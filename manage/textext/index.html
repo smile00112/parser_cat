@@ -1,0 +1,141 @@
+################################################################################
+@cms_body[]
+#-------------------------------------------------------------------------------
+<link	href="./styles/style.css" rel="stylesheet" type="text/css">
+<script	src="./scripts/actions.js" type="text/javascript"></script>
+# Выводим шапку
+^cms.ShowPageHeader[Редактирование раздела "^site:GetPageNameById[$form:idpage]";$cms.currentModule.path;^textext.GetClassInfo[]]
+# ------------------------------------------------------------------------------
+# Параметры страницы
+$curpage[^textext.GetPageProperties[$form:idpage]]
+^if(def $curpage){
+<p class="cms_h2">
+	<a href="${cms.cmsFolder}/structure/"><i class="fa fa-reply fa-3x inline blue mr10"></i>К страницам сайта</a>
+		^if($cms.cmsUserLevel>0){
+		<span id="addSlideBtn" data-width="350" data-href="add_block.html?idpage=$form:idpage" data-title="Добавить блок" data-reload="true" class="link pointer ml20" onClick="^$(this).OpenFancybox()^;">
+			<i class="fa fa-plus fa-3x inline blue mr10"></i>Добавить блок</span>
+		}
+	<a href="materials.html?idpage=$form:idpage"><i class="fa fa-picture-o fa-3x inline blue ml20 mr10" title="Галерея"></i>Материалы</a>
+</p>
+<div class="seo_tags" data-id="$curpage.id">
+	<div class="seo_tag_string">
+		<div class="tag_title">Заголовок (title):</div>
+		<div class="tag_value">
+			<div id="head" class="callout"></div>
+			<input name="head" value="$curpage.head" class="cms_input">
+		</div>
+	</div>
+	<div class="seo_tag_string">
+		<div class="tag_title">Ключевые слова (keywords):</div>
+		<div class="tag_value">
+			<div id="keywords" class="callout"></div>
+			<input name="keywords" value="$curpage.keywords" class="cms_input">
+		</div>
+	</div>
+	<div class="seo_tag_string">
+		<div class="tag_title">Описание раздела (description):</div>
+		<div class="tag_value">
+			<div id="descript" class="callout"></div>
+			<input name="descript" value="$curpage.descript" class="cms_input">
+		</div>
+	</div>
+</div>
+}
+# ------------------------------------------------------------------------------
+# Получаем список блоков старницы
+$curblocks[^textext.GetPageBlocks[$form:idpage]]
+# Если блоки есть
+<table border="0" cellspacing="0" cellpadding="0">
+	<tr valign="top">
+		<td>
+		^if(^curblocks.count[]>0){
+			<div class="cms_h1">Блоки раздела:</div>
+			<br>
+			<table width="650" border="0" cellspacing="1" cellpadding="5" bgcolor="#999999">
+				<tr class="tH">
+					<td width="80">Параметры</td>
+					<td width="20">id</td>
+					<td class="aL">Название блока</td>
+					<td width="100">Тип блока</td>
+					<td width="150">Действие</td>
+				</tr>
+			$rown(0)
+			^curblocks.menu{
+				^rown.inc(1)
+				<tr class="tN" onmouseover="className='tNs'" onmouseout="className='tN'">
+					<td>
+						^if(-f "./modules/${curblocks.name}/index.html"){<span><a href="./modules/${curblocks.name}/?id=$curblocks.id&idpage=$form:idpage" title="Редактировать блок"><i class="fa fa-pencil-square-o fa-3x blue"></i></a></span>}
+						^if(-f "./modules/${curblocks.name}/options.html"){<span><a href="./modules/${curblocks.name}/options.html?id=$curblocks.id&idpage=$form:idpage" title="Настройки блока"><i class="fa fa-cogs fa-3x blue"></i></a></span>}
+					</td>
+					<td>$curblocks.id</td>
+					<td class="aL">
+						<input type="text" name="name_${curblocks.id}" value="$curblocks.caption" style="border-width: 1px^;width:250" onchange='^$.post("UpdateBlockName.html", { id: $curblocks.id, name: this.value } )^;'>
+					</td>
+					<td>^ShowBlockName[$curblocks.name]</td>
+					<td align="center">
+						<table border="0" cellspacing="0" cellpadding="0">
+							<tr>
+								^if(^curblocks.count[]>1){
+									^if($rown>1){<span><a href="changeBlockPosition.html?up=yes&id=$curblocks.id&idpage=$form:idpage" title="Поднять выше"><i class="fa fa-arrow-circle-up fa-3x blue"></i></a></span>}{<div class="inline" style="width: 29px^;">&nbsp^;</div>}
+									<div class="inline" style="width: 6px^;">&nbsp^;</div>
+									^if($rown<^curblocks.count[]){<span><a href="changeBlockPosition.html?id=$curblocks.id&idpage=$form:idpage" title="Опустить ниже"><i class="fa fa-arrow-circle-down fa-3x blue"></i></a></span>}{<div class="inline" style="width: 29px^;">&nbsp^;</div>}
+									<div class="inline pr10">&nbsp^;</div>
+								}
+								<span><i class="fa fa-times fa-3x pointer blue" title="Удалить" onclick="if (confirm('Вы хотите удалить данную позицию?')){window.location.href='modules/${curblocks.name}/deleteall.html?id=$curblocks.id&idpage=$form:idpage'}"></i></span>
+								<span class="pl10"><a href="unlinkBlock.html?id=$curblocks.id&idpage=$form:idpage" title="Отвязать от текущей страницы"><i class="fa fa-chain-broken fa-3x blue"></i></a></span>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			}
+			</table>
+		}
+		</td>
+    ^if($cms.cmsUserLevel>0){
+# ------------------------------------------------------------------------------
+		$nonPagedBlocks[^textext.GetPageBlocks[0]]
+		^if(def $nonPagedBlocks){
+		<td width="10">&nbsp^;</td>
+		<td width="10" style="border-left: 1px solid^;color: #999999^;">&nbsp^;</td>
+		<td>
+		<div class="cms_h1">Непривязанные блоки:</div>
+			<br>
+			<table border="0" cellspacing="1" cellpadding="5" bgcolor="#999999">
+				<tr class="tH">
+					<td>Раздел</td>
+					<td>Название блока</td>
+					<td width="100">Тип блока</td>
+					<td width="70">Действие</td>
+				</tr>
+			^nonPagedBlocks.menu{
+				<tr class="tN">
+					<td align="left">^site:GetPageNameById[$nonPagedBlocks.last_page_id]</td>
+					<td align="left">$nonPagedBlocks.caption</td>
+					<td>^ShowBlockName[$nonPagedBlocks.name]</td>
+					<td><a href="linkBlock.html?id=$nonPagedBlocks.id&idpage=$form:idpage" title="Привязать к текущей странице"><i class="fa fa-chain fa-3x blue"></i></a></td>
+				</tr>
+			}
+			</table>
+		</td>
+		}
+		}
+	</tr>
+</table>
+################################################################################
+@ShowBlockName[name]
+$blockInfo[^modules:GetModules[$.name[$name]]]
+<table border="0" align="left" cellspacing="0" cellpadding="0">
+	<tr>
+		<td>
+		$index_image_extention[^cms.GetImageExtention[./modules/${name}/]]
+		^if($index_image_extention ne 'no'){
+			<img src="./modules/${name}/index.${index_image_extention}" width="22" height="22" border="0" align="absmiddle">
+		}{
+			<img src="${cms.imagesFolder}/no.png" width="22" height="22" border="0" align="absmiddle">
+		}
+		</td>
+		<td>&nbsp^;</td>
+		<td>$blockInfo.caption</td>
+	</tr>
+</table>
+################################################################################

@@ -1,0 +1,81 @@
+@cms_body[]
+^try{
+<link		href="./styles/styles.css?v=0.01" rel="stylesheet" type="text/css">
+<script	src="./scripts/actions.js?v=0.01" type="text/javascript"></script>
+#	Выводим заголовок страницы
+^cms.ShowPageHeader[Заказы;$cms.currentModule.path;^this.GetClassInfo[]]
+# ^if($cms.cmsUserLevel>0){
+#	Инициализируем значения фильтров
+	$filters[
+		$.page(1)
+		$.city(0)
+		$.status[all]
+	]
+	^if(def $form:page){$filters.page(^form:page.int(1))}
+	^if(def $form:city){$filters.city(^form:city.int(0))}
+	^if(def $form:status){$filters.status[$form:status]}
+#	Получаем список городов для фильтра
+	$cities[^contacts:GetCities[]]
+# <p class="cms_h2">
+# 	<span id="addSlideBtn" data-width="400" data-href="add_account.html" data-title="Добавить аккаунт" data-reload="true" class="link pointer" onClick="^$(this).OpenFancybox()^;">
+# 		<i class="fa fa-plus fa-3x inline blue mr10"></i>Добавить аккаунт</span>
+# 	<a href="./options.html?^if($cparent>0){&parent=$cparent}" class="ml20"><i class="fa fa-cog fa-3x inline blue mr10"></i>К настройкам</a>
+# </p>
+	$allOrders[^this.GetOrders[
+		^if($filters.city>0){$.cityIDs($filters.city)}
+		^if($filters.status ne all){$.status[$filters.status]}
+		$.count(true)
+	]]
+	^scroller:print_scroller2[^math:ceiling(^eval($allOrders/$this.perPage));20]
+	<form class="filter" method="post">
+		<input type="hidden" name="page" value="$filters.page">
+		<span class="cms_h2 filter-name">Отфильтровать по</span>
+		<span class="cms_h2 filter-title">городу:</span>
+		<select name="city" class="cms_select">
+			<option value="0"^if($cities.id eq $order.status){ selected}>Все</option>
+		^cities.menu{
+			<option value="$cities.id"^if($cities.id eq $filters.city){ selected}>$cities.name</option>
+		}
+		</select>
+		<span class="cms_h2 filter-title">статусу:</span>
+		<select name="status" class="cms_select">
+			<option value="all"^if($cities.id eq $order.status){ selected}>Все</option>
+		^this.statuses.foreach[key;value]{
+			<option value="$key"^if($key eq $filters.status){ selected}>$value.name</option>
+		}
+		</select>
+	</form>
+	$orders[^this.GetOrders[
+			^if($filters.city>0){$.cityIDs($filters.city)}
+			^if($filters.status ne all){$.status[$filters.status]}
+			$.orderType[DESC]
+			$.limitCount($this.perPage)
+			$.offsetCount(^eval($this.perPage*$filters.page-$this.perPage))
+		]
+	]
+	^if(def $orders){
+		$templateURL[orderString.html]
+		^include[$templateURL]
+		<table class="orders table_dsb" data-template-url="actions.html">
+			<tr class="header">
+				<td>№</td>
+				<td>Город</td>
+				<td>Дата заказа</td>
+				<td>Заказ</td>
+				<td>Заказчик</td>
+				<td>Статус заказа</td>
+				<td>Действия</td>
+			</tr>
+		^orders.menu{
+			^GetOrderString[$orders]
+		}
+		</table>
+	}{
+		<h1 class="cms_h1">Заказы не найдены<h1>
+	}
+# }
+}{
+	$exception.handled(1)
+	^var_dump[$exception]
+	^var_dump[$orders]
+}

@@ -1,0 +1,56 @@
+################################################################################
+@main[]
+<style>
+	.table_dsb .label{
+		width: 1px^;
+		white-space: nowrap^;
+	}
+	.callout::before{
+		right: inherit !important^;
+	}
+</style>
+^cms.ShowModalHeader[header_light.html]
+<script	src="./scripts/seo.js" type="text/javascript"></script>
+^if(def $form:element_id){
+	^connect[$site:connectString]{$video[^this.GetVideo[$.IDs($form:element_id)]]}
+	<table class="table_dsb w100p" data-id="$video.id">
+		<tr>
+			<td class="aC" colspan="2"><span class="cms_h1 aC">SEO атрибуты для элемента: "^textext:GetFixedText[$video.name;40;...]"</span></td>
+		</tr>
+		<tr>
+			<td class="label">Адрес (url):</td>
+			<td>
+				<div id="url" class="callout"></div>
+				<input class="cms_input w100p save" type="text" name="url" value="$element.url" onKeyUp="">
+			</td>
+		</tr>
+		<tr>
+			<td class="label">Заголовок (title):</td>
+			<td>
+				<div id="title" class="callout"></div>
+				<input class="cms_input w100p save" type="text" name="title" value="$video.title">
+			</td>
+		</tr>
+		<tr>
+			<td class="label">Ключевые слова (keywords):</td>
+			<td>
+				<div id="keywords" class="callout"></div>
+				<input class="cms_input w100p save" type="text" name="keywords" value="$video.keywords">
+			</td>
+		</tr>
+		<tr>
+			<td class="label">Описание (description):</td>
+			<td>
+				<div id="description" class="callout"></div>
+				<input class="cms_input w100p save" type="text" name="description" value="$video.description">
+			</td>
+		</tr>
+	</table>
+}{
+	$response:refresh[
+		$.value(0)
+		$.url[${cms.cmsFolder}/${self.currentModulePath}]
+	]
+}
+^cms.ShowModalFooter[]
+################################################################################

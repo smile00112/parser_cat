@@ -1,0 +1,96 @@
+/* Сопутствующие товары */
+.lost-elements{
+	font-family: "Cuprum",Tahoma;
+	font-size: 16px;
+}
+.lost-elements .description{
+	width: 370px;
+	font-size: 14px;
+	font-style: italic;
+}
+.lost-elements .elements-table{
+	margin-top: 15px;
+	display: table;
+}
+.lost-elements .element-string{
+	padding: 0;
+	margin: 0;
+	position: relative;
+}
+.lost-elements .element-string li{
+	display: table-cell;
+	padding: 10px 0;
+	width: 350px;
+	vertical-align: middle;
+	border-bottom: 1px dashed #999999;
+}
+.lost-elements .element-string li+li{
+	width: auto;
+	min-width: 90px;
+	text-align: right;
+}
+.lost-elements .element-string .fa-chevron-up{
+	float: left;
+	cursor: pointer;
+	top: 3px;
+	position: relative;
+	-o-transition: all 0.5s ease;
+	-moz-transition: all 0.5s ease;
+	-webkit-transition: all 0.5s ease;
+	transition: all 0.5s ease;
+	-webkit-transform-origin: 50% 50%;
+	-ms-transform-origin: 50% 50%;
+	transform-origin: 50% 50%;
+}
+.lost-elements .element-string.close .fa-chevron-up{
+	-moz-transform: rotate(180deg);
+	-ms-transform: rotate(180deg);
+	-webkit-transform: rotate(180deg);
+	-o-transform: rotate(180deg);
+	transform: rotate(180deg);
+}
+.lost-elements .element-string.close ul{
+	display: none;
+}
+.lost-elements .element-name{
+	margin-left: 20px;
+	display: block;
+	cursor: pointer;
+}
+.lost-elements .element-name-wrapper{
+	display: block;
+}
+.lost-elements .linkElement,
+.lost-elements .redirectElement,
+.lost-elements .deleteElement{
+	display: inline-block;
+	cursor: pointer;
+	text-align: center;
+	font-family: FontAwesome;
+}
+.lost-elements .elementFullness{
+	display: inline-block;
+	text-align: center;
+	font-family: FontAwesome;
+}
+
+.lost-elements .linkElement,
+.lost-elements .redirectElement,
+.lost-elements .elementFullness{
+	margin-right: 10px;
+}
+.lost-elements .deleteElement:before{
+	content: "\f00d";
+}
+.lost-elements .linkElement:before{
+	content: "\f0c1";
+}
+.lost-elements .redirectElement:before{
+	content: "\f074";
+}
+.lost-elements .elementFullness.full:before{
+	content: "\f05d";
+}
+.lost-elements .elementFullness.empty:before{
+	content: "\f10c";
+}

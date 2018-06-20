@@ -1,0 +1,26 @@
+@ShowMenuTemplate[pages;parent;userVars]
+<ul class="multilevel_nav_a">
+ ^pages.menu{
+  <li>
+  ^if($self.currentPage.id == $pages.id){
+   <span>$pages.name</span>
+  }{
+   <a href="^if($self.mainPageId == $pages.id){/}{^if(def $pages.uri){/$pages.uri/}{/?p=$pages.id}}">$pages.name</a>
+  }
+  $parent_pages[^self.GetPagesByParent[$pages.id]]
+  ^if(def $parent_pages){
+   <ul>
+   ^parent_pages.menu{
+    <li>
+    ^if($self.currentPage.id == $parent_pages.id){
+     <span>$parent_pages.name</span>
+     }{
+     <a href="^if($self.mainPageId == $parent_pages.id){/}{^if(def $parent_pages.uri){/$parent_pages.uri/}{/?p=$parent_pages.id}}">$parent_pages.name</a>
+     }
+    </li>
+   }
+   </ul>
+  }
+  </li>
+}
+</ul>

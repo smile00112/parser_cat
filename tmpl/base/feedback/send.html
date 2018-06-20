@@ -1,0 +1,44 @@
+################################################################################
+@main[]
+^connect[$connect_string]{
+ ^use[controlimage.p]
+ ^try{$prov[^controlimage:proverka_controlimage[$form:control;$form:maxid]]}{$exception.handled(1)}
+ ^if(def $prov){
+  ^send[]
+ }{
+  Неверный код проверки
+#  <p align="center">Пожалуйста, <a href="http://^string:base64[$form:resp]">вернитесь</a> и заполните все поля.</p>
+ }
+}
+################################################################################
+@send[]
+
+^if(def $form:name && def $form:email && def $form:text){
+	^use[site.p]
+	$site[^site::create[]]
+	$send_email[$site.email]
+	^try{
+		$body[
+			Обратная связь
+			Имя: $form:name
+			Email: $form:email
+			Текст сообщения: ^#0A
+				$form:text
+			^#0A^#0A
+		]
+		^mail:send[
+			$.from[postmaster]
+			$.to[$send_email]
+			$.charset[$response:charset]
+			$.subject[Обратная связь с сайта http://$env:SERVER_NAME/]
+			$.text[$body]
+		]
+		Спасибо, Ваше сообщение отправлено.
+	}{
+		$exception.handled(1)
+		Сожалеем, но при отправке письма возникла неизвестная ошибка.
+	}
+}{
+	Вы заполнили не все поля формы. Пожалуйста, заполните все поля.
+}
+################################################################################

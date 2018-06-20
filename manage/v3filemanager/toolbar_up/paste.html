@@ -1,0 +1,162 @@
+п»ї
+@cms_left[]
+<table class="table100">
+<tr>
+<td valign=top bgcolor="$allbgcolor">
+
+@cms_body[]
+$url[$form:url]
+$paste[$cookie:paste]
+$cut[$cookie:cut]
+$copy[$cookie:copy]
+
+^if($url eq $paste){
+	$cookie:paste[]
+	$cookie:cut[]
+	$cookie:copy[]
+	$response:location[http://$env:SERVER_NAME/manage/v3filemanager/index.html?url=$form:url&err=$err]
+}{
+
+^if(def $cut){
+	$parts[^cut.split[|]]
+	$name[^cut.split[|;1h]]
+}{
+	$parts[^copy.split[|]]
+	$name[^copy.split[|;1h]]
+}
+^if(def $url && def $paste){
+	$i(-1)
+	^parts.menu{
+		^i.inc[]
+#		$name.$i
+		$way[$paste]
+		$slesh[/]
+		$way[^way.trim[]]
+		^if(-f "${way}$name.$i"){
+			^file_paste[]
+		}{
+			$way[${way}$name.$i/]			
+			$table_way[^table::create{cnt	name	way}]
+			$summ(0)
+			^table_way.append{$summ	$name.$i	$way}
+			$exit(1)
+			
+#			РџСЂРѕРІРµСЂРєР° С‡С‚РѕР±С‹ РїР°РїРєР° РІ РєРѕС‚РѕСЂСѓСЋ РїРµСЂРµРјРµС‰Р°СЋС‚ РЅРµ Р±С‹Р»Р° РґРѕС‡РµСЂРЅРµР№
+			$proverka[^url.pos[${paste}$name.$i/]]
+			$proverka
+			^if(def $cut){
+				^if($proverka==0){
+					$err[folder_drag]
+
+				}{
+					^folder_paste[]
+					$way[]
+				}
+			}{
+				^folder_paste[]
+				$way[]
+			}
+		
+		}
+
+	}
+}
+$cookie:paste[]
+$cookie:cut[]
+$cookie:copy[]
+$response:location[http://$env:SERVER_NAME/manage/v3filemanager/index.html?url=$form:url&err=$err]
+}
+
+#РїРµСЂРµРјРµС‰РµРЅРёРµ С„Р°Р№Р»Р°
+@file_paste[]
+^ext[$name.$i]
+
+$pv[^file:list[$way]]
+$exist_pv(0)
+^pv.menu{
+	^if($preview_name eq $pv.name){
+		$exist_pv(1)
+	}
+}
+
+^if($exist_pv!=1){
+	^if(def $cut){
+		^file:move[${way}${name_file};${url}${name_file}]
+	}{		
+		^file:copy[${way}${name_file};${url}${name_file}]
+	}
+}{
+	^if(def $cut){
+		^file:move[${way}${name_file};${url}${name_file}]
+		^file:move[${way}${preview_name};${url}${preview_name}]
+	}{		
+		^file:copy[${way}${name_file};${url}${name_file}]
+		^file:copy[${way}${preview_name};${url}${preview_name}]
+	}
+}	
+
+################################
+#РџРµСЂРµРјРµС‰РµРЅРёРµ РїР°РїРєРё
+@folder_paste[]
+$exception[t.t]
+$t(0)
+^while($exit!=-1){
+	$tables[^table_way.select($table_way.cnt==$summ)]
+	^if($tables){
+		^summ.inc[]
+		^tables.menu{
+			$back_way[$tables.way]				
+			$list[^file:list[$tables.way]]
+			^if($list){
+			}{
+				$t(-1)
+			}
+			^list.menu{
+				^ext[$list.name]
+				^if($name_file eq $exception){
+					$t(1)
+				}{
+					$t(-1)
+				}
+#				Р•СЃР»Рё РµСЃС‚СЊ СЂР°Р·СЂРµС€РµРЅРёРµ С‚Рѕ СѓРґР°Р»СЏРµРј СЃСЂР°Р·Сѓ РµСЃР»Рё РЅРµС‚ С‚Рѕ Р·Р°С…РѕРґРёРј РІРЅСѓС‚СЂСЊ
+				^if(-f "${tables.way}${name_file}"){
+					$way_t[^table::create{from	to
+${paste}$name.$i/	
+}]
+
+					$rep_way[${tables.way}]
+					$rep_way[^rep_way.replace[$way_t]]
+
+					^if(def $copy){
+						^file:copy[${tables.way}${name_file};${url}$name.$i/${rep_way}${name_file}]
+					}{
+						^file:move[${tables.way}${name_file};${url}$name.$i/${rep_way}${name_file}]
+#						${tables.way}${name_file} - ${url}$name.$i/${rep_way}${name_file}<br>
+					}
+						
+				}{
+					$way[${tables.way}${name_file}/]
+					^table_way.append{$summ	$name_file	$way}
+					}	
+			}<br>
+		}
+	}{	
+		$exit(-1)
+	}
+}
+
+
+
+##################################
+#Р Р°Р·СЂРµС€РµРЅРёРµ С„Р°Р№Р»Р°
+@ext[name]
+$name_file[$name]
+$ext[^file:justext[$name_file]]
+$preview[-preview.]
+$name_f[^file:justname[$name_file]]
+$preview_name[${name_f}${preview}${ext}]
+#$ext-СЂР°СЂСЃС€РёСЂРµРЅРёРµ
+#$name_f-РёРјСЏ С„Р°Р№Р»Р°
+#$name_file-РёРјСЏ С„Р°Р№Р»Р° СЃ СЂР°СЃС€РёСЂРµРЅРёРµРј
+#$preview_name-РёРјСЏ РїСЂРµРІСЊСЋ
+

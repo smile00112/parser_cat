@@ -1,0 +1,129 @@
+@ShowUserProfileTemplate[user;this]
+$fields[
+	$.contacts[
+		$.email[]
+		$.phone[]
+		$.skype[]
+		$.twitter[]
+	]
+	$.personal[
+		$.interests[]
+		$.about[]
+	]
+]
+$sex[
+	$.male[Мужской]
+	$.female[Женский]
+]
+# Проверяем есть ли непустые поля в блоке "Контактная информация"
+$fields.hasContacts[^CheckFields[$user;$fields;contacts]]
+# Проверяем есть ли непустые поля в блоке "Личная информация"
+$fields.hasPersonal[^CheckFields[$user;$fields;personal]]
+# Выводим профиль пользователя
+<div class="user-profile">
+	<div class="user-profile-avatar">
+		^if(-f "${this.folders.user.avatars.small}/$user.avatar"){
+			<img src="${this.folders.user.avatars.small}/$user.avatar" />
+		}{
+			<div class="user-no-avatar"></div>
+		}
+	</div>
+	<div class="user-profile-info">
+		<div class="user-profile-header">
+			<div class="user-profile-name">$user.first_name $user.last_name^if(^user.nickname.length[]>0){ <span>($user.nickname)</span>}</div>
+			^if(^user.sigest.length[]>0){<div class="user-profile-sigest">$user.sigest</div>}
+		</div>
+		<div class="user-profile-fields">
+		^if(^user.birth_date.length[]>0){
+			$birth_date[^user.birth_date.split[-;lh]]
+			<div class="user-profile-field">
+				<div class="user-profile-field-label">День рождения:</div>
+				<div class="user-profile-field-labeled">^birth_date.2.int(0) $dtf:rr-locale.month.[$birth_date.1] $birth_date.0 г.</div>
+			</div>
+		}
+		^if(^user.sex.length[]>0){
+			<div class="user-profile-field">
+				<div class="user-profile-field-label">Пол:</div>
+				<div class="user-profile-field-labeled">$sex.[$user.sex]</div>
+			</div>
+		}
+		^if(^user.city.length[]>0){
+			<div class="user-profile-field">
+				<div class="user-profile-field-label">Город:</div>
+				<div class="user-profile-field-labeled">$user.city</div>
+			</div>
+		}
+		^if(^user.site.length[]>0){
+			<div class="user-profile-field">
+				<div class="user-profile-field-label">Веб-сайт:</div>
+				<div class="user-profile-field-labeled"><a href="/goto.html?link=${user.site}" target="_blank">$user.site</a></div>
+			</div>
+		}
+		^if($fields.hasContacts){
+			<div class="user-profile-field-group">
+				<div class="user-profile-field-group-header">
+					<span>Контактная информация</span>
+				</div>
+				^if(^user.email.length[]>0){
+					<div class="user-profile-field">
+						<div class="user-profile-field-label">E-mail:</div>
+						<div class="user-profile-field-labeled"><a href="mailto:${user.email}">$user.email</a></div>
+					</div>
+				}
+				^if(^user.phone.length[]>0){
+					<div class="user-profile-field">
+						<div class="user-profile-field-label">Телефон:</div>
+						<div class="user-profile-field-labeled"><a href="tel:${user.phone}">$user.phone</a></div>
+					</div>
+				}
+				^if(^user.skype.length[]>0){
+					<div class="user-profile-field">
+						<div class="user-profile-field-label">Skype:</div>
+						<div class="user-profile-field-labeled"><a href="skype:${user.skype}?call">$user.skype</a></div>
+					</div>
+				}
+				^if(^user.twitter.length[]>0){
+					<div class="user-profile-field">
+						<div class="user-profile-field-label">Twitter:</div>
+						<div class="user-profile-field-labeled"><a href="//twitter.com/${user.twitter}" target="_blank">$user.twitter</a></div>
+					</div>
+				}
+			</div>
+		}
+		^if($fields.hasPersonal){
+			<div class="user-profile-field-group">
+				<div class="user-profile-field-group-header">
+					<span>Личная информация</span>
+				</div>
+				^if(^user.interests.length[]>0){
+					<div class="user-profile-field">
+						<div class="user-profile-field-label">Интересы:</div>
+						<div class="user-profile-field-labeled">$user.interests</div>
+					</div>
+				}
+				^if(^user.about.length[]>0){
+					<div class="user-profile-field">
+						<div class="user-profile-field-label">О себе:</div>
+						<div class="user-profile-field-labeled">$user.about</div>
+					</div>
+				}
+			</div>
+		}
+		</div>
+	</div>
+</div>
+################################################################################
+@CheckFields[table;fields;subHash]
+$answer(false)
+^fields.[$subHash].foreach[key;value]{
+	^try{
+		^if(^table.[$key].length[]>0){
+			$answer(true)
+			^break[]
+		}
+	}{
+		$exception.handled(true)
+	}
+}
+$result($answer)
+################################################################################

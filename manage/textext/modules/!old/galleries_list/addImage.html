@@ -1,0 +1,11 @@
+################################################################################
+@cms_body[]
+# Если передаётся id записи
+^if(def $form:id){
+# Удаляем существующие изображения
+ $res[^galleries_list.DeleteImage[$form:id]]
+# Сохраняем загруженное изображение
+ $res[^galleries_list.SaveImage[$form:id;$form:image]]
+}
+$response:refresh[$.value(0)$.url[edit.html?id=$form:id&id_block=$form:id_block&idpage=$form:idpage]]
+################################################################################

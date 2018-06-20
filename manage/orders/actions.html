@@ -1,0 +1,38 @@
+################################################################################
+@main[]
+$answer[^hash::create[]]
+^connect[$site:connectString]{
+	^switch[$form:action]{
+		^case[get_order_string]{
+			^if(def $form:order_id){
+				^include[orderString.html]
+				$answer[^this.GetOrders[$.orderIDs($form:order_id)$.resultType[hash]]]
+				^if(!^answer.contains[error]){
+					$order[$answer.[$form:order_id]]
+					$order.id($form:order_id)
+					$answer[
+						$.error(false)
+						$.html[^GetOrderString[$order]]
+					]
+				}
+			}{
+				$answer[
+					$.error(true)
+					$.text[Неизвестный заказ]
+					$.order_id($form:order_id)
+				]
+			}
+		}
+		^case[update_order_field]{
+			$answer[^this.SaveOrderProperty[$form:order_id;$form:field;$form:value]]
+		}
+		^case[DEFAULT]{
+			$answer[
+				$.error(true)
+				$.text[Неизвестное действие]
+			]
+		}
+	}
+}
+$result[^json:string[$answer;$.indent(true)]]
+################################################################################

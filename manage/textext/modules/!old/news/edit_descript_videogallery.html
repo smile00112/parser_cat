@@ -1,0 +1,18 @@
+################################################################################
+@cms_body[]
+# Инициализируем класс videogallery
+^use[/classes/modules/videogallery.p]
+$videogallery[^videogallery::init[news;$form:news_id;$form:idpage]]
+$params[^videogallery.get_params[]]
+# Выводим заголовок страницы
+
+^cms.ShowPageHeader[Редактирование видео;$cms.currentModule.path;^news.GetClassInfo[]]
+<br><a href="videogallery.html${params}">Назад к видеогалерее</a><br><br>
+# Если параметры формы непустые
+^if(def $form:video_id){
+	^videogallery.edit_descript_videogallery[$form:video_id;$cms_page_id]
+}{
+# Иначе выводим ошибку
+ ^insert_error_fields[]
+}
+################################################################################

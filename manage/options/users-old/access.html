@@ -1,0 +1,55 @@
+################################################################################
+@cms_body[]
+# Если есть логин
+^if(def $form:login){
+ ^edit_access[]
+}{
+ ^insert_error_fields[]
+}
+################################################################################
+@edit_access[]
+# Выводим заголовок страницы
+^cms.ShowPageHeader[Редактирование прав пользователя <font color="#cc0000">"$form:login"</font>;$cms.currentModule.path;^module_info[]]
+# Получаем список блоков CMS, доступных пользователю
+$access[^table::sql{SELECT cmc_block FROM admins_access WHERE login='$form:login'}]
+# Получаем информацию о блоках CMS
+$cmc_block[^table::sql{SELECT id, namemenu FROM cmc_block WHERE block<>1 ORDER BY id}]
+<br>
+# Назад к списку модулей
+<a href="${cms.cmsFolder}/${cms.currentModulePath}/">Назад к списку пользователей</a>
+<br>
+# Выводим таблицу со списком блоков CMS
+<br>
+<table border="0">
+ <tr>
+  <td width="200" align="center" valign="top">
+   <form method="post" action="access_ch.html">
+   <input type="hidden" name="login" value="$form:login">
+   <table border="0" cellspacing="1" cellpadding="6" bgcolor="#999999">
+    <tr class="tH">
+     <td>Название блока</td>
+     <td>Доступ</td>
+    </tr>
+    ^cmc_block.menu{
+     ^if($cmc_block.namemenu eq "-" || $cmc_block.namemenu eq "Выход"){
+      <input type="hidden" name="access" value="$cmc_block.id">
+     }{
+    <tr class="tN">
+     <td>$cmc_block.namemenu</td>
+     <td>
+      <input type="checkbox" name="access" value="$cmc_block.id" ^if(^access.locate[cmc_block;$cmc_block.id]){checked}>
+     </td>
+    </tr> 
+     }
+    }
+   </table>
+   <br>
+   <input type="submit" value="Сохранить права">
+   </form>
+  </td>
+#  <td valign="top">
+#   wekiwhdf
+#  </td>
+ </tr>
+</table>
+################################################################################ 

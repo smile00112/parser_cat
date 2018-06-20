@@ -1,0 +1,39 @@
+################################################################################
+@inMain[]
+^cms.ShowModalHeader[]
+<script src="./scripts/redirect.js" type="text/javascript"></script>
+<link href="./styles/redirect.css" rel="stylesheet" type="text/css">
+^if(def $form:element_id){
+	^connect[$site:connectString]{$element[^this.GetElements[$.element_ids[$form:element_id]]]}
+	^if(^element.count[]==1){
+		$elementName[$this.elementTypes.[$element.type].titleRE: "^textext:GetFixedText[$element.name;40;...]"]
+	}{
+		$elementName[^str_replace[$cms.languageVars.notFoundName;$.ELEMENTS[$this.elementTypes.[$element.type].titleRM]$._ID[$element.parent]]]
+	}
+	$elementName[^str_replace[$cms.languageVars.header;$.ELEMENT[$elementName]]]
+	<form data-id="$form:element_id">
+		<table width="100%" cellpadding="5" align="center">
+			<tr>
+				<td class="aC"><span class="cms_h1">$elementName</span></td>
+			</tr>
+			<tr>
+				<td><input class="cms_input w100p" type="text" name="redirect" value="$element.redirect"></td>
+			</tr>
+			<tr>
+				<td><input type="checkbox" name="withChilds" checked><span class="label">Сохранить значение для всех дочерних элементов</span></td>
+			</tr>
+			<tr>
+				<td>
+					<span class="cms_h1 pointer save">
+						<i class="fa fa-floppy-o"></i>Сохранить
+						<i class="fa fa-check ok"></i>
+					</span>
+				</td>
+			</tr>
+		</table>
+	</form>
+}{
+	<script>parent.^$.fancybox.close()^;</script>
+}
+^cms.ShowModalFooter[]
+################################################################################

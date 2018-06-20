@@ -1,0 +1,10 @@
+field	sql_field	rename
+id	`id` int(1) unsigned NOT NULL AUTO_INCREMENT,
+template	`template` varchar(255) DEFAULT NULL,
+name	`name` varchar(50) DEFAULT NULL,
+value	`value` varchar(255) DEFAULT NULL,
+default_value	`default_value` varchar(255) NOT NULL,
+type_field	`type_field` int(10) unsigned DEFAULT 0,
+comment	`comment` varchar(255) NOT NULL,
+sortir	`sortir` int(10) unsigned NOT NULL,
+	PRIMARY KEY (`id`)

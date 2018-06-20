@@ -1,0 +1,190 @@
+################################################################################
+@cms_body[]
+$div_width(605)
+$color_urov[   
+	$.1[#ffcf48]
+	$.2[#FFFFDA]
+	$.3[#F8DABD]
+	$.4[#747474]
+]
+<script type="text/javascript" src="./FixedHead/script.js"></script>
+<link href="./FixedHead/style.css" rel="stylesheet" type="text/css">
+<link href="./style.css" rel="stylesheet" type="text/css">
+# Выводим заголовок страницы
+^cms.ShowPageHeader[Структура сайта;$cms.currentModule.path;^module_info[]]
+# ------------------------------------------------------------------------------
+$mmenumain[^table::sql{select * from menus where parent=0 and id_menu='a' and level<=$cms.cmsUserLevel order by sortir}]
+
+^if($mmenumain){
+#----------------------------Шапка таблицы структуры----------------------------
+^if($cms.cmsUserLevel==$self.maxUserLevel){$div_width(^eval($div_width+38))}
+^show_fixed_table_header[]
+#-------------------------------------------------------------------------------
+<h2>Главное меню</h2>
+<section class="structure-block">
+	^show_table_header[]
+	^mmenumain.menu{			
+		$mmenupodchcount[^int:sql{select count(*) from menus where parent=$mmenumain.id and level<=$cms.cmsUserLevel order by sortir}]
+		^show_tr_strukture[$mmenumain;$mmenupodchcount;0]		
+		^show_tr_strukture_recurs[$mmenumain.id;1]
+	}
+}
+</section>
+#----------------------------------------------------------------
+$mmenumain2[^table::sql{select * from menus where parent=0 and id_menu='b' and level<=$cms.cmsUserLevel order by sortir}]
+^if($mmenumain2){
+<h2>Дополнительное меню</h2>
+<section class="structure-block">
+#  ^show_table_header[]
+<div></div>
+	^mmenumain2.menu{			
+		$mmenupodchcount[^int:sql{select count(*) from menus where parent=$mmenumain2.id and level<=$cms.cmsUserLevel order by sortir}]
+		^show_tr_strukture[$mmenumain2;$mmenupodchcount;0]		
+		^show_tr_strukture_recurs[$mmenumain2.id;1]
+	}
+}
+</section>
+#----------------------------------------------------------------
+$mmenumain3[^table::sql{select * from menus where parent=0 and id_menu='c' and level<=$cms.cmsUserLevel order by sortir}]
+^if($mmenumain3){
+<h2>Служебное меню</h2>
+<section class="structure-block">
+#  ^show_table_header[]
+<div></div>
+	^mmenumain3.menu{			
+		$mmenupodchcount[^int:sql{select count(*) from menus where parent=$mmenumain3.id and level<=$cms.cmsUserLevel order by sortir}]
+		^show_tr_strukture[$mmenumain3;$mmenupodchcount;0]		
+		^show_tr_strukture_recurs[$mmenumain3.id;1]
+	}
+}
+</section>
+#----------------------------------------------------------------
+$mmenumain4[^table::sql{select * from menus where parent=0 and id_menu='d' and level<=$cms.cmsUserLevel order by sortir}]
+^if($mmenumain4){
+<h2>Блоки</h2>
+<section class="structure-block">
+#  ^show_table_header[]
+<div></div>
+	^mmenumain4.menu{
+		$mmenupodchcount[^int:sql{select count(*) from menus where parent=$mmenumain4.id and level<=$cms.cmsUserLevel order by sortir}]
+		^show_tr_strukture[$mmenumain4;$mmenupodchcount;0]
+		^show_tr_strukture_recurs[$mmenumain4.id;1]
+	}
+}
+</section>
+
+#--------------------------Добавление раздела-------------------------
+
+<div class="struct_add_razdel normal">
+	<span>Добавление раздела</span>
+	<div></div>
+		<script type="text/javascript" src="/manage/structure/translit.js"></script>
+		<form method="post" action="add_menu.html" style="MARGIN-TOP: 0em^; margin-bottom: 0em^;">
+			<input type="hidden" name="visall" value="$form:visall"/>
+			<table border="0" cellspacing="1" cellpadding="0" bgcolor="#999999">
+				<tr class="tH">
+					<td>Название</td>
+					<td>Родитель</td>
+					<td>Порядок</td>		   
+					<td>Внешняя ссылка</td>
+					<td>Расположение</td>
+#					<td>Видимость</td>
+					<td class="aC">Действия</td>
+				</tr>
+				<tr bgcolor="#fdf4e3">
+					<td>
+						<input name="name" onkeyup="document.getElementById('uri').value=toTranslit(this.value).toLowerCase()" style="width: 200px^;  border-width: 1px^; color: #000033^; background-color: #f9f9f9^;"/>
+					</td>
+					<td>
+						<input name="parent" style="width: 60px^;  border-width: 1px^; color: #000033^; background-color: #f9f9f9^;"/>
+					</td>
+					<td>
+						<input name="sortir" style="width: 60px^;  border-width: 1px^; color: #000033^; background-color: #f9f9f9^;"/>
+					</td>
+					<td>
+						<input id="uri" name="uri" style="width: 100px^;  border-width: 1px^; color: #000033^; background-color: #f9f9f9^;"/>
+					</td>
+					<td>
+						<select name="id_menu" style="width: 120px^;">
+							<option value="a" style="background-color=ffffcc" selected>Главное меню</option>
+							<option value="b" style="background-color=ccffcc">Дополнительное меню</option>
+							^if($cms.cmsUserLevel>9){
+								<option value="c" style="background-color=ffffcc">Служебное меню</option>
+							}
+              <option value="d" style="background-color=ccffcc">Блоки</option>
+						</select>
+					</td>
+#					<td class="aC"><input type="checkbox" name="mainpage" value="1"/></td>
+#					<td class="aC"><input type="checkbox" name="visible" value="1"/></td>
+					<td class="aC">
+						<input type="submit" value="Добавить" />
+					</td>
+				</tr>
+			</table>
+		</form>
+	
+</div>
+<div class="help_empty"></div>
+################################################################################
+@show_tr_strukture_recurs[idp;tparent][mmenupodch;tparent]
+
+$mmenupodch[^table::sql{select * from menus where parent=$idp and level<=$cms.cmsUserLevel order by sortir}]
+
+^mmenupodch.menu{	
+ $mmenupodchcount[^int:sql{select count(*) from menus where parent=$mmenupodch.id and level<=$cms.cmsUserLevel order by sortir}]
+ ^show_tr_strukture[$mmenupodch;$mmenupodchcount;$tparent]	
+ ^show_tr_strukture_recurs[$mmenupodch.id;^eval($tparent+1)]
+}
+################################################################################
+@show_tr_strukture[menu;countpodch;cparent]
+
+$clevel[^get_level[$menu.id]]
+<div style="background-color: $color_urov.$clevel^;">
+	<form method="post" action="ch_menu.html">
+		<input type="hidden" name="id" value="$menu.id">
+		<input type="hidden" name="visall" value="$form:visall">
+		<div class="form-left">
+			<span class="str-name">
+				<span style="padding-left: ^eval(($clevel-1)*30+5)"><input name="name" value="$menu.name"/></span>
+			</span>
+		</div><!--
+		--><div class="form-right" style="width: ${div_width}px^;">
+			<span class="str-id"><span><a name="zap${menu.id}">$menu.id</a></span></span><!--
+			--><span class="str-parent">
+				<span><input name="parent" value="$menu.parent" maxlength="3"/></span>
+			</span><!--
+			--><span class="str-porydok">
+				<span><input name="sortir" value="$menu.sortir" maxlength="4"/></span>
+			</span><!--
+			--><span class="str-link">
+				<span><input name="uri" value="$menu.uri"/></span>
+			</span><!--
+			--><span class="str-general">
+				<span><input type=checkbox name="mainpage" value="1" ^if($menu.mainpage eq 1){checked}/></span>
+			</span><!--
+			--><span class="str-visible">
+				<span><input type=checkbox name="visible" value="1" ^if($menu.visible eq 1){checked}></span>
+			</span><!--
+			^if(def $security){--><span class="str-closed"><span><input type=checkbox name="security" value="1" ^if($menu.security eq 1){checked}></span></span><!--}
+			^if($cms.cmsUserLevel>9){--><span class="str-level"><span><input name="level" value="$menu.level"></span></span><!--}
+			--><span>
+				<span><input type="submit" value="Изменить"/></span>
+			</span><!--
+			--><span>
+				<span>^if($menu.id_menu ne c){<input type="button" value="Удалить" onclick="if (confirm('Вы хотите удалить данную позицию?')){window.location.href='del_menu.html?id=$menu.id'}">}{<div style="width: 68px^; height: 4px^;"></div>}</span>
+			</span><!--
+			--><span>
+				<span><input type="button" value="Наполнение" onclick="window.location.href='../textext/index.html?idpage=$menu.id'"></span>
+			</span>
+		</div>
+	</form>
+</div>	
+################################################################################
+@get_level[parent][parent;par_urov]
+$result[0]
+$par_urov[^int:sql{select parent from menus where id='$parent'}[$.default{-1}]]
+^if($par_urov>0){
+	$result[^eval(^get_level[$par_urov]+1)]
+}
+^if($par_urov==0){$result[1]}	
+################################################################################

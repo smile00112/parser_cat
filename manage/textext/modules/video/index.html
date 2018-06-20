@@ -1,0 +1,121 @@
+################################################################################
+@cms_body[]
+#-------------------------------------------------------------------------------
+<link		href="./styles/styles.css" rel="stylesheet" type="text/css">
+<script	src="./scripts/actions.js" type="text/javascript"></script>
+#------------------------------------ jcrop ------------------------------------
+<link		href="${cms.templateFolder}/libraries/jcrop/css/jquery.Jcrop.css" rel="stylesheet" type="text/css">
+<script	src="${cms.templateFolder}/libraries/jcrop/js/jquery.Jcrop.min.js"></script>
+#----------------------------------- dragula -----------------------------------
+<script type="text/javascript" src="${cms:templateFolder}/libraries/dragula/dragula.min.js"></script>
+<link rel="stylesheet" type="text/css" href="${cms:templateFolder}/libraries/dragula/dragula.min.css" />
+#-------------------------------------------------------------------------------
+^if(def $form:parent){$cparent($form:parent)}{$cparent(0)}
+# Если параметры передаются
+^if(def $form:id && def $form:idpage){
+# Определяем страницу
+	^if(!def $form:page){$currentPage(1)}{$currentPage($form:page)}
+	$params[
+		$.parentIDs($cparent)
+		$.blockIDs($form:id)
+		$.offsetCount(^eval(($currentPage-1)*$this.perPage))
+	]
+	$elements[^this.GetVideo[^hash::create[$params]]]
+#	Выводим заголовок страницы
+	^cms.ShowPageHeader[Видео для раздела "^site:GetPageNameById[$form:idpage]";$cms.currentModule.path;^this.GetClassInfo[]]
+	^if(!def $elements){
+		$headerText[Добавить элемент]
+	}{
+		^if($elements.type){
+			$headerText[Добавить видео]
+		}{
+			$headerText[Добавить видеогалерею]
+		}
+	}
+	<div class="navigation cms_h2">
+		<a class="navigation-point back" href="../../?idpage=$form:idpage" title="Вернуться к списку блоков страницы">К блокам</a>
+		^if($cms.cmsUserLevel>0){
+			<div id="addSlideBtn" class="navigation-point add open" title="$headerText" data-width="440" data-href="add.html?idpage=$form:idpage&idblock=$idblock&element_type=$elements.type&parent=$cparent" data-reload="true">$headerText</div>
+			<a class="navigation-point settings" href="./options.html?id=$idblock&idpage=$form:idpage^if(def $cparent){&parent=$cparent}^if($currentPage>1){&page=$currentPage}" title="Перейти к настройкам блока">К настройкам</a>
+			^if($cparent>0){
+			<div class="navigation-hover blocks">Текстовые блоки
+				<div class="navigation-hover-actions">
+					<div class="navigation-point open" data-width="830" data-href="edit_field.html?gallery_id=$cparent&field=text_before&fieldName=Текст перед видеогалереей"><div class="mixed-icon text-before"></div>Перед видеогалереей</div>
+					<div class="navigation-point open" data-width="830" data-href="edit_field.html?gallery_id=$cparent&field=text_after&fieldName=Текст после видеогалереи"><div class="mixed-icon text-after"></div>После видеогалереи</div>
+				</div>
+			</div>
+			}
+		}
+	</div>
+#	Вывод навигационного меню
+^if($cparent>0){
+	<div class="breadcrumbs"><a href="?id=$idblock&idpage=$form:idpage&parent=0">Галерея</a> ^header_page[$cparent]</div>
+}
+	<h1 class="cms_h1 no-videos^if(!def $elements){ show}">Элементы не найдены</h1>
+# Выводим скроллер
+	$params.count(true)
+	^scroller:print_scroller2[^math:ceiling(^eval(^this.GetVideo[$params]/$this.perPage));5;yes]
+	<div class="videos"><!--
+	^elements.menu{
+		$image(false)
+		$link[^video:GenerateLink[$elements.hoster;^this.hosters.[$elements.hoster].video.replace[-IDENTIFIER-;$elements.src];$.source[cms]]]
+--><div class="block_video shadow" data-id="$elements.id">
+		<div class="block_video_wrapper" style="width:${this.width.small}px">
+			<div class="element^if($elements.type){ video}" style="height: ${this.height.small}px^;line-height: ${this.height.small}px^;"^if($elements.type){ data-width="75%" data-href="$link.link"}>
+				<div class="image^if(^elements.image.length[]<1){ empty}" id="image_${elements.id}" title="Перейти в видеогалерею"^if(^elements.image.length[]>0){ style="background-image: url(${this.folders.images.small}/${elements.image})"}>
+					<div class="crop blue" title="Обрезать изображение" data-image="${this.folders.images.src}/${elements.image}"></div>
+					<div class="remove red" title="Удалить изображение видеогалереи"></div>
+					<div class="empty-text">Нет изображения</div>
+					<div class="add-image blue open" data-width="440" data-href="add_image.html?element_id=$elements.id" title="Добавление изображения"></div>
+				</div>
+			</div>
+			<div class="name-block">
+				<div id="name_${elements.id}" class="callout name-callout"></div>
+				<input name="name" value="$elements.name" class="cms_input w100p aC save">
+			</div>
+			<div class="string actions">
+				<div class="main-actions"><!--
+				^if(!$elements.type){
+					--><a class="open-folder blue" href="./?id=$form:id&idpage=$form:idpage&parent=$elements.id" title="Перейти в видеогалерею"></a><!--
+					--><span class="seo blue open" data-width="830" data-href="./seo.html?element_id=${elements.id}" title="SEO атрибуты"></span><!--
+				}
+					--><span class="parent blue open" data-width="640" data-href="./parent.html?element_id=${elements.id}" data-reload="true" title="Изменить родителя"></span>
+				</div><!--
+				--><div class="common-actions">
+					<div id="visible_${elements.id}" class="callout visible-callout"></div>
+					<span class="visible ^if($elements.visible == 1){true}{false} blue" title="^if($elements.visible == 1){Скрыть}{Отобразить}"></span><!--
+					--><span class="delete red" title="Удалить"></span>
+				</div>
+				^if(!$elements.type){
+					<span class="extra-actions">
+						<span class="text-before blue open" data-width="830" data-href="edit_field.html?gallery_id=$elements.id&field=text_before&fieldName=Текст перед видеогалереей" title="Текст перед видеогалереей"></span><!--
+						--><span class="text-after blue open" data-width="830" data-href="edit_field.html?gallery_id=$elements.id&field=text_after&fieldName=Текст после видеогалереи" title="Текст после видеогалереи"></span>
+					</span>
+				}
+				</span>
+			</div>
+		</div>
+	</div><!--
+	}
+--></div>
+	<div class="crop-form" data-min-width="$this.width.small" data-min-height="$this.height.small" data-width="$this.width.src" data-height="$this.height.src" data-ratio="$this.aspectRatio">
+		<div class="crop-form-wrapper">
+			<div class="controls">
+				<div><div class="reset-button">По умолчанию</div></div><!--
+				--><div class="right-controls"><div class="crop-button">Обрезать</div></div>
+			</div>
+			<div class="crop-image"><img src=""/></div>
+		</div>
+	</div>
+}{
+	$response:refresh[$.value(0)$.url[${cms.cmsFolder}/]]
+}
+################################################################################
+@header_page[currentElementId][elementId;elementName]
+^if($currentElementId>0){
+	$element[^this.GetVideo[$.IDs($currentElementId)]]
+	$elementName[$element.name]
+	$elementId[$element.id]
+	^header_page[$element.parent] / <a^if($currentElementId != $form:parent){ href="?id=$idblock&idpage=$form:idpage&parent=$elementId"}>$elementName</a>
+}
+################################################################################

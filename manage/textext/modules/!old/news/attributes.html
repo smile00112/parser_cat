@@ -1,0 +1,45 @@
+################################################################################
+@cms_body[]
+# Получаем текущую новость
+$curr_news[^table::sql{select * from news where id='$form:news_id'}]
+# Выводим шапку страницы
+^cms.ShowPageHeader[Атрибуты новости "$curr_news.head";$cms.currentModule.path;^news.GetClassInfo[]]
+# Ссылка на возврат к списку новостей
+<a href="index.html?idpage=$form:idpage">Вернуться в раздел</a>
+<br><br>
+# Если новость есть
+^if(def $curr_news){
+ <form method="post" action="attributes_set.html">
+  <input type="hidden" name="news_id" value="$form:news_id">
+  <input type="hidden" name="idpage" value="$form:idpage">
+  <table border="0" cellspacing="1" cellpadding="5" bgcolor="#999999">
+   <tr class="tH">
+    <td>Атрибут</td>
+    <td>Значение</td>
+   </tr>
+   <tr class="tN">
+    <td>Адрес новости:</td>
+    <td><input class="mybutton"  style="width: 350" name="url" value="$curr_news.url"></td>
+   </tr>
+   <tr class="tN">
+    <td>Заголовок новости:</td>
+    <td><input class="mybutton"  style="width: 350" name="title" value="$curr_news.title"></td>
+   </tr>
+   <tr class="tN">
+    <td>Ключевые слова новости:</td>
+    <td><input class="mybutton"  style="width: 350" name="keywords" value="$curr_news.keywords"></td>
+   </tr>
+   <tr class="tN">
+    <td>Описание новости:</td>
+    <td><input class="mybutton"  style="width: 350" name="description" value="$curr_news.description"></td>
+   </tr>
+   <tr class="tH">
+    <td colspan="2"><input class="mybutton" type="submit" value="Установить атрибуты"></td>
+   </tr>
+  </table>
+ </form>
+# Если новости нет
+}{
+ <h1>Запись не найдена.</h1>
+}
+################################################################################

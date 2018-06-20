@@ -1,0 +1,19 @@
+################################################################################
+@main[]
+^connect[$site:connectString]{
+ ^switch[$form:action]{
+	^case[edit]{
+	 ^if(def $form:id && def $form:city_id && def $form:field && def $form:value){
+    ^try{
+		 $res[^catalog.EditContact[$form:id;$form:city_id;$form:field;$form:value]]
+		 $result(1)
+    }{
+     $exception.handled(true)
+     $result(0)
+    }
+   }{$result(-1)}
+	}
+	^case[DEFAULT]{$result(-1)}
+ }
+}
+################################################################################

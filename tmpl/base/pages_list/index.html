@@ -1,0 +1,7 @@
+@ShowPlTemplate[block_id]
+$pages[^self.GetPagesByParent[$self.currentPageId]]
+^if(def $pages){
+^pages.menu{
+ <p><a href="/^self.GetPageUrlById[$pages.id]/" title="$pages.name">$pages.name</a></p>
+}
+}{<p>В данном разделе не найдено ниодной дочерней страницы</p>}

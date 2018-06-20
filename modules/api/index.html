@@ -1,0 +1,47 @@
+################################################################################
+@main[]
+^try{
+	$CLASS_PATH[^table::create{path
+/classes
+/classes/modules
+/manage/classes/
+	}]
+	$params[^hash::create[]]
+	^if(def $form:format){$params.resultFormat[$form:format]}
+	^use[site.p]
+	^use[system.p]
+	$this[^system::create[]]
+	^connect[$site:connectString]{
+		^if(def $form:command){
+			^switch[$form:command]{
+				^case[GetClassInfo]{
+					$answer[^this.GetClassInformation[$form:class;$params]]
+					$result[$answer.text]
+				}
+				^case[AddUser]{
+					$answer[^this.AddUserByAPI[$form:user;$params]]
+					$result[$answer.text]
+				}
+				^case[DEFAULT]{
+					$params.errorText[Неизвестная команда]
+					$result[^ShowError[^this.GetAPIError[$params];$params]]
+				}
+			}
+		}{
+			$params.errorText[Отсутствует команда]
+			$result[^ShowError[^this.GetAPIError[$params];$params]]
+		}
+	}
+}{
+	$exception.handled(true)
+	^if($form:debug eq 'true'){$error[$exception.source $exception.comment]}{$error[Ошибка выполнения скрипта]}
+	$params.errorText[$error]
+	$result[^ShowError[^this.GetAPIError[$params];$params]]
+}
+################################################################################
+@ShowError[error;params]
+^switch[$params.resultFormat]{
+	^case[xml]{$result[$error.text]}
+	^case[DEFAULT]{$result[<br><br><br><h1 align="center">$error.text</h1>]}
+}
+################################################################################

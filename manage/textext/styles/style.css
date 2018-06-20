@@ -1,0 +1,74 @@
+.seo_tags{
+	font-size: 16px;
+	font-family: "Cuprum",Tahoma;
+	margin-bottom: 15px;
+}
+
+.seo_tags .seo_tag_string{
+	display:table-row;
+}
+
+.seo_tags .seo_tag_string > div{
+	display: table-cell;
+	white-space: nowrap;
+	border-bottom: 1px dashed #999999;
+	padding: 10px 0;
+}
+
+.seo_tags .seo_tag_string:first-child > div{
+	border-top: 1px dashed #999999;
+}
+
+.seo_tags .seo_tag_string .tag_value,
+.seo_tags .seo_tag_string input{
+	width: 100%;
+}
+
+.seo_tags .seo_tag_string .tag_value{
+	padding-left: 15px;
+	position: relative;
+}
+
+.callout {
+	max-width: 420px;
+	background: #ffa812;
+	position: absolute;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	border-radius: 10px;
+	bottom: 51px;
+	font-size: 13pt;
+	padding: 10px;
+	display: none;
+	z-index: 2;
+	white-space: pre-line;
+}
+.callout:before {
+	content:"";
+	position: absolute;
+	left: 8px;
+	bottom: -13px;
+	width: 0;
+	height: 0;
+	border-left: 13px solid transparent;
+	border-right: 13px solid transparent;
+	border-top: 13px solid #ffa812;
+}
+
+.callout.success{
+	background: #3d8805;
+	color: #ffffff
+}
+
+.callout.success:before {
+	border-top: 13px solid #3d8805;
+}
+
+.callout.error{
+	background: #ff0000;
+	color: #ffffff
+}
+
+.callout.error:before {
+	border-top: 13px solid #ff0000;
+}

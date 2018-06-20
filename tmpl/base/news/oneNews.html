@@ -1,0 +1,99 @@
+@ShowOneNews[article;this]
+$pageUrl[^site:GetPageUrlById[$site:currentPage.id;skipMain]]
+<ul class="news">
+	<li>
+		^if(def $article){
+			$dt_news[^dtf:create[$article.date_news;^date::now[]]]
+			$mainImage[^this.GetMainImage[$article.id;$.visible(1)]]
+			$big[${this.imagesFolder.big}/$mainImage.name]
+			$gallery[^news:GetImages[$article.id;$.visible(1)$.main(0)]]
+			$files[^this.GetFiles[$article.id]]
+			$videos[^video:GetVideos[$article.id;$.block_name[$this.className]$.visible(1)]]
+			^if(def $mainImage){
+				$dataImage[http://${site:domain}${this.imagesFolder.big}/$mainImage.name]
+			}{
+				$dataImage[http://${site:domain}${site:templateFolder}/images/logo.png]
+			}
+		<div class="nImg">
+			^if(def $big){
+				<a href="$big" rel="gallery-${article.id}" class="gallery-item" title="^site:currentPage.title.replace[";']"><img src="${this.imagesFolder.small}/$mainImage.name" alt="^site:currentPage.title.replace[";']" title="^site:currentPage.title.replace[";']"></a>
+			}{
+				<img src="${self.imagesFolder}/no_image.png" alt="^site:currentPage.title.replace[";']" title="^site:currentPage.title.replace[";']"/>
+			}
+		</div>
+		<div class="nCont">
+			<span class="nInfo">
+#				<div class="author">Автор: ^if($article.user_id>0){<a href="${user:userInfoFolder}/?user_id=$article.user_id" title="$authorName">$authorName</a>}{Администратор}</div>
+				<div class="date">^dtf:format[<span>%d %h %Y</span>;$dt_news;$dtf:rr-locale]</div>
+			</span>
+# Текст
+			<div class="h2">^untaint{$article.head}</div>
+			<div class="nText">^untaint{$article.full_text}</div>
+# Файлы
+			^if($files){
+				<div class="news-block nFiles">
+					<div class="news-block-name">Файлы для скачивания</div><!--
+						^files.menu{
+						--><div class="news-file"><a href="/files/download.html?path=${this.filesFolder}/${article.id}/$files.name">$files.descript ($files.name)</a></div><!--
+						}
+				--></div>
+			}
+# Галерея
+			^if(def $gallery){
+				<div class="news-block nGallery">
+					<div class="news-block-name">Галерея</div>
+					^gallery.menu{
+						<a href="${this.imagesFolder.big}/$gallery.name" rel="gallery-${article.id}" class="gallery-item" title="^gallery.descript.replace[";']">
+							<img src="${this.imagesFolder.small}/$gallery.name" alt="^gallery.descript.replace[";']" title="^gallery.descript.replace[";']" />
+							<div class="image-name">$gallery.descript</div>
+						</a>
+					}
+				</div>
+			}
+# Видео
+			^if($videos){
+				<div class="news-block videos">
+					<div class="news-block-name">Видео</div>
+				^videos.menu{
+					<div class="block_video" data-id="videos.id">
+						<div class="video">
+							^switch[$videos.hoster]{
+								^case[youtube]{
+									<div class="youtube-video" style="background-image: url(http://img.youtube.com/vi/${videos.src}/0.jpg)" data-src="$videos.src">
+									</div>
+								}
+								^case[facebook]{
+									<iframe src="https://www.facebook.com/plugins/video.php?href=${videos.src}" scrolling="no" frameborder="0" allowTransparency="true" allowFullScreen="true"></iframe>
+								}
+								^case[DEFAULT]{}
+							}
+						</div>
+						^if(def $videos.name){<div class="video-name">^untaint{$videos.name}</div>}
+					</div>
+				}
+				</div>
+			}
+		</div>
+#		<div class="nShare">
+#			^site::ShowShare[text-align: right^;]
+#		</div>
+	}{
+		<p>Новость не найдена</p>
+	}
+	</li>
+</ul>
+<a class="back" href="/$pageUrl/"><< Вернуться в раздел</a>
+# Комментарии
+# ^self.ShowComments[/${pageUrl}/^self.GetNewsUrl[$article]/;$article.head]
+# Соседние новости
+# ^self.ShowPrewNextNews[$article.id]
+# ^self.ShowSliderNews[]
+^site:AddToQueue[
+<script type="text/javascript">
+	^$('.youtube-video').click(function(){
+		var src = ^$(this).attr('data-src')^;
+		^$(this).addClass('playing')^;
+		^$(this).html('<iframe src="//www.youtube.com/embed/'+src+'?rel=0&autoplay=1" frameborder="0" allowfullscreen></iframe>')^;
+	})^;
+</script>
+]

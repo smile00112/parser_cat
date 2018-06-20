@@ -1,0 +1,52 @@
+################################################################################
+@cms_body[]
+#-------------------------------------------------------------------------------
+<script src="./scripts/actions.js" type="text/javascript"></script>
+<link href="./styles/style.css" rel="stylesheet" type="text/css">
+#-------------------------------------------------------------------------------
+# Если параметры передаются
+^if(def $form:id && def $form:idpage){
+# Выводим заголовок страницы
+	^cms.ShowPageHeader[Галерея элемента "^textext:GetFixedText[^this.GetElementNameById[$form:id];40;...]";$cms.currentModule.path;^this.GetClassInfo[]]
+	<p class="cms_h2">
+		<a href="../?id=$idblock&idpage=$form:idpage&parent=$form:parent^if(def $form:page){&page=$form:page}&moveto=$form:id"><i class="fa fa-reply fa-3x inline blue mr10"></i>К каталогу</a>
+		^if($cms.cmsUserLevel>0){
+		<span id="addSlideBtn" data-width="400" data-href="add_images.html?id=$form:id&idblock=$idblock" data-title="Добавить изображения" data-reload="true" class="pointer ml20" onClick="^$(this).OpenFancybox()^;">
+			<i class="fa fa-plus fa-3x inline blue mr10"></i>Добавить изображения
+		</span>
+		}
+	</p>
+	$params[
+		$.limitCount(9999999)
+	]
+	$all_images[^this.GetImages[$form:id;$params]]
+	^if(!def $all_images){
+		<h1 class="cms_h1">Изображения не добавлены</h1>
+	}{
+		<div class="images">
+		^all_images.menu{
+			<div class="block_image" data-id="$all_images.id" style="width: ${this.imagesWidth.small}px^;">
+				<div class="image">
+					<img src="${this.imagesFolder.small}/${all_images.name}">
+				</div>
+				<div class="name"><input name="descript" value="$all_images.descript" class="cms_input w100p aC" onChange="^$(this).Save()^;"></div>
+				<div class="string">
+					<div class="label pr10">Позиция:</div>
+					<div class="sort"><input name="sortir" value="$all_images.sortir" class="cms_input w100p inline" onChange="^$(this).SavePosition()^;"></div>
+					<div class="actions">
+						<i id="main_${all_images.id}" class="fa ^if($all_images.main == 1){fa-check-square-o}{fa-square-o} fa-3x inline pr5^if($all_images.main == 0){ pointer} blue main"^if($all_images.main == 0){ title="Сделать главным изображением" onClick="^$(this).SetMain()^;"}{ title="Главное изображение"}></i>
+						<i class="fa ^if($all_images.visible == 1){fa-eye}{fa-eye-slash} fa-3x inline pr15 pointer blue" title="^if($all_images.visible == 1){Скрыть}{Отобразить}" onClick="^$(this).ChangeVisible()^;"></i>
+						<div class="fa-stack fa-2x inline pointer blue delete" title="Удалить" onClick="^$(this).Delete()^;">
+							<i class="fa fa-square-o fa-stack-2x"></i>
+							<i class="fa fa-times fa-stack-1x"></i>
+						</div>
+					</div>
+				</div>
+			</div>
+		}
+		</div>
+	}
+}{
+	$response:refresh[$.value(0)$.url[${cms.cmsFolder}/]]
+}
+################################################################################

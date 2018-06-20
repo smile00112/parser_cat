@@ -1,0 +1,38 @@
+@ShowCatalogElementsTemplate[elements;allElementsCount]
+$pageUrl[^site:GetPageUrlById[$site:currentPage.id;skipMain]]
+$elementTexts[^caller.GetElementTexts[$form:idc]]
+<div class='topText'>^untaint{$elementTexts.top_text}</div>
+^if($elements){
+	$pagesCount[^math:ceiling(^eval($allElementsCount/$caller.elementsPerPage))]
+	^if(def $form:page){ $curPage[$form:page] }{ $curPage[1] }
+	^if( $curPage > 1 ){
+		$prevPage($curPage-1)
+		<a class='load-prev' href='/$pageUrl/$form:idc/?page=$prevPage'>предыдущие категории</a>
+	}
+	$counter(0)
+	<section class='catalog-folder'>
+		^elements.menu{^counter.inc[]<article class="color_bg_${counter}">
+			$priceHash[^caller.GetExchangePrice[$.element[$elements]]]
+		^if($counter==5){$counter(0)}
+			<a href='/${pageUrl}/^if(def $elements.url){$elements.url}{$elements.id}/'>
+				<div class='img'>
+					$img[^caller.GetMainImage[$elements.id]]
+					^if($img){
+						<img src="$caller.imagesFolder.small/$img.name" alt='$elements.name' title='$elements.name'>
+					}{
+						<div class='noImg'></div>
+					}
+				</div>
+				<h3^if(^elements.name.length[]>20){ class="long"}>$elements.name</h3>
+				^if($elements.price>0){<div class="price"><span>^eval(^math:ceiling($priceHash.price/10)*10)</span> руб.</div>}
+			</a>
+		</article>}
+	</section>
+	^if( $pagesCount > 1 && $curPage < $pagesCount ){
+		$nextPage( $curPage+1 )
+		<a href='/$pageUrl/$form:idc/?page=$nextPage' class='load-more' data->еще категории</a>
+	}
+}{
+	<p>Товаров нет</p>
+}
+<div class='bottomText'>^untaint{$elementTexts.bottom_text}</div>

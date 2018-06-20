@@ -1,0 +1,61 @@
+################################################################################
+@cms_body[]
+<script	src="./scripts/actions.js" type="text/javascript"></script>
+# Выводим заголовок страницы
+^cms.ShowPageHeader[Управление пользователями сайта <font color="red">$cms.domain</font>;$cms.currentModule.path;^this.GetClassInfo[]]
+# Получаем список администраторов сайта
+$admins[^this.GetAdmins[$cms.cmsUserLevel]]
+^if($cms.cmsUserLevel>0){
+<p class="cms_h2">
+	<a href="../"><i class="fa fa-reply fa-3x inline blue mr10"></i>К опциям</a>
+	^if($cms.cmsUserLevel>0){
+	<span id="addSlideBtn" data-width="400" data-href="add_user.html" data-title="Добавить пользователя" data-reload="true" class="link pointer ml20" onClick="^$(this).OpenFancybox()^;">
+		<i class="fa fa-plus fa-3x inline blue mr10"></i>Добавить пользователя</span>
+	}
+	^if($cms.cmsUserLevel==$cms.maxUserLevel){<span class="cms_H2 link pointer ml20" onClick="^$(this).UpdateAll()^;"><i class="fa fa-refresh fa-3x inline blue mr10"></i>Обновить все права</span>}
+</p>
+}
+^if(def $admins){
+<table class="table_dsb">
+	<tr class="tHn">
+		<td class="aL">Тип польз-ля:</td>
+		<td class="aL">Логин:</td>
+		<td class="aL">ФИО:</td>
+		<td align="center" colspan="3">Действия</td>
+#	<td align="center">Установлен</td>
+	</tr>
+	^admins.menu{
+		^if($cms.cmsUserLevel>=$admins.level){
+	<tr ^if($cms.cmsUser.login eq $admins.login){class="tNS"}{class="aC"}>
+		<td class="aL">
+		^if($admins.level==0){Пользователь}
+		^if($admins.level>0){
+			^if($cms.cmsUserLevel==$cms.maxUserLevel && $admins.level>$cms.maxUserLevel){<span class="bold green">Владелец</span>}{<span class="bold">Администратор</span>}
+		}
+		</td>
+		<td class="aL">$admins.login</td>
+		<td class="aL">$admins.fio</td>
+		<td>
+		^if( ($cms.cmsUserLevel>0 && $admins.level<$cms.cmsUserLevel ) || $cms.cmsUserLevel==$cms.maxUserLevel){
+			<span data-width="600" data-href="access.html?login=$admins.login" data-title="Редактировать права пользователя" class="link pointer" onClick="^$(this).OpenFancybox()^;">
+				<i class="fa fa-lock fa-2x inline blue mr10"></i>Права
+			</span>
+		}</td>
+		<td>
+		^if($admins.login eq $cms.cmsUser.login || $cms.cmsUserLevel>0){
+			<span data-width="600" data-href="user_edit.html?login=$admins.login" data-title="Редактировать данные о пользователе" class="link pointer" onClick="^$(this).OpenFancybox()^;">
+				<i class="fa fa-edit fa-2x inline blue mr10"></i>Редактировать данные
+			</span>
+		}
+		</td>
+		<td>
+		^if($cms.cmsUser.login ne $admins.login && $cms.cmsUserLevel>0){
+		<a href="javascript: if (confirm('Вы хотите удалить пользователя?')){window.location.href='user_del.html?login=$admins.login'}"style="cursor:pointer"><i class="fa fa-times fa-2x inline blue mr10"></i>Удалить</a>
+		}{<span style="color:#999999^;padding-left:42px^;">Удалить</span>}
+		</td>
+	</tr>
+		}
+	}
+</table>
+}
+################################################################################

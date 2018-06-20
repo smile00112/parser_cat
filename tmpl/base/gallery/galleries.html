@@ -1,0 +1,27 @@
+@ShowGalleriesTemplate[galleries;allGalleriesCount;current]
+^if(def $galleries){
+	$params[$.page_url[^site:GetPageUrlById[$site:currentPage.id;skip_main]]]
+# 	^if(def $current.text_before){$current.text_before}
+# 	^var_dump[$galleries]
+	<div class="main-wrap gallery-wrap js-masonry"><!--
+	^galleries.menu{
+		$params.element[$galleries.fields]
+--><div class="gallery-item">
+			<div class='item-wrap'>
+				$description[^galleries.description.replace[";']]
+				<a class="title-wrap" href="^caller.GetElementUrl[$params]" title="$description">
+					^if(def $galleries.name){<img src="$caller.imagesFolder.small/$galleries.name" alt="$description" title="$description" />}{<div class="gallery-default" style="height: ${caller.imagesHeight.small}px"></div>}
+				</a>
+			</div>
+		</div><!--
+	}
+		--><div class='gallery-sizer'></div><!--
+		--><div class='sizer'></div><!--
+	--></div>
+# 	^if(def $current.text_after){$current.text_after}
+}
+^site:AddToQueue[
+	<script type="text/javascript" src="${site:templateFolder}/scripts/masonry.pkgd.min.js"></script>
+	<script type="text/javascript" src="${site:templateFolder}/scripts/imagesloaded.pkgd.min.js"></script>
+	<script type="text/javascript" src="${site:templateFolder}/scripts/main.js"></script>
+]

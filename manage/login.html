@@ -1,0 +1,16 @@
+@main[]
+
+$cookie:adm_login[
+	$.value[$form:n_login]
+	$.expires[session]
+]
+
+$cookie:adm_password[
+	$.value[^math:crypt[$form:n_password;$cms.cryptValue]]
+	$.expires[session]
+]
+
+$response:refresh[
+	$.value(0)
+	$.url[${cms.cmsFolder}/]
+]

@@ -1,0 +1,28 @@
+field	sql_field	rename
+id	`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+block_id	`block_id` int(10) unsigned DEFAULT NULL,	idpage
+name	`name` varchar(255) DEFAULT NULL,
+parent	`parent` int(10) unsigned DEFAULT '0',
+url	`url` varchar(255) DEFAULT NULL,
+sortir	`sortir` int(10) unsigned DEFAULT '0',
+price	`price` double DEFAULT NULL,
+markup	`markup` float DEFAULT '0',
+currency_id	`currency_id` int(10) unsigned DEFAULT '1'
+head	`head` text,
+visible	`visible` int(1) DEFAULT '1',
+content	`content` text,
+type	`type` int(1) NOT NULL DEFAULT '0',
+artikul	`artikul` varchar(255) DEFAULT NULL,
+to_order	`to_order` int(1) unsigned NOT NULL DEFAULT '0',
+no_sync	`no_sync` int(1) unsigned NOT NULL,
+unit_id	`unit_id` int(10) unsigned DEFAULT '1'
+parts	`parts` varchar(255) DEFAULT NULL,
+new	`new` int(1) NOT NULL DEFAULT '0',
+stock	`stock` varchar(255) DEFAULT NULL,
+favorites	`favorites` int(1) unsigned DEFAULT '0',
+step	`step` float NOT NULL DEFAULT '1',
+title	`title` varchar(255) NOT NULL,
+keywords	`keywords` varchar(255) NOT NULL,
+description	`description` varchar(255) NOT NULL,
+redirect	`redirect` varchar(255) NOT NULL,
+	PRIMARY KEY (`id`)

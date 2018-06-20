@@ -1,0 +1,154 @@
+################################################################################
+@cms_body[]
+# Получаем текущую дату
+$date_now[^date::now[]]
+# Выводим заголовок страницы
+^cms.ShowPageHeader[Добавление новости сайта;$cms.currentModule.path;^news.GetClassInfo[]]
+# Получаем список групп новостей
+$all_group[^table::sql{select * from news_group where id_page=$form:idpage order by sortir}]
+# Если что-то передаётся
+^if(def $form:elm_body && def $form:idpage && def $form:elm_full_text && def $form:head && def $form:day && def $form:month && def $form:year){ 
+# Создаём новость
+ ^create_news[] 
+}{
+# Выводим форму добавления новости
+ ^add_news_form[]
+}
+################################################################################
+@create_news[][flag_bryansk]
+^if(def $form:author_id){$author_id[$form:author_id]}{$author_id[0]} 
+$dt[^date::create[${form:year}-${form:month}-${form:day} ${date_now.hour}:${date_now.minute}:${date_now.second}]]
+^void:sql{insert into news (date_news, id_page, head, body, full_text, id_group, user_id) values ('^dt.sql-string[]', '$form:idpage', '$form:head', '$form:elm_body', '$form:elm_full_text', '0', '$author_id')}
+^make_rewrite[]  
+# Переходим к списку новостей
+ $response:refresh[
+   $.value(0)
+   $.url[index.html?idpage=$form:idpage&type_news=$form:type_news]
+ ]
+################################################################################
+@add_news_form[]
+# Вставляем скрипт TinyMCE
+^cms.InsertTiny[;2]
+# Инициализируем массив с названиями месяцев
+$month[
+ $.1[января]
+ $.2[февраля]
+ $.3[марта]
+ $.4[апреля]
+ $.5[мая]
+ $.6[июня]
+ $.7[июля]
+ $.8[августа]
+ $.9[сентября]
+ $.10[октября]
+ $.11[ноября]
+ $.12[декабря]
+]
+# Если передан день
+^if(def $form:day){
+ <font color="#ff0000"><b><br><br>Заполните все обязательные поля.</b></font>
+}
+# Определение типа новости
+^if(def $form:type_news){$ctypenews[$form:type_news]}{$ctypenews[1]}
+^if($ctypenews==0){$ctypenews[1]}
+# Инициализируем день 
+^if(def $form:day){$cday($form:day)}{$cday($date_now.day)}
+# Выводим форму
+<form method="post" action="news_add.html">
+# <input type="hidden" name="second" value="$date_now.second">
+ <input type="hidden" name="idpage" value="$form:idpage">
+ <table border="0" width="100%" cellspacing="0" cellpadding="5">
+  <tr> 
+   <td width="1"><font size="3"><b>Дата:</b></font></td>
+   <td>
+    <select name="day">
+    ^for[days](1;31){
+     <option value="^days.format[%02.2u]" ^if($date_now.day eq $days && !def $cday){selected} ^if($cday eq $days){selected}>$days</option>
+     }
+    </select>
+    <select name="month">
+    ^for[months](1;12){
+     <option value="^months.format[%02.2u]" ^if($date_now.month eq $months && !def $form:month){selected} ^if($form:month eq ^months.format[%02.2u]){selected}>$month.[$months]</option>
+    }
+    </select>
+    <select name="year">
+    ^for[years](^eval($date_now.year-1);^eval($date_now.year+1)){
+     <option value="^years.format[%04.4u]" ^if($date_now.year eq ^years.format[%04.4u]  && !def $form:year){selected} ^if($form:year eq ^years.format[%04.4u]){selected}>$years</option>
+    }
+    </select>
+    ^if($show_time==1){
+    &nbsp^;
+    <select name="hour">
+    ^for[hours](0;23){
+     <option value="^hours.format[%02.2u]" ^if($news_date.hour eq $hours){selected}>$hours</option>
+    }
+    </select>
+    <strong>:</strong>
+    <select name="minute">
+    ^for[minutes](0;59){
+     <option value="^minutes.format[%02.2u]" ^if($news_date.minute eq $minutes){selected}>$minutes</option>
+    }
+    </select>
+    }{
+    <input type="hidden" name="hour" value="$date_now.hour">
+    <input type="hidden" name="minute" value="$date_now.minute">
+    }
+   </td>
+   ^if($show_sticker){
+   <td width="1"><font size="3"><b>Стикер:</b></font></td>
+   <td width="1">
+    $stickers[^news.GetStickers[;ASC]]
+    <select name="sticker_id">
+     <option value="0">Нет</option>
+     ^if(def $stickers){
+      ^stickers.menu{
+     <option value="$stickers.id">$stickers.name</option>
+      }
+     }
+    </select>
+	 </td>
+   }
+   <td width="1"><font size="3"><b>Автор:</b></font></td>
+   <td width="1">
+    $authors[^table::sql{SELECT * FROM auth_accounts ORDER BY user_id}]
+    <select name="author_id">
+     <option value="0">Администратор</option>
+     ^if(def $authors){
+      ^authors.menu{
+     <option value="$authors.user_id">$authors.fio</option>
+      }
+     }
+    </select>
+	 </td>
+  </tr>
+  <tr>
+	 <td width="1"><font size="3"><b>Заголовок:&nbsp^;<span style="font-family: Verdana^; color: #FF0000">*</span></b></font></td>
+   <td colspan="^if($show_sticker){5}{3}"><input name="head" value="$form:head" style="width: 100%"></td>
+  </tr>
+	^if($show_body==1){
+  <tr> 
+   <td colspan="^if($show_sticker){6}{4}"><font size="3"><b>Анонс:&nbsp^;<span style="font-family: Verdana^; color: #FF0000">*</span></b></font></td>
+  </tr>
+  <tr>
+   <td colspan="^if($show_sticker){6}{4}">
+	  <textarea id="elm" name="elm_body" rows="2" cols="80" style="width: 100%">$form:elm_body</textarea></td>
+  </tr>
+	}
+  <tr>	 
+   <td colspan="^if($show_sticker){6}{4}"><font size="3"><b>Текст:&nbsp^;<span style="font-family: Verdana^; color: #FF0000">*</span></b></font></td>
+  </tr>
+  <tr>
+   <td colspan="^if($show_sticker){6}{4}">
+	  <textarea id="elm_2" name="elm_full_text" rows="20" cols="80" style="width: 100%">$form:elm_full_text</textarea></td>
+  </tr>
+  <tr>
+   <td colspan="^if($show_sticker){4}{2}">
+	  <input type="submit" value="Сохранить" />
+	 </td>
+	 <td colspan="2" align="right">
+	  <input type="reset" name="reset" value="Отменить все изменения" />
+	 </td>
+  </tr>
+ </table>  
+</form> 
+################################################################################

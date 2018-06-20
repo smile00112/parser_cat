@@ -1,0 +1,16 @@
+@ShowWidgetTemplate[idpage]
+$visible(^textext:GetPageVisible[$idpage])
+^if($visible==1){
+ $images[^slider:GetImages[^textext:GetBlockIdByPageId[$idpage]]]
+ ^if(def $images){
+	<ul class="slider">
+  ^images.menu{
+		<li>
+			<a^if(def $images.link){ href="$images.link" title="$images.description"}>
+				<img src="${slider:bigPath}/${images.id}.${images.ext}" alt="$images.description" title="$images.description"/>
+			</a>
+		</li>
+  }
+	</ul>
+ }
+}

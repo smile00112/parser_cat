@@ -1,0 +1,16 @@
+################################################################################
+@cms_body[]
+^connect[$site:connectString]{
+# Если что-то передаётся
+ ^if(def $form:id && def $form:elm1){
+	^void:sql{UPDATE cmc_block SET descript='$form:elm1' WHERE id='$form:id'}  
+ }{
+  ^void:sql{UPDATE cmc_block SET id='$form:id', block='$form:block', namemenu='$form:namemenu', nameblock='$form:nameblock', pathblock='$form:pathblock', level='$form:level' WHERE id='$form:idald'}
+ }	
+# Переходим к списку элементов
+ $response:refresh[
+  $.value(0)
+  $.url[${cms.cmsFolder}/${cms.currentModulePath}/]
+ ]
+} 
+################################################################################

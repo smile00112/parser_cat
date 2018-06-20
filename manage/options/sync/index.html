@@ -1,0 +1,51 @@
+################################################################################
+@cms_body[]
+$site[^site:GetDomainName[]]
+$tpuri[http://${site}${request:uri}]
+# Выводим шапку
+^cms.ShowPageHeader[Синхронизация сайтов;$cms.currentModule.path;^sync.GetClassInfo[]]
+<p class="cms_h2">
+	<a href="${cms.cmsFolder}/options/"><img src="${cms.imagesFolder}/actions/back.png" class="inline mr10" width="40">К списку блоков</a>
+	<a href="${sync.syncFolder}/addSiteToSync.html?site=$site&syncVersion=$sync.classVersion&description=$site:name&resp=^tpuri.base64[]" class="ml20 addForm"><img src="${cms.imagesFolder}/actions/add.png" class="inline mr10" width="40">Добавить сайт в список</a>
+</p>
+# Получаем список сайтов с возможностью синхронизации
+^try{
+ $sites[^sync.GetSitesFromServer[]]
+}{
+ $exception.handled(1)
+ <h1 class="cms_h1 red">Невозможно получить информацию о синхронизации!!!</h1>
+}
+^if(def $sites){
+<form name="syncSites" method="post" action="module.html">
+<table border="0" cellspacing="1" cellpadding="5">
+ <tr valign="top">
+  <td>
+   <table border="0" cellspacing="1" cellpadding="5" bgcolor="#999999">
+    <tr class="tH">
+     <td>Сайт</td>
+     <td>Версия модуля</td>
+    </tr>
+    <tr class="tN">
+     <td><input type="checkbox" name="sites" value="$sites.site" ^if($site eq $sites.site){disabled}>$sites.site</td>
+     <td>$sites.syncVersion</td>
+    </tr>
+   </table>
+  </td>
+  <td>
+   <table border="0" cellspacing="1" cellpadding="5" bgcolor="#999999">
+    <tr class="tH">
+     <td colspan="2">Модуль синхронизации</td>
+    </tr>
+    <tr class="tN">
+     <td style="text-align: left^;"><input type="radio" name="modules" value="news" checked> Новости</td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr>
+  <td colspan="2"><input type="submit" value="Синхронизировать"></td>
+ </tr>
+</table>
+</form>
+}
+################################################################################

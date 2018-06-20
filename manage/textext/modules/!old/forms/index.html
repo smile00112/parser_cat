@@ -1,0 +1,47 @@
+################################################################################
+@cms_body[]
+#-------------------------------------------------------------------------------
+<link href='styles/style.css' rel='stylesheet' type='text/css'>
+<script src="./scripts/actions.js" type="text/javascript"></script>
+#-------------------------------------------------------------------------------
+# Выводим заголовок страницы
+^cms.ShowPageHeader[$this.classDescription для страницы "^site:GetPageNameById[$form:idpage]";$cms.currentModule.path;^this.GetClassInfo[]]
+# Ссылка на возвращение к списку блоков
+<p class="cms_h2">
+	<a href="${cms.cmsFolder}/textext/?idpage=$form:idpage"><i class="fa fa-reply fa-3x inline blue mr10"></i>К блокам</a>
+	^if($cms.cmsUserLevel>0){
+	<span id="addSlideBtn" data-width="400" data-href="add_field.html?id=$form:id" data-title="Добавить поле" data-reload="true" class="pointer ml20" onClick="^$(this).OpenFancybox()^;">
+		<i class="fa fa-plus fa-3x inline blue mr10"></i>Добавить поле
+	</span>
+	}
+</p>
+# Список значений полей таблицы
+$fields[^this.GetBlockFields[]]
+^if(def $fields){
+<table class="table_dsb">
+	<tr>
+		<td>Имя</td>
+		<td>Описание</td>
+		<td>Тип</td>
+		<td>По умолчанию</td>
+		<td align="center">Действия</td>
+	</tr>
+	^fields.menu{
+	<tr data-id="$fields.id">
+		<td><input type="text" name="name" value="$fields.name" class="cms_input" onChange="^$(this).Save()^;"></td>
+		<td><input type="text" name="label" value="$fields.label" class="cms_input" onChange="^$(this).Save()^;"></td>
+		<td>$fields.type_description</td>
+		<td><input type="text" name="default_value" value="$fields.default_value" class="cms_input" onChange="^$(this).Save()^;"></td>
+		<td>
+#			<i data-width="830" data-href="edit_content.html?id=$all_news.id" data-title="Редактирование '$all_news.head'" class="fa fa-pencil-square fa-3x inline pointer blue pr10" title="Изменить" onClick="^$(this).OpenFancybox()^;"></i>
+#			<i class="fa ^if($all_news.visible == 1){fa-eye}{fa-eye-slash} fa-3x inline pointer blue pr20" title="^if($all_news.visible == 1){Скрыть}{Отобразить}" onClick="^$(this).ChangeVisible()^;"></i>
+			<span class="fa-stack fa-2x inline pointer blue delete" title="Удалить" onClick="^$(this).Delete()^;">
+				<i class="fa fa-square-o fa-stack-2x"></i>
+				<i class="fa fa-times fa-stack-1x"></i>
+			</span>
+		</td>
+	</tr>
+	}
+</table>
+}{<h1 class="cms_h1">Не создано ниодного поля</h1>}
+################################################################################

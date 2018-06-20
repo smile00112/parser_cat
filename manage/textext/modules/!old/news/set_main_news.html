@@ -1,0 +1,12 @@
+################################################################################
+@main[]
+^if(def $form:news_id){
+ ^connect[$site:connectString]{
+  $main(^int:sql{SELECT main FROM news WHERE id=$form:news_id}[$.default(0)])
+  ^if($main==0){$main(1)}{$main(0)}
+  ^if($form:one==1){$res[^void:sql{UPDATE news SET main=0}]}
+  $res[^void:sql{UPDATE news SET main=$main WHERE id=$form:news_id}]
+ }
+}
+$response:refresh[$.value(0)$.url[index.html?id=$form:id&idpage=$form:idpage]]
+################################################################################

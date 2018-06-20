@@ -1,0 +1,71 @@
+################################################################################
+@cms_body[]
+# Выводим заголовок страницы
+^cms.ShowPageHeader[Слайдер для раздела "^site:GetPageNameById[$form:idpage]";$cms.currentModule.path;^slider.GetClassInfo[]]
+<a href="/manage/textext/?idpage=$form:idpage">Блоки</a>
+$block[^slider.GetImages[$form:id]]
+^if(def $block){
+ $countcol(^slider.GetColumnCount[$form:id])
+ $counter(0)
+<br><br>
+<table border="0" width="100%" cellspacing="0" cellpadding="0">
+ <tr>
+ ^block.menu{
+  <td id="$block.id" align="center" valign="top" style="padding:10 0px^;border-bottom: 1px solid #999999^;">
+   <table border="0" cellspacing="1" cellpadding="5" bgcolor="#999999">
+    <tr class="tN">
+     <td colspan="3">
+      <a href="edit_descript.html?id=$block.id&id_te=$form:id&idpage=$form:idpage">
+       <img src="$slider.smallPath/${block.id}.${block.ext}" alt="^untaint{$block.description}" title="^untaint{$block.description}">
+      </a>
+     </td>
+    </tr>
+    <tr class="tN">
+     <td width="1">Название:</td>
+     <td colspan="2"><input type="text" name="description" value="$block.description" style="width:100%" onchange="^$.post('UpdateImageProperty.html', { id: $block.id, property: 'description', value: this.value } )^;"></td>
+    </tr>
+    <tr class="tN">
+     <td>Ссылка:</td>
+     <td colspan="2"><input type="text" name="link" value="$block.link" style="width:100%" onchange="^$.post('UpdateImageProperty.html', { id: $block.id, property: 'link', value: this.value } )^;"></td>
+    </tr>
+    <tr class="tN">
+     <td>Сортировка:</td>
+     <td width="1"><input type="text" name="sortir" value="$block.sortir" style="width:40" onchange="^$.post('UpdateImageProperty.html', { id: $block.id, property: 'sortir', value: this.value }, window.location.reload(true) )^;"></td>
+     <td><input style="width:80" class="mybutton" type="button" value="Удалить" onclick="if (confirm('Вы действительно хотите удалить данное изображение?')){^$.post('del.html', { id: $block.id }, ^$('#$block.id').hide(600) )^;}"></td>
+    </tr>
+   </table>
+  </td>
+  ^counter.inc[]
+  $count_mod($counter)
+  ^count_mod.mod($countcol)
+  ^if($count_mod eq 0){</tr><tr>}
+ }
+ </tr>
+</table>
+}
+<br>
+<form method="post" enctype="multipart/form-data" action="add.html">
+<input type="hidden" name="idblock" value="$form:id">
+<input type="hidden" name="idpage" value="$form:idpage">
+<p><b>Закачать новое изображение:</b></p>
+<table border="0" cellspacing="1" cellpadding="5" bgcolor="#999999">
+ <tr class="tH">
+  <td colspan="2">
+   Общее описание для всех загружаемых изображений
+  </td>
+ </tr>
+ <tr class="tN">
+  <td colspan="2">
+   <textarea name="description" rows="1" style="width: 410px^;"></textarea>
+  </td>
+ </tr>
+ <tr class="tN">
+  <td>
+   <input type="file" name="multifiles" id="multifiles" multiple="true" size="40" style="width: 335px^; font-size:14px^;  border-width: 1px^; color: #000033^; background-color: #f9f9f9^;">
+  </td>
+  <td class="aR"><input type="submit" value="Закачать" style="width: 70px"></td>
+ </tr>
+</table>
+</form>
+<p>Можно выбрать несколько, общим объемом не более ^eval($LIMITS.post_max_size/1024/1024) Мегабайт</p>
+################################################################################

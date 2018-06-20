@@ -1,0 +1,60 @@
+################################################################################
+@head[]
+<link href='styles/style.css' rel='stylesheet' type='text/css'>
+<script type="text/javascript">
+^$.fn.Edit = function(){
+	var id      = ^$("#element_id").val(),
+			city_id	= ^$(this).closest("tr").attr("data-id"),
+			field		= ^$(this).attr("name"),
+			value		= ^$(this).val(),
+			object	= ^$(this)^;
+	^$.post("actions.html", { action: "edit", id: id, city_id: city_id, field: field, value: value }, function(data){
+		if(data > 0){
+			object.addClass("green_border")^;
+			setTimeout(function(){
+				object.removeClass("green_border")^;
+			},1000)^;
+		}
+	})^;
+}^;
+</script>
+################################################################################
+@cms_body[]
+$element[^table::sql{select * from catalog where id='$form:catalog_id'}]
+^cms.ShowPageHeader[Цены для товара "$element.name";$cms.currentModule.path;^catalog.GetClassInfo[]]
+<br>
+^if(def $element){
+ <a href="../index.html?idpage=$form:idpage&parent=$form:parent">Вернуться к каталогу</a>
+ <br><br>
+ ^try{
+	$prices[^catalog.GetPrices[$element.id]]
+	^if(!def $prices){
+		$res[^catalog.CreatePrices[$element.id]]
+		$prices[^catalog.GetPrices[$element.id]]
+	}
+ }{
+# Обработали ошибку
+  $exception.handled(0)
+	<h1>Нет таблицы catalog_prices и (или) contacts_cities</h1>
+ }
+ ^if(def $prices){
+	<input id="element_id" type="hidden" name="element_id" value="$element.id">
+  <table border="0" cellspacing="1" cellpadding="5" bgcolor="#999999">
+	 <tr class="tH">
+    <td>Город</td>
+    <td>Розница</td>
+		<td>Опт</td>
+   </tr>
+		^prices.menu{
+   <tr class="tN" data-id="$prices.city_id">
+    <td><div class="cms_h3">$prices.city</div></td>
+    <td><input type="text" name="price" value="$prices.price" onChange="^$(this).Edit()^;"></td>
+		<td><input type="text" name="price_opt" value="$prices.price_opt" onChange="^$(this).Edit()^;"></td>
+   </tr>
+	 }
+  </table>   
+ }
+}{
+ <p>Товар не найден.</p>
+}
+################################################################################

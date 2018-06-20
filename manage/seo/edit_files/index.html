@@ -1,0 +1,53 @@
+################################################################################
+@cms_body[]
+<link href="./styles/style.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="./scripts/scripts.js"></script>
+# Выводим шапку
+^cms.ShowPageHeader[SEO сайта <font color="red">$cms.domain</font> - Редактирование файла;$cms.currentModule.path;^module_info[]]
+<p class="cms_h2">
+	<a href="../"><i class="fa fa-reply fa-3x inline blue mr10"></i>К SEO</a>
+</p>
+$editFiles[
+	$.robots_txt[
+		$.editable(true)
+		$.path[/robots.txt]
+		$.new_text[Host: ${env:REQUEST_SCHEME}://${env:HTTP_HOST}/]
+		$.tab_name[robots_txt]
+		$.tab_caption[robots.txt]
+		$.tab_active(true)
+	]
+	$.sitemap_xml[
+		$.editable(false)
+		$.path[/sitemap.xml]
+		$.tab_name[sitemap_xml]
+		$.tab_caption[sitemap.xml]
+		$.tab_active(false)
+	]
+]
+<div class="seo_edit_file">
+	<div class='tabs'>
+	^editFiles.foreach[key;value]{
+		<div class='tabname^if($value.tab_active){ active}^if(!$value.editable){ readonly}' data-tabname='$value.tab_name'>$value.tab_caption</div>
+	}
+	^editFiles.foreach[key;value]{
+		^if(def $value.new_text && !-f $value.path){
+			^value.new_text.save[$value.path]
+		}
+		^if(-f $value.path){
+			$currentFile[^file::load[binary;$value.path]]
+		}
+		<div class='tabcontent^if($value.tab_active){ active}' data-file-path='$value.path' data-tabcontent='$value.tab_name'>
+		^if(-f $value.path){
+			<textarea^if(!$value.editable){ readonly class="readonly"}>^taint[html][$currentFile.text]</textarea>
+			^if($value.editable){
+			<div class="cms_h1 pointer save" onClick="^$(this).Save()^;">
+				<i class="fa fa-floppy-o"></i>Сохранить
+				<i class="fa fa-check ok"></i>
+			</div>
+			}
+		}{<div class="cms_h1">Файл не найден</div>}
+		</div>
+	}
+	</div>
+</div>
+################################################################################

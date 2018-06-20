@@ -1,0 +1,108 @@
+################################################################################
+@main[]
+^connect[$site:connectString]{
+	^switch[$form:action]{
+# ------------------------------------------------------------------------------
+		^case[edit_path]{
+			^if(def $form:module_name){
+				^try{
+					$result(^textext:UpdateModulePathByName[$this.className;$this.modulePath])
+				}{
+					$exception.handled(true)
+					$result(0)
+				}
+			}{$result(-1)}
+		}
+		^case[insert_table]{
+			^if(def $form:name && def $form:module_name){
+				$result(^cms:InsertTable[$form:name;${cms:cmsFolder}/${this.modulePath}/tables/${form:name}.table])
+			}{$result(-1)}
+		}
+		^case[rename_table]{
+			^if(def $form:name && def $form:old_name){
+				^try{
+					$result(^cms:RenameTable[$form:old_name;$form:name])
+				}{
+					$exception.handled(true)
+					$result(0)
+				}
+			}{$result(-1)}
+		}
+		^case[delete_table]{
+			^if(def $form:name){
+				^try{
+					$result(^cms:DeleteTable[$form:name])
+				}{
+					$exception.handled(true)
+					$result(0)
+				}
+			}{$result(-1)}
+		}
+		^case[insert_field]{
+			^if(def $form:table_name && def $form:field && def $form:module_name){
+				^try{
+					$result(^cms:InsertTableField[$form:table_name;$form:field;${cms:cmsFolder}/${this.modulePath}/tables/${form:table_name}.table])
+				}{
+					$exception.handled(true)
+					$result(0)
+				}
+			}{$result(-1)}
+		}
+		^case[rename_field]{
+			^if(def $form:table_name && def $form:field && def $form:module_name){
+				^try{
+					$result(^cms:RenameTableField[$form:table_name;$form:field;${cms:cmsFolder}/${this.modulePath}/tables/${form:table_name}.table])
+				}{
+					$exception.handled(true)
+					$result(0)
+				}
+			}{$result(-1)}
+		}
+		^case[delete_field]{
+			^if(def $form:table_name && def $form:field){
+				^try{
+					$result(^cms:DeleteTableField[$form:table_name;$form:field])
+				}{
+					$exception.handled(true)
+					$result(0)
+				}
+			}{$result(-1)}
+		}
+		^case[insert_option]{
+			^if(def $form:block_id && def $form:option && def $form:module_name){
+				^try{
+					$newOption[^hash::create[$this.moduleOptions.main.[$form:option]]]
+					$newOption.block_id($form:block_id)
+					$newOption.name[$form:option]
+					$result(^textext:InsertOption[$newOption])
+				}{
+					$exception.handled(true)
+					$result(0)
+				}
+			}{$result(-1)}
+		}
+		^case[rename_option]{
+			^if(def $form:block_id && def $form:option && def $form:module_name){
+				^try{
+					$result(^textext:RenameOption[$form:block_id;$form:option;$this.moduleOptions.rename.[$form:option];$this.moduleOptions.main.[$this.moduleOptions.rename.[$form:option]].caption])
+				}{
+					$exception.handled(true)
+					$result(0)
+				}
+			}{$result(-1)}
+		}
+		^case[delete_option]{
+			^if(def $form:block_id && def $form:option){
+				^try{
+					$result(^textext:DeleteOption[$form:block_id;$form:option])
+				}{
+					$exception.handled(true)
+					$result(0)
+				}
+			}{$result(-1)}
+		}
+# ------------------------------------------------------------------------------
+		^case[DEFAULT]{$result(-1)}
+	}
+}
+################################################################################

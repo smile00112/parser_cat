@@ -1,0 +1,12 @@
+################################################################################
+@cms_body[]
+# Добавляем блок в таблицу
+^connect[$site:connectString]{
+ ^void:sql{INSERT INTO cmc_block (id, block, namemenu, nameblock, pathblock) VALUES ('$form:id', '$form:block', '$form:namemenu', '$form:nameblock', '$form:pathblock')}
+}
+# Переходим к списку элементов
+$response:refresh[
+ $.value(0)
+ $.url[${cms.cmsFolder}/${cms.currentModulePath}/]
+] 
+################################################################################

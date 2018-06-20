@@ -1,0 +1,62 @@
+################################################################################
+@inMain[]
+^cms.ShowModalHeader[]
+^if(def $form:element_id){
+	^connect[$site:connectString]{
+		$element[^this.GetElements[$.element_id[$form:element_id]]]
+		^if(^element.count[]==1){
+			$elementName[$this.elementTypes.[$element.type].titleRE: "^textext:GetFixedText[$element.name;40;...]"]
+		}{
+			$elementName[^str_replace[$cms.languageVars.notFoundName;$.ELEMENTS[$this.elementTypes.[$element.type].titleRM]$._ID[$element.parent]]]
+		}
+		$elementName[^str_replace[$cms.languageVars.header;$.ELEMENT[$elementName]]]
+		$blocks[^textext:GetBlocksListByName[$this.className]]
+		<link href="./styles/link.css" rel="stylesheet" type="text/css">
+		<script src="./scripts/link.js" type="text/javascript"></script>
+		<div class="header cms_h1^if(^elementName.length[]>45){ small}">$elementName</div>
+		<div class="elements" data-element-id="$form:element_id" data-default-id="$form:default">
+			<div class="elements-table">
+		^if(^blocks.count[]>1){
+			^blocks.menu{
+				$elements[^this.GetElements[$.block_id($blocks.id)$.type(0)$.limitCount(-1)]]
+				<ul class="element-string close">
+					<li>
+						<span class="element-name-wrapper">
+							<i class="fa fa-chevron-up"></i><span class="element-name">$blocks.name</span>
+						</span>
+					</li><li></li>
+					^ShowProducts[$elements;0]
+				</ul>
+			}
+		}{
+			$elements[^this.GetElements[$.block_id($blocks.id)$.type(0)$.limitCount(-1)]]
+			^ShowProducts[$elements;0]
+		}
+			</div>
+		</div>
+	}
+}{
+	<h1>Неизвестный элемент</h1>
+}
+^cms.ShowModalFooter[]
+################################################################################
+@ShowProducts[allModules;parent;counter][modules;moduleChilds]
+^if(!def $counter){$counter(1)}
+$modules[^allModules.select($allModules.parent eq $parent)]
+^if(def $modules){
+	^modules.menu{
+		$moduleChilds[^allModules.select($allModules.parent == $modules.id)]
+		<ul class="element-string^if($moduleChilds){ close}" data-id="$modules.id">
+			<li>
+				<span style="margin-left: ^eval($counter*20)px^;" class="element-name-wrapper">
+					^if($moduleChilds){<i class="fa fa-chevron-up"></i>}<span class="element-name">$modules.name</span>
+				</span>
+			</li><li>
+				<div id="$modules.id" class="callout"></div>
+				<input type="checkbox"^if($modules.id == $element.id){ checked}>
+			</li>
+			^if($moduleChilds){^ShowProducts[$allModules;$modules.id;^eval($counter+1)]}
+		</ul>
+	}
+}
+################################################################################

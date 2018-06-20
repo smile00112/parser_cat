@@ -1,0 +1,20 @@
+################################################################################
+@cms_body[]
+$images[^table::sql{SELECT * FROM catalog_gallery WHERE main='1'}]
+$elements[^table::sql{SELECT DISTINCT(element_id) FROM catalog_gallery}]
+^elements.menu{
+	$currentImages[^images.select($images.element_id==$elements.element_id)]
+	^if(^currentImages.count[]>1){
+		$count(0)
+		$max(^currentImages.count[])
+		^currentImages.menu{
+			^count.inc[]
+			^if($count<$max){
+				^void:sql{UPDATE catalog_gallery SET main='0' WHERE id=$currentImages.id}
+			}
+		}
+		$elements.element_id<br>
+	}
+}
+<h1>Готово</h1>
+################################################################################

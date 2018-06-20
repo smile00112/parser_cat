@@ -1,0 +1,5 @@
+@cms_body[]
+^if(def $form:idpage && def $form:news_id){
+	^void:sql{update news set visible=1 where id='$form:news_id' and id_page='$form:idpage'}
+		$response:location[index.html?idpage=$form:idpage]
+}

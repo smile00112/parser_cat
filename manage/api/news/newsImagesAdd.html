@@ -1,0 +1,26 @@
+################################################################################
+@main[]
+^if(def $form:site && def $form:newsId && def $form:existNewsId){
+ ^try{
+  $images[^table::load[http://${form:site}${newsImagesGetFile}?newsId=$form:newsId]]
+ }{
+  $exception.handled(1)
+  $images[^table::load[http://www.${form:site}${newsImagesGetFile}?newsId=$form:newsId]]
+ }
+ ^try{
+  $fields[^table::load[http://${form:site}${newsGetFile}?newsId=$form:newsId]]
+ }{
+  $exception.handled(1)
+  $fields[^table::load[http://www.${form:site}${newsGetFile}?newsId=$form:newsId]]
+ }
+ ^if(-f "/manage/news/gallery_add.html"){$galleryFile[/manage/news/gallery_add.html]}{$galleryFile[/manage/textext/modules/news/gallery_add.html]}
+ ^use[$galleryFile]
+ ^connect[$site:connectString]{
+  ^images.menu{
+   $image[$.name[^file::load[binary;http://${images.value}]]]
+   ^resize[$image;$images.descript;$form:existNewsId]
+  }
+ }
+ $result(1)
+}{$result(0)}
+################################################################################

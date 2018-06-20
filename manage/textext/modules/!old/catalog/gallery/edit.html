@@ -1,0 +1,39 @@
+################################################################################
+@cms_body[]
+^if(def $form:id && def $form:catalog_id){
+ ^edit_block[]
+}{
+ ^insert_error_fields[]
+}
+################################################################################
+@edit_block[]
+$curr_photo[^table::sql{SELECT id, description, path FROM catalog_gallery_second WHERE id=$form:id ORDER BY sortir}]
+<a href="index.html?id=$form:id&catalog_id=$form:catalog_id&parent=$form:parent&idpage=$form:idpage">Назад к фотогалерее</a>
+<br><br>
+<form method="post" enctype="multipart/form-data" action="save.html">
+ <input type="hidden" name="id" value="$curr_photo.id">
+ <input type="hidden" name="catalog_id" value="$form:catalog_id">
+ <input type="hidden" name="idpage" value="$form:idpage">
+ <input type="hidden" name="parent" value="$form:parent">
+ <input type="hidden" name="gallery_edit" value="yes">
+ <table border="0" cellspacing="1" cellpadding="5" bgcolor="#999999">	
+  <tr class="tH">
+   <td>Изображение</td>
+   <td>Описание</td>
+  </tr>
+  <tr class="tN">	
+   <td><img src="/images/catalog/second/small/${curr_photo.path}"></td>
+   <td valign="top">
+	  <table border="0">
+     <tr>
+      <td><textarea id="elm1" name="description" rows="3" style="width: 300px^;">$curr_photo.description</textarea></td>
+     </tr>
+     <tr>
+      <td align="center"><input type="submit" name="save" value="Сохранить" /></td> 
+     </tr>
+    </table>   
+   </td>
+  </tr>
+ </table>
+</form> 
+################################################################################

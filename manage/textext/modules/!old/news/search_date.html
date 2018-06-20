@@ -1,0 +1,99 @@
+################################################################################
+@cms_body[]
+^use[/classes/dtf.p]
+# Выводим заголовок страницы
+
+^cms.ShowPageHeader[Новости сайта;$cms.currentModule.path;^news.GetClassInfo[]]
+^top_menu[3]
+<br>
+# ВСЕ НОВОСТИ ЗА УКАЗАННУЮ ДАТУ
+$months[
+	$.1[января]
+	$.2[февраля]
+	$.3[марта]
+	$.4[апреля]
+	$.5[мая]
+	$.6[июня]
+	$.7[июля]
+	$.8[августа]
+	$.9[сентября]
+	$.10[октября]
+	$.11[ноября]
+	$.12[декабря]
+]
+^if(def $form:year && def $form:month && def $form:day){
+	$now[^date::create[${form:year}-${form:month}-${form:day}]]
+	$nextDay[^date::create[${form:year}-${form:month}-${form:day}]]
+	^nextDay.roll[day](1)
+}{
+	$now[^date::now[]]
+	$nextDay[^date::now(1)]
+}
+^if(!def $form:sp){
+	$page(1)
+}{
+	$page[$form:sp]
+}
+<form>
+	<input type="hidden" name="idpage" value="$form:idpage">
+	<table border="0" cellspacing="4" cellpadding="0" width="300">
+		<tr>
+			<td>
+				<b>День</b><br>
+			</td>
+			<td>
+				<b>Месяц</b><br>
+			</td>
+			<td>
+				<b>Год</b><br>
+			</td>
+		</tr>
+		<tr>
+			<td width="150">
+				<select name="day" style="width: 100%">
+					^for[i](1;31){
+						<option value="$i" ^if($now.day == $i){selected}>^i.format[%02d]</option>
+					}
+				</select>
+			</td>
+			<td width="200">
+				<select name="month" style="width: 100%">
+					^for[i](1;12){
+						<option value="$i" ^if($now.month == $i){selected}>$months.$i</option>
+					}
+				</select>
+			</td>
+			<td width="150">
+				<select name="year" style="width: 100%">
+					^for[i](0;4){
+						<option value="^eval($now.year + $i - 2)" ^if($now.year == ^eval($now.year + $i - 2)){selected}>^eval($now.year + $i - 2)</option>
+					}
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="3"><input type="submit" value="Просмотреть новости" style="background-color: White"></td>
+		</tr>
+	</table>
+</form>
+$kolvo(20)
+$kolvoall(^int:sql{select count(*) from news where date_news>='${now.year}-${now.month}-${now.day}' and id_page='$form:idpage' and date_news<'${nextDay.year}-${nextDay.month}-${nextDay.day}'})
+
+
+#$news[^table::sql{select * from news where id_page='$form:idpage' and  date_news>='${now.year}-${now.month}-${now.day}' and date_news<'${nextDay.year}-${nextDay.month}-${nextDay.day}' order by date_news desc limit ^eval($page*$kolvo - $kolvo), $kolvo}]
+$news[^table::sql{select * from news where id_page='$form:idpage' and  date_news>='${now.year}-${now.month}-${now.day}' and id_page='$form:idpage' and date_news<'${nextDay.year}-${nextDay.month}-${nextDay.day}' order by date_news desc}[]]
+
+
+
+^if($news){
+	
+		^news.menu{
+			^print_row_news[$news]
+		}
+	
+}{
+	<h3>^dtf:format[%d %h %Y;$datapr;$dtf:rr-locale]: новостей нет.</h3>
+}
+
+
+

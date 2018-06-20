@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+	<head>^site.ShowHeader[]</head>
+	<body>
+		<section class="page">
+			<header>
+				<h1 class="logo">^if($site.currentPageId!=$site.mainPageId){<a href="/" title="$site.name">}$site.name^if($site.currentPageId!=$site.mainPageId){</a>}</h1>
+				<nav>^site.ShowMenu[]</nav>
+			</header>
+			<section>
+				<aside class="aside_left">
+					<div>
+						<div class="date"><span class="d">$site.currentDate.day</span> $dtf:rr-locale.month.[$site.currentDate.month], $dtf:ri-locale.weekday.[$site.currentDate.weekday]<span id="digital_watch" class="t"></span></div>
+					</div>
+					<div>^polls:ShowPoll[]</div>
+				</aside>
+				<aside class="aside_right">
+					^site.user.ShowAuthForm[]
+				</aside>
+				<section class="content">
+					^site:ShowBreadcrumbs[]
+					<h1>$site.currentPage.header</h1>
+					^text[]
+				</section>
+				<br class="clear">
+			</section>
+			<div class="push"></div>
+		</section>
+		<footer>
+			<address>2017 - $site.currentDate.year © $site.name</address>
+			<div class="counter">^widgets:ShowWidget[counters]</div>
+			<address class="copy">
+				<a href="http://websun-com.ru" target="_blank" title="Создание и разработка сайтов - студия WebSun">Создание сайта - Cтудия WebSun</a>
+			</address>
+		</footer>
+		^site.PrintQueue[]
+		^statistic:InsertInfo[]
+	</body>
+</html>

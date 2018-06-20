@@ -1,0 +1,38 @@
+@ShowNews[news;allNewsCount;this]
+^if(def $news){
+	$pageUrl[^site:GetPageUrlById[$form:p;skipMain]]
+	<ul class="news">
+		^news.menu{
+			$dt_news[^dtf:create[$news.date;^date::now[]]]
+			$gallery_one[^this.GetMainImage[$news.id]]
+			$news_url[/$pageUrl/^this.GetNewsUrl[$news]/]
+			^if(!$gallery_one.visible){$gallery_one[]}
+			<li>
+				<div class="nImg">
+					^if(def $gallery_one){
+						<a href="$news_url">
+							<img src="${this.imagesFolder.small}/$gallery_one.name" alt="^news.head.replace[";']" title="^news.head.replace[";']">
+						</a>
+					}{
+						<a href="$news_url">
+							<img src="${this.imagesFolder}/no-image.png" alt="^news.head.replace[";']" title="^news.head.replace[";']" align="left"/>
+						</a>
+					}
+				</div>
+				<div class="nCont">
+					<span class="nInfo">
+#						<div class="author">Автор: $news.author</div>
+						<div class="date">^dtf:format[%d %h %Y;$dt_news;$dtf:rr-locale]</div>
+					</span>
+					<a class="h2" href="$news_url">$news.head</a>
+					<div class="nText">
+						^untaint{$news.body}
+					</div>
+				</div>
+			</li>
+		}
+	</ul>
+	^scroller:print_scroller2[^math:ceiling(^eval($allNewsCount/$this.newsPerPage));$this.newsPerPage]
+}{
+	<p>Записей нет</p>
+}

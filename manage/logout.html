@@ -1,0 +1,15 @@
+@main[]
+
+$cookie:adm_login[
+	$.value[]
+	$.expires[session]
+]
+
+$cookie:adm_password[
+	$.value[]
+	$.expires[session]
+]
+$response:refresh[
+	$.value(0)
+	$.url[${cms.cmsFolder}/]
+]

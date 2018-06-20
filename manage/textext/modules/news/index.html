@@ -1,0 +1,154 @@
+################################################################################
+@cms_body[]
+#-------------------------------------------------------------------------------
+<link	href="./styles/style.css" rel="stylesheet" type="text/css">
+<script	src="./scripts/actions.js" type="text/javascript"></script>
+<script	src="./scripts/date.js" type="text/javascript"></script>
+#----------------------------------- jqueryui ----------------------------------
+<link	href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/redmond/jquery-ui.css" rel="stylesheet">
+<script	src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+#---------------------------------- timepicker ---------------------------------
+<link	href="${cms.templateFolder}/libraries/timepicker/jquery.ui.timepicker.css" rel="stylesheet">
+<script	src="${cms.templateFolder}/libraries/timepicker/jquery.ui.timepicker.js"></script>
+#------------------------------------ jcrop ------------------------------------
+<link	href="${cms.templateFolder}/libraries/jcrop/css/jquery.Jcrop.css" rel="stylesheet" type="text/css">
+<script	src="${cms.templateFolder}/libraries/jcrop/js/jquery.Jcrop.min.js"></script>
+<script	src="./scripts/crop.js"></script>
+#-------------------------------------------------------------------------------
+# Если параметры передаются
+^if(def $form:id && def $form:idpage){
+# Определяем страницу
+	^if(!def $form:page){$currentPage(1)}{$currentPage($form:page)}
+# Выводим заголовок страницы
+	^cms.ShowPageHeader[Новости;$cms.currentModule.path;^this.GetClassInfo[]]
+	<p class="cms_h2">
+		<a href="${cms.cmsFolder}/textext/?idpage=$form:idpage"><i class="fa fa-reply fa-3x inline blue mr10"></i>К блокам</a>
+		^if($cms.cmsUserLevel>0){
+		<span id="addSlideBtn" data-width="800" data-href="add_news.html?idpage=$form:idpage&idblock=$idblock" data-title="Добавить новость" data-reload="true" class="pointer ml20" onClick="^$(this).OpenFancybox()^;">
+			<i class="fa fa-plus fa-3x inline blue mr10"></i>Добавить новость
+		</span>
+		}
+		^if($cms.cmsUserLevel==$cms.maxUserLevel){
+			<a href="./options.html?id=$idblock&idpage=$form:idpage" class="ml20"><i class="fa fa-cog fa-3x inline blue mr10"></i>К настройкам</a>
+		}
+	</p>
+	$params[
+		$.offsetCount(^eval(($currentPage-1)*$this.newsPerPage))
+	]
+	$all_news[^this.GetNews[$form:idpage;$params]]
+	^if($all_news.CLASS_NAME eq table){
+		^if(!def $all_news){
+			<h1 class="cms_h1">Новости не найдены</h1>
+		}{
+# Выводим скроллер
+			^scroller:print_scroller2[^math:ceiling(^eval(^this.GetCountAllPageNews[$form:idpage]/$this.newsPerPage));5;yes]
+			$imagesHeight(^eval($this.imagesWidth.small/$this.imagesAspectRatio))
+			^all_news.menu{
+				$image(false)
+				$newsDate[^date::create[$all_news.date]]
+				<div class="block_news" data-id="$all_news.id">
+					<div class="block_image">
+						<div class="image_main" style="width: ${this.imagesWidth.small}px^;height: ${imagesHeight}px^;line-height: ${imagesHeight}px^;">
+						$mainImage[^this.GetMainImage[$all_news.id]]
+						^if(def $mainImage){
+							$image(true)
+							<div id="image_${all_news.id}">
+								<span class="editThumb" href="#cropImg" title="Обрезать изображение" data-idblock="$idblock" data-id="$mainImage.id" data-width="$this.imagesWidth.small" data-ratio="$this.imagesAspectRatio" data-big="${this.imagesFolder.src}/${mainImage.name}" data-small="${this.imagesFolder.small}/${mainImage.name}">
+									<i class="fa fa-crop fa-2x blue pointer"></i>
+								</span>
+								<span data-id="$mainImage.id" class="image_delete" title="Удалить изображение" onClick="^$(this).DeleteImage()^;">Х</span>
+								<img src="${this.imagesFolder.small}/${mainImage.name}" title="$all_news.head">
+							</div>
+						}
+							<div id="no_image_${all_news.id}"^if($image){ style="display: none^;"}>
+								<div class="news_image">Нет изображения</div>
+								<span data-width="320" data-href="./images/add_main_image.html?id=${all_news.id}&idblock=${form:id}" data-title="Добавление изображения для новости '$all_news.head'" data-reload="true" class="link" onClick="^$(this).OpenFancybox()^;" style="position:absolute^; left: 10px^; top: 10px^;">
+									<i class="fa fa-plus fa-3x inline blue mr10"></i>
+								</span>
+							</div>
+						</div>
+						<div class="pt5">
+							<a href="./images/?id=${all_news.id}&idblock=${form:id}&idpage=${form:idpage}&newspage=${currentPage}"><i class="fa fa-picture-o fa-2x inline pointer blue" title="Галерея"></i></a>
+							<a href="./video/?id=${all_news.id}&idblock=${form:id}&idpage=${form:idpage}&newspage=${currentPage}"><i class="fa fa-youtube-play fa-2x inline pointer blue" title="Видео"></i></a>
+							<a href="./files/?id=${all_news.id}&idblock=${form:id}&idpage=${form:idpage}&newspage=${currentPage}"><i class="fa fa-file fa-2x inline pointer blue" title="Файлы"></i></a>
+							<a href="./seo/?id=${all_news.id}&idblock=${form:id}&idpage=${form:idpage}&newspage=${currentPage}"><i class="fa fa-bar-chart-o fa-2x inline pointer blue" title="SEO атрибуты"></i></a>
+						</div>
+					</div>
+					<div class="block_fields">
+						<div class="block_string multiple first">
+							<div class="label main">Дата:</div>
+							<div class="field"><input type="text" name="date" value="${newsDate.year}-^newsDate.month.format[%02d]-^newsDate.day.format[%02d]" onChange="^$(this).SaveDate()^;" class="datepicker cms_input date"></div>
+							^if($this.settings.showTime){
+							<div class="label">Время:</div>
+							<div class="field"><input type="text" name="date" value="^newsDate.hour.format[%02d]:^newsDate.minute.format[%02d]" onChange="^$(this).SaveTime()^;" class="timepicker cms_input time"></div>
+							}
+							^if($this.settings.showAuthor){
+							<div class="label">Автор:</div>
+							<div class="field">^ShowAuthorSelect[^this.GetAuthors[];$all_news.author_id]</div>
+							}
+							^if($this.settings.showMain){
+							<div class="label">Главная:</div>
+							<div class="field"><input type="checkbox"^if($this.settings.oneMain){ data-one="true"} name="main" onChange="^$(this).UpdateMain()^;"^if($all_news.main){ checked}></div>
+							}
+						</div>
+						<div class="block_string">
+							<div class="label main">Заголовок:</div>
+							<div class="field"><input type="text" name="head" value="$all_news.head" class="cms_input" onChange="^$(this).Save()^;"></div>
+						</div>
+						^if($this.settings.showBody){
+						<div class="block_string">
+						<div class="label main">Анонс:</div>
+							<div class="field">
+							^if($this.settings.setTextBody){
+								<input name="body" value="$all_news.body" class="cms_input w100p" onChange="^$(this).Save()^;">
+							}{
+								<span data-width="830" data-href="edit_announcement.html?id=$all_news.id" data-title="Анонс для новости '$all_news.head'" data-reload="true" class="pointer" onClick="^$(this).OpenFancybox()^;">^if(def $all_news.body){^untaint{$all_news.body}}{Анонс не задан}</span>
+							}
+							</div>
+						</div>
+						}
+						^if($this.settings.showSticker || $this.settings.showType){
+						<div class="block_string^if($this.settings.showSticker || $this.settings.showType){ multiple}">
+							^if($this.settings.showSticker){
+							<div class="label main">Стикер:</div>
+							<div class="field">^ShowStickerSelect[^this.GetStickers[$.limitCount(9999999)];$all_news.sticker_id]</div>
+							^if($cms.cmsUserLevel>0){
+							<a href="./stickers/?id=${all_news.id}&idblock=${form:id}&idpage=${form:idpage}&newspage=${currentPage}" title="Редактировать стикеры"><i class="fa fa-plus fa-3x inline blue" style="font-size: 25px^;"></i></a>
+							}
+							}
+							^if($this.settings.showType){
+							<div class="label^if(!$this.settings.showSticker){ main}">Тип:</div>
+							<div class="field">^ShowTypeSelect[^this.GetTypes[$.limitCount(9999999)];$all_news.type_id]</div>
+							^if($cms.cmsUserLevel>0){
+							<a href="./types/?id=${all_news.id}&idblock=${form:id}&idpage=${form:idpage}&newspage=${currentPage}" title="Редактировать стикеры"><i class="fa fa-plus fa-3x inline blue" style="font-size: 25px^;"></i></a>
+							}
+							}
+						</div>
+						}
+						<div class="pt5">
+							<i data-width="860" data-href="edit_content.html?id=$all_news.id" data-title="Редактирование '$all_news.head'" class="fa fa-pencil-square fa-3x inline pointer blue" title="Изменить" onClick="^$(this).OpenFancybox()^;"></i>
+							<i class="fa ^if($all_news.visible == 1){fa-eye}{fa-eye-slash} fa-3x inline pointer blue pl20" title="^if($all_news.visible == 1){Скрыть}{Отобразить}" onClick="^$(this).ChangeVisible()^;"></i>
+							<span class="fa-stack fa-2x inline pointer pl30 blue delete" title="Удалить" onClick="^$(this).Delete()^;">
+								<i class="fa fa-square-o fa-stack-2x"></i>
+								<i class="fa fa-times fa-stack-1x"></i>
+							</span>
+						</div>
+					</div>
+				</div>
+			}
+		}
+	}{
+		<h1>$all_news.text</h1>
+#		$all_news.debug
+	}
+	<div id="cropImg" style="display: none^;">
+		<div class="controls">
+			<button id="reset">По умолчанию</button>
+			<button id="crop">Обрезать</button>
+		</div>
+		<div id="targetWrap"></div>
+	</div>
+}{
+	$response:refresh[$.value(0)$.url[${cms.cmsFolder}/]]
+}
+################################################################################

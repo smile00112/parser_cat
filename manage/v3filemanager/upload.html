@@ -1,0 +1,154 @@
+@main[]
+^use[/classes/NConvert.p]
+$ext_table[^table::load[/manage/v3filemanager/config/config.cfg]]
+$dote[.]
+$preview[-preview.]
+$uri_get[$form:url_get]
+$oImg[^NConvert::create[
+#	Путь, где лежит nconvert
+	$.sScriptPath[/cgi-bin/]
+#	Имя самого файла nconvert
+	$.sScriptName[nconvert]
+	^if(def $sFormat){$.sFormat[$sFormat]}
+]]
+$params1[ 
+	$.bKeepRatio[1]
+	$.sResizeType[decr]
+]
+$tempst[qqq]
+$filename[$form:tables.name]
+^filename.menu{
+######################################################
+#$name_file-имя файла с расширением
+#$name- имя файла без расширения
+#$ext- расширение файла
+######################################################
+$name_file[$filename.field]
+$ext[^file:justext[$filename.field]]
+$ext_replace[^table::create{from	to
+.$ext}]
+$name[^name_file.replace[$ext_replace]]
+######################################################
+#Удаление всех недопустимых символов
+######################################################
+$counter(0)
+$replace_symbol[^table::create{from	to}]
+	$drName_length(^name.length[])
+	^while($counter!=$drName_length){
+		$symbol[^name.mid($counter;1)]
+		^switch[$symbol]{
+			^case[a]{}
+			^case[b]{}
+			^case[c]{}
+			^case[d]{}
+			^case[e]{}
+			^case[f]{}
+			^case[g]{}
+			^case[h]{}
+			^case[i]{}
+			^case[j]{}
+			^case[k]{}
+			^case[l]{}
+			^case[m]{}
+			^case[n]{}
+			^case[o]{}
+			^case[p]{}
+			^case[q]{}
+			^case[r]{}
+			^case[s]{}
+			^case[t]{}
+			^case[u]{}
+			^case[v]{}
+			^case[w]{}
+			^case[x]{}
+			^case[y]{}
+			^case[z]{}
+			^case[0]{}
+			^case[1]{}
+			^case[2]{}
+			^case[3]{}
+			^case[4]{}
+			^case[5]{}
+			^case[6]{}
+			^case[7]{}
+			^case[8]{}
+			^case[9]{}
+			^case[-]{}
+			^case[_]{}
+			^case[DEFAULT]{$err_symbol[$symbol]
+				^replace_symbol.append{$err_symbol	}
+			}
+		}
+		^counter.inc[]
+	}
+	
+$name[^name.replace[$replace_symbol]]
+
+^if(def $name&&def $uri_get){
+###############################################################
+#Проверка расширения файла и существования файла с таким именем
+###############################################################
+	^ext_table.menu{
+		^if($ext_table.ext eq $ext){
+			$exist_ext(1)
+		}
+	}
+	^if(def $exist_ext){
+		$big_name[${name}${dote}${ext}]
+		$small_name[${name}${preview}${ext}]
+		
+		$exist[^file:list[$uri_get]]
+		^exist.menu{
+			^if($exist.name eq $big_name){
+				$exist_file(1)	
+			}
+		}
+		^if(def $exist_file){
+### 		Ошибка файл уже существует!!!!   
+			^throw[
+				$.type[bad.command]
+				$.source[$name]
+				$.comment[Error file exist $name]
+			]
+
+		}{
+			
+			$big[^taint[as-is][${uri_get}${name_file}]]
+			$small[^taint[as-is][${uri_get}${small_name}]]
+			
+			^form:file.save[binary;$big]
+
+#			^switch[$ext]{
+			^rem{
+				^case[jpeg]{^cms:ImageResize[$big;$small;70;70;$params1]}
+				^case[jpg]{^cms:ImageResize[$big;$small;70;70;$params1]}
+				^case[png]{^cms:ImageResize[$big;$small;70;70;$params1]}
+				^case[gif]{^cms:ImageResize[$big;$small;70;70;$params1]}
+				^case[bmp]{^cms:ImageResize[$big;$small;70;70;$params1]}
+				^case[ico]{^cms:ImageResize[$big;$small;70;70;$params1]}
+				^case[icon]{^cms:ImageResize[$big;$small;70;70;$params1]}
+				^case[jpe]{^cms:ImageResize[$big;$small;70;70;$params1]}
+			}
+		}
+	}{
+### 	Ошибка в расширении файла!!!!
+		^throw[
+				$.type[image.format]
+				$.source[$name]
+				$.comment[Error format $name]
+			]
+		$e[1]
+	}
+}{
+### Ошибка в имени файла!!!!
+	^throw[
+		$.type[bad.command]
+		$.source[$name]
+		$.comment[Error name файла]
+	]
+	$s[1]
+}
+#	^form:file.save[binary;$name_file]
+	$tempst[$tempst файл существует: $exist_file Расширение: $e Имя файла: $s]
+}
+#^tempst.save[log.txt]

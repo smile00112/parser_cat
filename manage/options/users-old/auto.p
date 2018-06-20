@@ -1,0 +1,17 @@
+################################################################################
+@auto[]
+^if($cms.cmsUser){
+	^connect[$site:connectString]{
+		^cms.SetCurrentModule[users]
+	}
+}{
+	$response:refresh[
+		$.value(0)
+		$.url[${cms.cmsFolder}/]
+	]
+}
+################################################################################
+@module_info[]
+^use[./module_info.p]
+$result[^module_information[]]
+################################################################################

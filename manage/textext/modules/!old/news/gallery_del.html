@@ -1,0 +1,18 @@
+################################################################################
+@cms_body[]
+^if(def $form:news_id && def $form:delete_photo){
+ $photo_path[^table::sql{select * from news_gallery where id='$form:delete_photo'}]
+ $small[/images/news/s_${photo_path.path}]
+ $big[/images/news/b_${photo_path.path}]
+ $mini[/images/news/m_${photo_path.path}]
+ ^void:sql{delete from news_gallery where id='$form:delete_photo'}
+ ^try{
+ ^file:delete[$small]
+ ^file:delete[$big]
+ ^file:delete[$mini]
+ }{$exception.handled(1)}
+ $response:location[gallery.html?idpage=$form:idpage&news_id=$form:news_id]
+}{
+ ^insert_error_fields[]
+}
+################################################################################

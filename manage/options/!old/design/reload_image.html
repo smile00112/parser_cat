@@ -1,0 +1,59 @@
+################################################################################
+@main[]
+^cms.ShowModalHeader[]
+^if(def $form:id){
+	^connect[$site:connectString]{
+		$property[^this.GetProperty[$form:id]]
+	}
+	^if($property is table){
+		^if(def $form:image){
+			^connect[$site:connectString]{
+				$res(^this.ReloadImage[$form:id;$form:image])
+			}
+			^if($res>0){
+				<div class="cms_h1 aC">Изображение заменено</div>
+				<br>
+				<script>parent.^$.fancybox.close()^;</script>
+			}{
+				<div class="cms_h1 aC">
+				^switch($res){
+					^case(0){Во время замены изображения возникла ошибка.}
+					^case(-1){Переданы не все обязательные поля.}
+					^case[DEFAULT]{Во время замены изображения возникла неизвестная ошибка.}
+				}
+				</div>
+				<br>
+			}
+		}{
+			<form method="post" enctype="multipart/form-data" action="reload_image.html">
+				<input type="hidden" name="id" value="$form:id">
+				<table class="table_dsb w100p">
+					<tr>
+						<td><div class="cms_h1 aC"><nobr>Замена изображения</nobr><br><nobr>($property.name)</nobr></div></td>
+					</tr>
+					<tr>
+						<td class="aC">
+							<input type="file" name="image">
+						</td>
+					</tr>
+					<tr>
+						<td class="aC" colspan="2"><input type="submit" value="Добавить"></td>
+					</tr>
+				</table>
+			</form>
+		}
+	}{
+		<div class="cms_h1 aC">
+		^switch($property){
+			^case(0){Не удалось получить данные о свойстве.}
+			^case(-1){Переданы не все обязательные поля.}
+			^case[DEFAULT]{Во время получения данных о свойстве возникла неизвестная ошибка.}
+		}
+		</div>
+		<br>
+	}
+}{
+	<div class="cms_h1">Необходимо передать id свойства</div>
+}
+^cms.ShowModalFooter[]
+################################################################################

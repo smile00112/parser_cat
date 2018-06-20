@@ -1,0 +1,19 @@
+################################################################################
+@main[]
+^if(def $form:newsId){
+ ^connect[$site:connectString]{$news[^table::sql{SELECT * FROM news WHERE id=$form:newsId}]}
+ ^if(def $news){
+  field	value^#0A
+  ^if(def $news.date_news){date_news	$news.date_news^#0A}
+  ^if(def $news.head){head	^untaint{^news.head.replace[^#0A;]}^#0A}
+  ^if(def $news.body){body	^untaint{^news.body.replace[^#0A;]}^#0A}
+  ^if(def $news.full_text){full_text	^untaint{^news.full_text.replace[^#0A;]}^#0A^#0A}
+  ^if(def $news.url){url	$news.url^#0A}
+  ^if(def $news.title){title	$news.title^#0A}
+  ^if(def $news.keywords){keywords	$news.keywords^#0A}
+  ^if(def $news.description){description	$news.description^#0A}
+ }{error	1^#0A}
+}{
+error	1^#0A
+}
+################################################################################

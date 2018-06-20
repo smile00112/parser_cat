@@ -1,0 +1,28 @@
+.element_string{
+	height:						30px;
+}
+.element_string .label{
+	display:					inline-block;
+	font-family:      "Cuprum",Tahoma;
+	font-size:        16px;
+	width:            75px;
+	vertical-align:   middle;
+	line-height:			30px;
+}
+.element_string .field{
+	display:					inline-block;
+	vertical-align:   middle;
+	line-height:			30px;
+}
+.element_string_actions{
+	position:					relative;
+	left:             -10px;
+}
+.delete{
+	font-size:				26px!important;
+	margin-top:       3px;
+}
+.delete .fa-times{
+	margin-top:       -2px;
+	font-size:        36px;
+}

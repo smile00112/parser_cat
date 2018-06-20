@@ -1,0 +1,15 @@
+################################################################################
+@cms_body[]
+^void:sql{UPDATE cmc_block SET id=id+1237}
+$sitemod[^table::sql{SELECT id, block, namemenu, nameblock, pathblock, level FROM cmc_block WHERE level<=$cms.cmsUserLevel ORDER BY block, id}]
+$ind(100)
+^sitemod.menu{
+ ^void:sql{UPDATE cmc_block SET id=$ind WHERE id=$sitemod.id}
+ ^ind.inc(100)
+}
+# Переходим к списку элементов
+$response:refresh[
+ $.value(0)
+ $.url[${cms.cmsFolder}/${cms.currentModulePath}/]
+]
+################################################################################

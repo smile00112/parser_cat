@@ -1,0 +1,55 @@
+.add-field-link{
+	cursor: pointer;
+}
+.add-field-link:hover{
+	color: #7a2000;
+}
+.add-field-link:before{
+	content: '\f067';
+	font-family: FontAwesome;
+}
+.fields-table{
+	display: inline-block;
+	max-width: 1100px;
+	margin-top: 1em;
+}
+.element-string.header div{
+	line-height: 1em;
+}
+.fields input,
+.fields select{
+	width: 100%;
+}
+.type{
+	width: 130px;
+	padding-left: 0!important;
+}
+.name{
+	width: 100px;
+}
+.caption,
+.description{
+	width: 180px;
+}
+.required{
+	width: 115px;
+	text-align: center;
+}
+.registration{
+	width: 105px;
+	text-align: center;
+}
+.actions{
+	width: 100px;
+	text-align: center;
+	padding-right: 0!important;
+}
+.actions .move{
+	margin-right: 10px;
+}
+.actions .move:before{
+	font-size: 24px;
+}
+.actions .visible:before{
+	font-size: 26px;
+}

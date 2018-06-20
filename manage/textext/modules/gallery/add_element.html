@@ -1,0 +1,110 @@
+################################################################################
+@main[]
+^cms.ShowModalHeader[]
+#-------------------------------------------------------------------------------
+<link href="./styles/style.css" rel="stylesheet" type="text/css">
+#-------------------------------------------------------------------------------
+# Если передаются необходимые параметры для добавления
+^if(def $form:type && def $form:parent){
+# Инициализируем настройки добавления
+	$params[
+		$.block_id[$form:idblock]
+		$.type($form:type)
+		$.parent($form:parent)
+		$.description[^if(def $form:name){$form:name}{^if(!$form:type){Новая галерея}}]
+	]
+# Подключаемся к БД
+	^connect[$site:connectString]{
+# Если тип добавляемого элемента - изображение и передан хоть один файл
+		^if($form:type && def $form:files){
+# Перебираем все переданные изображения
+			^form:files.multifiles.foreach[sNum;fValue]{
+# Инициализируем файл
+				$params.file[$fValue]
+# Добавляем изображение
+				$res[^this.InsertElement[$params]]
+			}
+		}{
+			^if(!$form:type){
+				^if($form:files.multifiles){$params.file[^form:files.multifiles.at[first]]}
+# Добавляем галерею
+				$res[^this.InsertElement[$params]]
+			}{
+				$res[
+					$.error(true)
+					$.text[Вы не выбрали изображение]
+				]
+			}
+		}
+# Вносим изменения в .htaccess
+		^make_rewrite[]
+	}
+	^if(!$res.error){
+		^if(!$form:type){
+			$answerText[Галерея добавлена]
+		}{
+			^if(^form:files.multifiles.count[]>1){
+				$answerText[Изображения добавлены]
+			}{
+				$answerText[Изображение добавлено]
+			}
+		}
+	}{
+		$answerText[$res.text]
+	}
+	<div class="cms_h1 aC">$answerText</div>
+	<br>
+	<script>
+		setTimeout(function(){
+			parent.^$.fancybox.close()^;
+		}, 1000)^;
+	</script>
+}{
+	^connect[$site:connectString]{
+		$this[^gallery_cms::create[$form:idblock]]
+	}
+	^if(!def $form:element_type){
+		$headerText[Добавление элемента]
+	}{
+		^if($form:element_type){
+			$headerText[Добавление изображения]
+		}{
+			$headerText[Добавление галереи]
+		}
+	}
+	<form method="post" enctype="multipart/form-data" action="add_element.html">
+		<input type="hidden" name="idblock" value="$form:idblock">
+		<input type="hidden" name="parent" value="^if(def $form:parent){$form:parent}{0}">
+		<table class="table_dsb w100p">
+			<tr align="center">
+				<td><div class="cms_h1"><nobr>$headerText</nobr></div></td>
+			</tr>
+			<tr align="center">
+				<td>
+					^if(!def $form:element_type){
+					<div class="inline">Тип:</div>
+					<div class="inline">
+						<select name="type" class="typeSelect">
+							<option value="0">Галерея</option>
+							<option value="1" selected>Изображение</option>
+						</select>
+					</div>
+					}{<input type="hidden" name="type" value="$form:element_type">}
+					<div class="inline^if(!def $form:element_type){ pl15}">Название:</div>
+					<input type="text" name="name" class="nameInput^if(def $form:element_type){ long}">
+				</td>
+			</tr>
+			<tr align="center">
+				<td>
+					<input type="file" name="multifiles" multiple="true">
+					<p>Можно выбрать несколько изображений, общим объемом не более ^eval($LIMITS.post_max_size/1024/1024) Mb</p>
+				</td>
+			</tr>
+			<tr align="center">
+				<td><input type="submit" value="Добавить"></td>
+			</tr>
+		</table>
+	</form>
+}
+^cms.ShowModalFooter[]
+################################################################################

@@ -1,0 +1,44 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+ <head>
+  <title>Дизайн-макет</title>
+ </head>
+ <body style="margin: 0px^;"> 
+  <table border="0" width="100%" height="100%" cellspacing="0" cellpadding="0">
+# Получаем список jpg файлов в папке design
+  $list[^file:list[/design;\.jpg^$]] 
+  $all_files[^list.count[]]
+  ^if($all_files>1){$counter(0)} 
+  ^if(def $list){
+   ^list.menu{
+   <tr>   
+    <td align="center">   
+     <img src="/design/$list.name">
+    </td> 
+   </tr>
+    ^if(def $counter){
+     ^counter.inc[]		    
+	   ^if($counter ne $all_files){
+	 <tr>   
+    <td align="center">   
+     <hr>
+    </td> 
+   </tr>
+	   }
+    }
+   } 
+  }{
+   <tr>  
+	  <td align="center">
+     ^use[site.p]
+		 <h1>$site:phrase</h1>
+		 <br>
+     <a href="http://www.kolibri.bryansk.in" target="_blank" title='Компьютерный центр "Колибри"'>
+     <img src="/manage/logo.png" border="0" alt='Компьютерный центр "Колибри"' title='Компьютерный центр "Колибри"'>
+     </a>
+		</td>
+   </tr>		
+	}
+	</table>  
+ </body>
+</html> 

@@ -1,0 +1,105 @@
+################################################################################
+@cms_body[]
+#-------------------------------------------------------------------------------
+<link href="./styles/style.css" rel="stylesheet" type="text/css">
+<style>
+	.load_form{
+		width: 400px^;
+	}
+	.load_form p{
+		font-family: "Cuprum",Tahoma;
+		font-size: 18px^;
+	}
+	.load_form td{
+		font-family: "Cuprum",Tahoma;
+		font-size: 18px^;
+		font-weight: bold^;
+		text-align: center^;
+	}
+	.load_form td input[type=submit],
+	.load_form td select{
+		font-family: "Cuprum",Tahoma;
+		font-size: 16px^;
+	}
+</style>
+#-------------------------------------------------------------------------------
+# Если параметры передаются
+^if(def $form:id && def $form:idpage){
+	^if(!def $form:parent){$parent(0)}{$parent($form:parent)}
+	^if($parent>0){
+		$elementName[для раздела "^this.GetNameById[$parent]"]
+	}{
+		$elementName[для корня каталога]
+	}
+# Выводим заголовок страницы
+	^cms.ShowPageHeader[Импорт поля $elementName;$cms.currentModule.path;^this.GetClassInfo[]]
+	<p class="cms_h2">
+		<a href="../?id=$idblock&idpage=$form:idpage^if(def $form:parent && $form:parent ne 0){&parent=$form:parent}^if(def $form:page){&page=$form:page}"><i class="fa fa-reply fa-3x inline blue mr10"></i>К каталогу</a>
+	</p>
+	$params[
+		$.block_id($form:id)
+		$.parent($parent)
+		$.sync_region[childs]
+	]
+	$elements[^this.GetElementsWithChilds[$params]]
+	^if(def $form:field && def $form:import_file){
+		$answer[^this.UpdateFieldByFile[$form:field;$form:files.import_file.0;$params]]
+		<div class="cms_h1">$answer.text</div>
+	}{
+	<div class="load_form">
+		<p>Каждая строка загружаемого файла будет сопоставлена выбранному полю каждого элемента в категории.</p>
+		<table class="table_dsb w100p">
+			<form method="post" enctype="multipart/form-data" action="import-field.html">
+				<input type="hidden" name="parent" value="$form:parent">
+				<input type="hidden" name="idpage" value="$form:idpage">
+				<input type="hidden" name="id" value="$form:id">
+				<tr>
+					<td width="1">
+						<nobr>Поле для импорта:</nobr>
+					</td>
+					<td>
+						<select name="field" class="w100p">
+							<option value="title" selected>title</option>
+							<option value="keywords">keywords</option>
+							<option value="description">description</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td width="1">
+						<nobr>Тип синхронизации:</nobr>
+					</td>
+					<td>
+						<select name="sync_type" class="w100p">
+							<option value="clean" selected>Заполнить пустые значения</option>
+							<option value="new">Перезаписать всё новыми значениями</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td width="1">
+						<nobr>Область применения:</nobr>
+					</td>
+					<td>
+						<select name="sync_region" class="w100p">
+							<option value="current" selected>Текущие элементы</option>
+							<option value="childs">Текущие и вложенные (^elements.count[])</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<input type="file" name="import_file" value="Загрузить" />
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<input type="submit" name="save" value="Импортировать" />
+					</td>
+				</tr>
+			</form>
+		</table>
+	</div>
+	}
+}
+################################################################################

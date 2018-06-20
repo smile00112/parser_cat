@@ -1,0 +1,21 @@
+################################################################################
+@cms_page_id[]
+$cms_page_id[sgid]
+################################################################################
+@cms_body[]
+<link type="text/css" rel="stylesheet" href="/manage/catalog/style.css">
+<script src="script.js" type="text/javascript"></script>
+<script src="/lib/placeholder.js" type="text/javascript"></script>
+<section class="catalog_production_cms">
+ <h1>Экспорт</h1>
+ ^try{
+  $file[^file::create[text;/sync/export.cfg;^catalog:GetExportText[$form:idpage]]]
+  ^file.save[text;/sync/export.exp]
+ <h2><a href="/download.html?path=/sync/export.exp">Файл</a> успешно сохранён!</h2>
+ }{
+  $exception.handled(1)
+  <h2>Ошибка сохранения файла.</h2>
+ }
+ <p><a href="../?parent=$form:parent&idpage=$form:idpage">Вернуться к списку товаров</a></p>
+</section>
+################################################################################

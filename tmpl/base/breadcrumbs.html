@@ -1,0 +1,19 @@
+@ShowBreadcrumbsTemplate[params]
+^if(def $self.breadcrumbs){
+	$counter(0)
+	<div class="breadcrumbs" itemscope itemtype="http://schema.org/BreadcrumbList">
+		^self.breadcrumbs.foreach[key;value]{
+			^counter.inc[]
+		<div class="breadcrumbsElement" itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+			^if(def $value.opened){
+			<span>$value.name</span>
+			<a href="^if($value.main){/}{$value.url}" style="display:none" itemprop="url" rel="nofollow">$value.name</a>
+			}{
+			<a href="^if($value.main){/}{$value.url}" title="$value.name" itemprop="url">$value.name</a>
+			}
+			<meta itemprop="name" content="$value.name">
+			<meta itemprop="position" content="$counter">
+		</div>
+		}
+	</div>
+}

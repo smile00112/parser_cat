@@ -1,0 +1,64 @@
+<title>CMS - ${env:SERVER_NAME}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="/favicon.ico" rel="icon" type="image/x-icon">
+<link href="${cms:templateFolder}/styles/cms.css" rel="stylesheet" type="text/css">
+<link href='${cms:templateFolder}/styles/style_google.css' rel='stylesheet' type='text/css'>
+<!---------------------------------- JQUERY ----------------------------------->
+<script type="text/javascript" src="/lib/jquery/jquery-1.11.2.min.js"></script>
+<!--------------------------------- fancybox ---------------------------------->
+<script type="text/javascript" src="${cms:templateFolder}/libraries/fancybox2/jquery.fancybox.js?v=2.1.5"></script>
+<link rel="stylesheet" type="text/css" href="${cms:templateFolder}/libraries/fancybox2/jquery.fancybox.css?v=2.1.5" media="screen" />
+<!------------------------------ Кнопка "Наверх" ------------------------------>
+<script type="text/javascript" src="${cms:templateFolder}/scripts/common.js"></script>
+<link href="${cms:templateFolder}/styles/ButtonGoTopCMS.css" rel="stylesheet" type="text/css">
+<!-------------------------------- fontawsome --------------------------------->
+<link href='/lib/fontawesome/css/font-awesome.min.css' rel='stylesheet' type='text/css'>
+<!----------------------------------------------------------------------------->
+<script type="text/javascript">
+^$(document).ready(function() {
+	^$(".fancybox").fancybox({
+		padding			: 1
+	})^;
+	^$(".modalwindow").fancybox({
+		padding			: 1,
+		fitToView		: false,
+		autoSize		: false,
+		closeClick	: false,
+		minHeight		: 10,
+		beforeClose	: function(){location.reload()^;}
+	})^;
+	^$(".smallWindow").fancybox({
+		padding			: 1,
+		fitToView		: true,
+		autoSize		: false,
+		autoHeight	: true,
+		width				: 450,
+		closeClick	: false,
+		beforeClose	: function(){location.reload()^;}
+	})^;
+	^$.fn.OpenFancybox = function(){
+		var	href		= ^$(this).attr("data-href"),
+				title		= ^$(this).attr("data-title"),
+				reload	= ^$(this).attr("data-reload"),
+				width		= ^$(this).attr("data-width"),
+				height	= ^$(this).attr("data-height")^;
+		var	params = {
+			type:							'iframe',
+			href:							href,
+			title:						title,
+			padding:					5,
+			fitToView:				true,
+			beforeClose:			function(){
+				if(reload){
+					location.reload(true)^;
+				}
+			}
+		};
+		if(typeof width !== 'undefined'){ params.width = width^; }
+		if(typeof height !== 'undefined'){ params.height = height^; }
+		^$.fancybox(params)^;
+	}^;
+})^;
+^head[]
+</script>
+^head_global[]

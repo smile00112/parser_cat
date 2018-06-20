@@ -1,0 +1,17 @@
+@cms_body[]
+^if(def $form:id_group && def $form:idpage){
+	^if(^int:sql{select count(*) from news_group where id_group='$form:id_group'}>0){
+		^insert_error_fields[Нельзя удалить, пока есть подчиненные новости]
+	}{
+		^void:sql{delete from news_group where id='$form:id_group'}
+		^make_rewrite[]
+		$response:location[^get_curent_path[]/index.html?where=$form:where&idpage=$form:idpage]
+	}
+
+	
+}{
+	^insert_error_fields[]
+
+}
+
+

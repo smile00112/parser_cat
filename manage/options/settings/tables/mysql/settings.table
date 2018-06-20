@@ -1,0 +1,7 @@
+field
+`id` int(3) unsigned NOT NULL auto_increment,
+`named` varchar(255) default NULL,
+`name` varchar(50) default NULL,
+`value` varchar(255) default NULL,
+`type_field` int(10) unsigned default 0,
+`comment` varchar(255) NOT NULL,

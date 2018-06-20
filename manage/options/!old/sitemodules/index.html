@@ -1,0 +1,197 @@
+################################################################################
+@cms_body[]
+# Выводим заголовок страницы   
+^cms.ShowPageHeader[Установленные модули сайта;$cms.currentModule.path;^module_info[]]
+# Описываем скрипт удаления позиции
+<script>
+ function gkeremove(obj,iddelete){
+  if (confirm('Вы хотите удалить данную позицию?')){
+   jQuery.get("del.html", {id: iddelete},function(data){
+    var parentTR = jQuery(obj).parent().parent();
+    jQuery(parentTR).fadeTo("slow", 0,function() {
+     jQuery(parentTR).remove()
+    });
+   }
+   );
+  }
+ }
+</script>
+# Проверяем установлен ли этот модуль, при необходимости устанавливаем
+^check_module[]
+# Получаем список модулей сайта
+$sitemod[^table::sql{SELECT id, block, namemenu, nameblock, pathblock, level FROM cmc_block WHERE level<=$cms.cmsUserLevel ORDER BY block, id}]
+# В зависимости от уровня доступа вызываем соответствующую функцию
+^if($cms.cmsUserLevel>=$cms.maxUserLevel){^adminblocks[]}{^userblocks[]}
+################################################################################
+@check_module[]
+# Получаем количество установленных модулей
+$sitemod[^int:sql{SELECT count(*) FROM cmc_block WHERE pathblock="$cms.currentModule.path"}]
+# Если модулей нет, то устанавливаем их
+^if($sitemod<=0){
+ $tmp[^void:sql{INSERT INTO cmc_block (id, block, namemenu, nameblock, pathblock, level, descript) VALUES 
+  (1000, 0, 'Опции сайта', 'options', 'options', 1, '<p>\nСписок опций сайта\n</p>'),
+  (1020, 0, 'Установленные модули', 'sitemodules', 'options/sitemodules', 1, '<p>\nСписок установленных модулей сайта и работа с ними\n</p>')
+ }] 
+}
+################################################################################
+@userblocks[]
+<table border="0" cellpadding="10">
+ <tr>
+  <td valign="top">^userleftblock[]</td>  
+  <td valign="top">^userdescrblock[]</td>
+ </tr>
+</table>
+#####################################################################################
+@userdescrblock[]
+^if(def $form:idm){
+ $descriptblock[^table::sql{SELECT id, descript FROM cmc_block WHERE id='$form:idm'}] 
+ ^untaint{$descriptblock.descript}
+}
+#####################################################################################
+@userleftblock[]  
+<table border="0" cellspacing="1" cellpadding="6" bgcolor="#999999">
+ <tr class="tH">
+  <td>&nbsp^;</td>
+  <td>block</td>
+  <td>namemenu</td>
+ </tr> 
+^sitemod.menu{
+ <tr ^if(def $form:idm && $form:idm==$sitemod.id){class="tNs"}{class="tN" style="cursor: pointer" onClick="window.location.href='?idm=$sitemod.id'" onMouseOver="this.setAttribute('class', 'tNs')" onMouseOut="this.setAttribute('class', 'tN')"}>
+  <td>    
+  ^switch[$sitemod.block]{
+   ^case[0;2]{
+    $index_image_extention[^cms.GetImageExtention[${cms.cmsFolder}/${sitemod.pathbloc}k/]]
+    ^if($index_image_extention ne 'no'){
+     <img src="${cms.cmsFolder}/${sitemod.pathblock}/index.${index_image_extention}" width="32" height="32" border="0" align="absmiddle">
+    }{
+     <img src="${cms.imagesFolder}/no.png" width="32" height="32" border="0" align="absmiddle">
+    }   
+   }
+   ^case[DEFAULT]{&nbsp^;}
+  }
+  </td> 
+  <td>
+   ^switch[$sitemod.block]{
+    ^case[0]{Меню управления}
+    ^case[1]{Модуль без меню}
+    ^case[2]{Модуль с меню}
+   }   
+  </td>
+  <td>$sitemod.namemenu</td>
+ </tr>
+}
+</table>  
+################################################################################
+@adminblocks[]
+<table border="0" cellspacing="0" cellpadding="10">
+ <tr>
+  <td>
+   <a href="clean_all.html">Очистка базы данных</a>
+  </td>
+  <td>
+   <a href="update_all.html">Обновление базы данных</a>
+  </td>
+  <td>
+   <a href="resort.html">Пересортировка таблицы модулей</a>
+  </td>
+ </tr>
+</table> 
+<br>
+<table border="0" cellspacing="1" cellpadding="3" bgcolor="#999999">
+ <tr class="tH">
+  <td>Иконка</td>
+  <td>Тип блока</td>
+  <td>Описание блока</td>
+  <td>Название блока</td>
+  <td>Путь к блоку</td>
+  <td>Порядок</td>
+  <td>Доступ</td>
+  <td colspan="3">Действие</td>
+	^if($cms.cmsUserLevel==$cms.maxUserLevel){
+	<td>&nbsp^;</td>
+	}
+ </tr>
+ ^sitemod.menu{ 
+ <tr class="tN">
+  <form method="post" action="ch.html">
+  <input type="hidden" name="idald" value="$sitemod.id">
+  <td>
+   ^switch[$sitemod.block]{
+    ^case[0;2]{
+     $index_image_extention[^cms.GetImageExtention[${cms.cmsFolder}/${sitemod.pathblock}/]]
+     ^if($index_image_extention ne 'no'){
+      <img src="${cms.cmsFolder}/${sitemod.pathblock}/index.${index_image_extention}" width="32" height="32" border="0" align="absmiddle">
+     }{
+      <img src="${cms.imagesFolder}/no.png" width="32" height="32" border="0" align="absmiddle">
+     }   
+    }
+    ^case[DEFAULT]{&nbsp^;}
+   }
+  </td> 
+  <td>
+   <select name="block" style="border: 1px^; padding: 1^;border-style:solid^;font-size: 14px^;border-color: #c2c2c2">
+    <option value="0" ^if($sitemod.block==0){selected}>Меню управления</option>
+    <option value="1" ^if($sitemod.block==1){selected}>Модуль без меню</option>
+    <option value="2" ^if($sitemod.block==2){selected}>Модуль с меню</option>
+   </select>
+  </td>
+  <td><input type="text" name="namemenu" value="$sitemod.namemenu" style="width: 180px"></td>
+  <td><input type="text" name="nameblock" value="$sitemod.nameblock" style="width: 100px"></td>
+  <td><input type="text" name="pathblock" value="$sitemod.pathblock" style="width: 100px"></td>
+  <td><input type="text" name="id" value="$sitemod.id" style="width: 40px"></td>
+  <td>
+   <select name="level" style="border: 1px^; padding: 1^;border-style:solid^;font-size: 14px^;border-color: #c2c2c2">
+    <option value="0" ^if($sitemod.level==0){selected}>Пользователь</option>
+    <option value="1" ^if($sitemod.level==1){selected}>Администратор</option>
+    <option value="10" ^if($sitemod.level==10){selected}>Программист</option>
+   </select>    
+	</td>
+  <td><input type="image" src="${cms.imagesFolder}/actions/save.png" width="32" style="cursor:pointer" alt="Сохранить"></td>
+  </form> 
+  <td>
+   <input type="image" src="${cms.imagesFolder}/actions/files.png" width="32" style="cursor:pointer" title="Описание" onclick="window.location.href='editd.html?idm=$sitemod.id'">
+  </td>
+  <td>
+   <input type="image" src="${cms.imagesFolder}/actions/delete.png" width="32" style="cursor:pointer" title="Удалить" onclick="gkeremove(this,$sitemod.id)">
+  </td>
+	^if($cms.cmsUserLevel==$cms.maxUserLevel){
+	<td>
+		<a href="./check/?module_name=$sitemod.nameblock" title="Проверка модуля на наличие ошибок и их исправление"><i class="fa fa-check-square fa-3x inline blue"></i></a>
+	</td>
+	}
+ </tr> 
+ }
+</table>
+# Форма добавления блока
+^insertblock[]
+################################################################################
+@insertblock[]
+<br>
+<h2>Добавить блок<h2>
+<form method="post" action="add.html">
+ <table border="0" cellspacing="1" cellpadding="6" bgcolor="#999999">
+  <tr class="tH">
+   <td>Тип блока</td>
+   <td>Описание блока</td>
+   <td>Название блока</td>
+   <td>Путь к блоку</td>
+   <td>Порядок</td>
+   <td>Действие</td>
+  </tr> 
+  <tr class="tN">
+   <td> 
+    <select name="block">
+     <option value="0">Меню управления</option>
+     <option value="1">Модуль без меню</option>
+     <option value="2">Модуль с меню</option>
+    </select>
+   </td>
+   <td><input type="text" name="namemenu"  style="width: 180px"></td>
+   <td><input type="text" name="nameblock" style="width: 100px"></td>
+   <td><input type="text" name="pathblock" style="width: 100px"></td>
+   <td><input type="text" name="id"  style="width: 40px"></td>
+   <td><input type="submit" value="Добавить" style="width: 100px"></td>
+  </tr>
+ </table>
+</form>
+################################################################################

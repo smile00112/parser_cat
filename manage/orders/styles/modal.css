@@ -1,0 +1,117 @@
+body{
+	font-family: 'Cuprum',Tahoma;
+	font-size: 18px;
+}
+.cms_h1{
+	text-align: center;
+}
+.order-name{
+	margin-bottom: 1em;
+}
+.order-header{
+	border-bottom: 1px dashed #999999;
+}
+.info-block .order-header{
+	margin-bottom: 10px;
+	display: inline-block;
+}
+form{
+	margin: 0;
+}
+form input[type=text],
+form textarea,
+form select{
+	border: 1px solid #adadad;
+	background-color: transparent;
+	font-family: "Cuprum",Tahoma;
+	font-size: 18px;
+}
+form textarea{
+	width: 100%;
+	resize: none;
+	height: 90px;
+}
+form .error{
+	border: 1px solid #ff0000 !important;
+	box-sizing: border-box;
+}
+.table_dsb .header,
+.table_dsb .footer{
+	text-align: center;
+	font-weight: bold;
+}
+.table_dsb .footer{
+	font-size: 20px;
+}
+.info-block > div{
+	width: 50%;
+	display: inline-block;
+	vertical-align: top;
+}
+.info-block{
+	margin-bottom: 1em;
+}
+.block-string{
+	position: relative;
+	line-height: 30px;
+}
+.block-string > div{
+	display: inline-block;
+}
+.left-column .field-name{
+	width: 75px;
+	display: inline-block;
+	font-weight: bold;
+}
+.right-column .field-name{
+	width: 70px;
+	display: inline-block;
+	font-weight: bold;
+}
+.user-name::before,
+.user-email::before,
+.user-phone::before{
+	font-family: FontAwesome;
+	margin-right: 5px;
+}
+.user-name::before{
+	content: '\f2c0';
+	padding: 0 1px;
+}
+.user-email::before{
+	content: '\f003';
+}
+.user-phone::before{
+	content: '\f095';
+	padding: 0 2px;
+}
+.order-info-table .footer > td{
+	border-bottom: none;
+}
+.order-info{
+/*	text-align: center*/
+}
+.order-info-table{
+	width: 100%;
+}
+.artikul{
+	width: 50px;
+}
+.count{
+	width: 45px;
+	text-align: center;
+}
+.price,
+.cost{
+	width: 60px;
+	text-align: center;
+}
+.status-wrapper{
+	position: relative;
+}
+.callout::before{
+	right: auto;
+}
+.callout.comment{
+	bottom: 108px;
+}

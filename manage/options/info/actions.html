@@ -1,0 +1,34 @@
+################################################################################
+@main[]
+^connect[$site:connectString]{
+	^switch[$form:action]{
+		^case[update_module_version]{
+			^if(def $form:module && def $form:version){
+				$answer[^this.UpdateModuleVersion[$form:module;$form:version]]
+			}{
+				$answer[
+					$.error(true)
+					$.text[Недостаточно параметров]
+				]
+			}
+		}
+		^case[update_cms_version]{
+			^if(def $form:site && def $form:cms_version){
+				$answer[^this.UpdateCMSVersion[$form:site;$form:cms_version]]
+			}{
+				$answer[
+					$.error(true)
+					$.text[Недостаточно параметров]
+				]
+			}
+		}
+		^case[DEFAULT]{
+			$answer[
+				$.error(true)
+				$.text[Неизвестное действие]
+			]
+		}
+	}
+}
+$result[^json:string[$answer]]
+################################################################################

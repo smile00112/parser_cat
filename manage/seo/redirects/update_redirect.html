@@ -1,0 +1,18 @@
+################################################################################
+@cms_body[]
+# Если параметры формы непустые
+^if(def $form:id && def $form:sortir){
+# Пробуем изменить сортировку в базе данных
+	^try{
+		^void:sql{UPDATE site_redirects SET sortir=$form:sortir WHERE id=$form:id}
+	}{
+# Обработали ошибку
+		$exception.handled(1)
+	}
+}
+# Переходим к списку записей
+$response:refresh[
+	$.value(0)
+	$.url[${cms.cmsFolder}/${cms.currentModule.path}/]
+]
+################################################################################

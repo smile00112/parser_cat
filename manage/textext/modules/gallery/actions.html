@@ -1,0 +1,66 @@
+################################################################################
+@main[]
+$answer[^hash::create[]]
+^connect[$site:connectString]{
+	^switch[$form:action]{
+# Элемент
+		^case[update_visible]{
+			$answer[^this.SetElementVisible[$form:id]]
+		}
+		^case[delete]{
+			$answer[^this.DeleteElement[$form:id]]
+		}
+		^case[save_field]{
+			$answer[^this.SaveProperty[$form:id;$form:field;$form:value]]
+		}
+# Только изображение
+		^case[delete_gallery_image]{
+			$answer[^this.DeleteImage[$form:id;$.name[$form:name]]]
+		}
+		^case[crop_image]{
+			$params[
+				$.x($form:x)
+				$.y($form:y)
+				$.width($form:width)
+				$.height($form:height)
+			]
+			$answer[^this.CropImage[$form:id;$params]]
+		}
+		^case[set_main]{
+			^if(def $form:id){
+				^try{
+					$result(^this.SetMainImage[$form:id])
+				}{
+					$exception.handled(true)
+					$answer.error(true)
+					$answer.text[Ошибка выполнения функции]
+				}
+			}{
+				$answer.error(true)
+				$answer.text[Не передан параметр ID]
+			}
+		}
+		^case[save_option]{
+			^if(def $form:id){
+				^try{
+					$res[^textext:UpdateOptionValue[$form:id;$form:value]]
+					$answer.error(false)
+					$answer.text[Настройка сохранена]
+				}{
+					$exception.handled(true)
+					$answer.error(true)
+					$answer.text[Ошибка сохранения настройки]
+				}
+			}{
+				$answer.error(true)
+				$answer.text[Не передан параметр ID]
+			}
+		}
+		^case[DEFAULT]{
+			$answer.error(true)
+			$answer.text[Неизвестное действие]
+		}
+	}
+}
+$result[^json:string[$answer;$.indent(true)]]
+################################################################################

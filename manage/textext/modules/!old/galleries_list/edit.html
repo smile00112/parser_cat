@@ -1,0 +1,73 @@
+################################################################################
+@cms_body[]
+# Если что-то передаётся, то пробуем это перезаписать
+^if(def $form:id && def $form:id_block && def $form:idpage){
+ ^if(def $form:name || def $form:comment){
+  $res[^galleries_list.Update[$form:id;$form:name;$form:comment]]
+  $response:refresh[$.value(0)$.url[index.html?id=$form:id_block&idpage=$form:idpage]]
+ }{^ShowEditForm[]}
+# ------------------------------------------------------------------------------
+}{$response:refresh[$.value(0)$.url[index.html?id=$form:id_block&idpage=$form:idpage]]}
+################################################################################
+@ShowEditForm[]
+# Выводим шапку
+^cms.ShowPageHeader[Оглавление фотогалереи для раздела "^site:GetPageNameById[$form:idpage]";textext/modules/${galleries_list.className};^galleries_list.GetClassInfo[]]<br>
+<a href="index.html?id=$form:id_block&idpage=$form:idpage">Назад к списку блоков</a><br><br>
+# Получаем информацию о редактируемом элементе
+$element[^galleries_list.GetBlockInfo[$form:id]]
+# Выводим форму редактирования
+<table border="0" cellspacing="0" cellpadding="5">
+ <tr>
+  <td valign="top">
+   <form method="post" action="edit.html">
+   <input type="hidden" name="id" value="$form:id">
+   <input type="hidden" name="id_block" value="$form:id_block">
+   <input type="hidden" name="idpage" value="$form:idpage">
+   <table border="0" cellspacing="1" cellpadding="4" bgcolor="#999999">
+# Выводим поля таблицы
+    <tr>
+     <td class="tH">Название:</td>
+     <td class="tN"><input type="text" name="name" value="$element.name" style="width: 250px^;"></td>
+    </tr>
+    <tr>
+     <td colspan="2" class="tH">Комментарий:</td>
+    </tr>
+    <tr>
+     <td colspan="2" class="tN"><textarea name="comment" rows="6" style="width: 320px^;">$element.comment</textarea></td>
+    </tr>
+    <tr class="tN">
+     <td colspan="2"><input type="submit" value="Изменить"></td>
+    </tr>
+   </table>
+   </form>
+  </td>
+# -------------------------------- Изображение ---------------------------------
+  <td>
+   $ext[^site:GetImageExtention[${galleries_list.imagesPath.small}/;$form:id]]
+   <table border="0" width="100%" cellspacing="1" cellpadding="5" bgcolor="#999999">
+    <tr>
+     <td class="tH">Изображение</td>
+    </tr>
+    <tr>
+     <td class="tN">^if($ext ne 'no'){<a href="${galleries_list.imagesPath.big}/${form:id}.${ext}" class="fancybox">}<img src="^if($ext ne 'no'){${galleries_list.imagesPath.small}/${form:id}.${ext}}{$galleries_list.noImage}" width="$galleries_list.imagesWidth.small">^if($ext ne 'no'){</a>}</td>
+    </tr>
+    <form method="post" enctype="multipart/form-data" action="addImage.html">
+    <input type="hidden" name="id" value="$form:id">
+    <input type="hidden" name="idpage" value="$form:idpage">
+    <input type="hidden" name="id_block" value="$form:id_block">
+    <tr>
+     <td class="tH">Загрузить изображение:</td>
+    </tr>
+    <tr>
+     <td class="tN"><input type="file" name="image"></td>
+    </tr>
+    <tr>
+     <td class="tH"><input type="submit" value="Загрузить"></td>
+    </tr>
+    </form>
+   </table>
+  </td>
+# -------------------------------- Изображение ---------------------------------
+ </tr>
+</table>
+################################################################################

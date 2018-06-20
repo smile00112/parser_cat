@@ -1,0 +1,66 @@
+################################################################################
+@main[]
+^cms.ShowModalHeader[]
+^if(def $form:login && def $form:fio && def $form:password1 && $form:password1 eq $form:password2){
+	^connect[$site:connectString]{
+		$admin[^this.GetAdmin[$form:login]]
+		^if(def $admin){
+			<div class="cms_h1 aC">Такой пользователь уже зарегистрирован</div>
+		}{
+			$userInfo[
+				$.login[$form:login]
+				$.pass[^this.CryptPassword[$form:password1]]
+				$.fio[$form:fio]
+				$.level[$form:level]
+			]
+			$res[^this.InsertNewAdmin[$userInfo]]
+		}
+	}
+	<div class="cms_h1 aC">Пользователь успешно добавлен!</div>
+	<script>parent.^$.fancybox.close()^;</script>
+}{
+	<form method="post" enctype="multipart/form-data" action="add_user.html">
+		<input type="hidden" name="idblock" value="$form:idblock">
+		<input type="hidden" name="parent" value="^if(def $form:parent){$form:parent}{0}">
+		<table class="table_dsb w100p">
+			<tr align="center">
+				<td colspan="2"><div class="cms_h1"><nobr>Добавление пользователя</nobr></div></td>
+			</tr>
+			^if($cms.cmsUserLevel>=$admins.level){
+			<tr>
+				<td align="right">Тип польз-ля:</td>
+				<td>
+					<select name="level" class="w100p">
+						<option value="0">Пользователь</option>
+						<option value="1">Администратор</option>
+						^if($cms.cmsUserLevel==$cms.maxUserLevel){
+						<option value="10">Владелец</option>
+						}
+					</select>
+				</td>
+			</tr>
+			}
+			<tr>
+				<td align="right">Логин:</td>
+				<td><input type="text" name="login" class="w100p"></td>
+			</tr>
+			<tr>
+				<td align="right">ФИО:</td>
+				<td><input type="text" name="fio" class="w100p"></td>
+			</tr>
+			<tr>
+				<td align="right">Пароль:</td>
+				<td><input type="password" name="password1" class="w100p"></td>
+			</tr>
+			<tr>
+				<td align="right">Еще раз пароль:</td>
+				<td><input type="password" name="password2" class="w100p"></td>
+			</tr>
+			<tr align="center">
+				<td colspan="2"><input type="submit" value="Добавить"></td>
+			</tr>
+		</table>
+	</form>
+}
+^cms.ShowModalFooter[]
+################################################################################

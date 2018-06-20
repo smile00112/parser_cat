@@ -1,0 +1,110 @@
+################################################################################
+@head[]
+^$(document).ready(function(){
+	^$(function(){
+		^$(".datepicker").datepicker({
+				dateFormat : 'yy-mm-dd',
+				monthNames: ['Января','Февраля','Марта','Апреля','Мая','Июня','Июля','Августа','Сентября','Октября','Ноября','Декабря'],
+				dayNamesMin: ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'],
+				firstDay: 1,
+				showAnim: 'slideDown',
+				duration: 'slow'
+		 })^;
+	})^;
+^if($this.settings.showTime){
+	^$(function(){
+		^$(".timepicker").timepicker({
+				hourText: 'Часы',
+				minuteText: 'Минуты',
+				showPeriodLabels: false
+		})^;
+	})^;
+}
+})^;
+################################################################################
+@main[]
+^ShowModalHeader[]
+<link		href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/redmond/jquery-ui.css" rel="stylesheet">
+<script	src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+^if($this.settings.showTime){
+<link		href="${cms.templateFolder}/libraries/timepicker/jquery.ui.timepicker.css" rel="stylesheet">
+<script	src="${cms.templateFolder}/libraries/timepicker/jquery.ui.timepicker.js"></script>
+}
+$now[^date::now[]]
+^if(def $form:date && def $form:head){
+	$params[
+		$.id_page[$form:idpage]
+		$.date_news[$form:date ^if(def $form:time){${form:time}:00}{${now.hour}:${now.minute}:${now.second}}]
+		$.head[$form:head]
+		$.body[$form:body]
+		$.full_text[$form:full_text]
+	]
+	^connect[$site:connectString]{
+# Добавляем новость
+		$res(^this.CreateNews[$params])
+# Вносим изменения в .htaccess
+		^make_rewrite[]
+	}
+		<div class="cms_h1 aC">Новость добавлена</div>
+		<br>
+		<script>
+			setTimeout(function(){
+				parent.^$.fancybox.close()^;
+			}, 1000)^;
+		</script>
+}{
+	^connect[$site:connectString]{
+		$this[^news_cms::create[$form:idblock]]
+	}
+	^cms:InsertTiny[text;2]
+	<form method="post" enctype="multipart/form-data" action="add_news.html">
+		<input type="hidden" name="idpage" value="$form:idpage">
+		<input type="hidden" name="idblock" value="$form:idblock">
+		<table class="table_dsb w100p">
+			<tr align="center">
+				<td><div class="cms_h1"><nobr>Добавление новости</nobr></div></td>
+			</tr>
+			<tr align="center">
+				<td>
+					<div class="inline">Дата:</div>
+					<div class="inline"><input type="text" name="date" value="${now.year}-^now.month.format[%02d]-^now.day.format[%02d]" class="datepicker cms_input" style="width: 70px^;"></div>
+				^if($this.settings.showTime){
+					<div class="inline">Время:</div>
+					<div class="inline"><input type="text" name="time" value="^now.hour.format[%02d]:^now.minute.format[%02d]" class="timepicker cms_input" style="width: 35px^;"></div>
+				}
+				</td>
+			</tr>
+			<tr align="center">
+				<td><div class="inline">Заголовок:</div></td>
+			</tr>
+			<tr align="center">
+				<td><textarea name="head" class="w100p"></textarea></td>
+			</tr>
+			^if($this.settings.showBody){
+			<tr align="center">
+				<td><div class="inline">Анонс:</div></td>
+			</tr>
+			<tr>
+				<td>
+				^if($this.settings.setTextBody){
+					<input name="body" value="$news.body" class="w100p">
+				}{
+					<textarea id="text" name="body" rows="2" style="width: 100%^;">$news.body</textarea>
+				}
+				</td>
+			</tr>
+			}
+			<tr align="center">
+				<td><div class="inline">Текст:</div></td>
+			</tr>
+			<tr>
+				<td><textarea id="text_2" name="full_text" rows="2" style="width: 100%^;">$news.full_text</textarea></td>
+			</tr>
+			<tr align="center">
+				<td><input type="submit" value="Добавить"></td>
+			</tr>
+		</table>
+	</form>
+}
+^ShowModalFooter[]
+################################################################################

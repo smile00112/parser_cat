@@ -1,0 +1,12 @@
+@font-face {
+  font-family: 'Cuprum';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Cuprum'), url('./fonts/wHBEZCjwNI3HN2fD1RQJgw.woff') format('woff');
+}
+@font-face {
+  font-family: 'Open Sans Condensed';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Open Sans Cond Light'), local('OpenSans-CondensedLight'), url('./fonts/gk5FxslNkTTHtojXrkp-xC3jdGpUUWWw3ZkjEiH7VGY.woff') format('woff');
+}

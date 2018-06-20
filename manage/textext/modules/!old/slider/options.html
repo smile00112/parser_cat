@@ -1,0 +1,120 @@
+################################################################################
+@cms_body[]
+^if(def $form:id && def $form:idpage){
+	^edit_block_options[]
+}{
+	^insert_error_fields[]
+}
+################################################################################
+@edit_block_options[]
+^module_info[]
+^page_head[Настройки слайдшоу;textext/modules/slideshow;$module_info]
+<table align="center" cellpadding="7" cellspacing="1" bgcolor="#999999">
+ <tr class="tH">
+  <td width="100">
+   <a href="$prefpath/manage/textext/?idpage=$form:idpage&idpage_name=$form:idpage_name">Блоки</a>
+  </td>
+  <td width="150">
+   <a href="options_clear.html?id=$form:id&idpage=$form:idpage&idpage_name=$form:idpage_name">Очистить настройки</a>
+  </td>
+  <td width="200">
+   <a href="image_resize.html?id=$form:id&idpage=$form:idpage&idpage_name=$form:idpage_name">Изменить размер изображений</a>
+  </td>
+  <td width="150">
+   <a href="preview_resize.html?id=$form:id&idpage=$form:idpage&idpage_name=$form:idpage_name">Изменить размер превью</a>
+  </td>
+ </tr>
+</table>  
+<br>
+^check_options[]
+^try{ 
+# Получаем таблицу слайдшоу 
+ $table_slideshow[^table::sql{select * from te_slideshow where id_te='$form:id' order by sortir}]
+}{
+# Обработали ошибку
+ $exception.handled(1)
+# Загружаем поля таблицы "Слайдшоу"
+ $mysql_slideshow[^load_table_from_file[table/mysql/te_slideshow.table]]
+# создаём таблицу "Слайдшоу"
+ ^create_sql_table[te_slideshow;$mysql_slideshow]
+# Получаем таблицу "Слайдшоу" 
+ $table_slideshow[^table::sql{select * from te_slideshow where id_te='$form:id' order by sortir}]
+}
+$table_opt[^table::sql{select * from te_opt where id_te='$form:id' order by id}]
+<table border="0" width="100%">	
+ <tr>
+  <td>
+   <table cellpadding="5" cellspacing="1" bgcolor="#999999">	
+	  <tr class="tH">
+		 <td>Название настройки</td>
+		 <td>Значение</td>
+		 <td colspan="2">Действия</td>		
+	  </tr>
+   ^table_opt.menu{
+    ^if($table_opt.type_field eq 10){<tr class="tH"><td colspan="4" align="center">^if(def $table_opt.named){$table_opt.named}{&nbsp^;}</td></tr>}{
+	<form method="post" enctype="multipart/form-data" action="options_save.html">	
+	<input type="hidden" name="id" value="$table_opt.id">
+	<input type="hidden" name="idte" value="$form:id">
+	<input type="hidden" name="idpage" value="$form:idpage">
+	<input type="hidden" name="idpage_name" value="$form:idpage_name">	  	
+	<tr class="tN">
+	 <td>$table_opt.named</td>
+	 <td>
+	 ^switch[$table_opt.type_field]{
+		^case[0]{<input type="text" name="value" value="$table_opt.value" style="width:250px">}
+		^case[1]{<input type="checkbox" name="value" ^if($table_opt.value==1){checked} value="1">}
+		^case[2]{ 
+		 $effect[^get_effect_list[]]            
+		 <select name="value" style="width:250px">
+		 	^effect.menu{<option value="$effect.name" ^if($table_opt.value eq $effect.name){selected}>$effect.description</option>}
+		 </select>
+		}
+		^case[3]{ 
+		 $align[^get_align_list[]]
+		 <select name="value" style="width:250px">
+		  ^align.menu{<option value="$align.name" ^if($table_opt.value eq $align.name){selected}>$align.description</option>}
+		 </select>
+		}
+		^case[4]{
+		 <link rel="stylesheet" href="/lib/colorpicker/css/colorpicker.css" type="text/css" />
+     <link rel="stylesheet" media="screen" type="text/css" href="/lib/colorpicker/css/layout.css" />
+	   <script type="text/javascript" src="/lib/colorpicker/js/colorpicker.js"></script>
+     <script type="text/javascript" src="/lib/colorpicker/js/eye.js"></script>
+     <script type="text/javascript" src="/lib/colorpicker/js/utils.js"></script>
+     <script type="text/javascript" src="/lib/colorpicker/js/layout.js?ver=1.0.2"></script> 			
+		 <div id="colorSelector"><div style="background-color:$table_opt.value"></div></div>
+		 <input type="hidden" id="border_color" name="value" value="$table_opt.value" />
+		}
+		^case[5]{ 
+		 $border_type[^get_border_type_list[]]
+		 <select name="value" style="width:250px">
+		  ^border_type.menu{<option value="$border_type.name" ^if($table_opt.value eq $border_type.name){selected}>$border_type.description</option>}
+		 </select>
+		}
+	 }
+	 </td>
+	 <td><input type="submit" name="save" value="Сохранить"></td>
+	</tr>
+	</form>
+    }
+	 }
+   </table>
+  </td>
+  <td>
+   &nbsp^;
+  </td>
+  <td valign="top">
+   <table cellpadding="5" cellspacing="1" bgcolor="#999999">	
+	  <tr class="tH">
+	   <td>Пример</td>
+	  </tr>
+	  <tr class="tN">
+     <td width="600px">
+		  ^show_preview[$table_opt]
+		</td>
+	 </tr>
+  </table>
+ </td>
+ </tr>
+</table>				
+################################################################################

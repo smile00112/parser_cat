@@ -1,0 +1,7 @@
+################################################################################
+@cms_body[]
+^if(def $form:id && def $form:idpage){
+ $res[^textext.DeleteOptions[$form:id]]
+}
+$response:refresh[$.value(0)$.url[options.html?id=$form:id&idpage=$form:idpage]]
+################################################################################

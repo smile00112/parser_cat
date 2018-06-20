@@ -1,0 +1,5 @@
+field	sql_field	rename
+id	`id` int(1) unsigned NOT NULL AUTO_INCREMENT,
+name	`name` varchar(255) NOT NULL,
+sortir	`sortir` int(1) unsigned NOT NULL,
+	PRIMARY KEY (`id`)

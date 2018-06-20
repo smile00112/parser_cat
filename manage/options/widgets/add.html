@@ -1,0 +1,20 @@
+################################################################################
+@main[]
+^connect[$site:connectString]{
+# Если передаётся название виджета и его тип
+	^if(def $form:caption && def $form:type_id){
+# Инициализируем параметры
+	$params[
+		$.caption[$form:caption]
+		$.type_id($form:type_id)
+		$.value_1[$form:value_1]
+		$.value_2[$form:value_2]
+		$.value_3[$form:value_3]
+		$.value_4[$form:value_4]
+	]
+# Создаём этот виджет
+		$res(^this.CreateWidget[$params])
+	}
+}
+$response:refresh[$.value(0)$.url[/manage/$this.className/settings/]]
+################################################################################

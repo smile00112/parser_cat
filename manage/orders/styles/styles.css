@@ -1,0 +1,58 @@
+.nav_pages,
+.filter{
+	padding: 10px 0;
+	border-bottom: 1px dashed #999999;
+}
+.nav_pages{
+	margin: 0;
+}
+.filter-name{
+	font-weight: bold;
+	margin-right: 5px;
+}
+.filter-title{
+	margin-right: 5px;
+	margin-left: 10px;
+}
+.table_dsb .header{
+	text-align: center;
+	font-weight: bold;
+}
+.orders td:not(.actions){
+	cursor: pointer;
+}
+.order:hover{
+	background-color: #eeeeee;
+}
+.order-id,
+.order-date,
+.actions{
+	text-align: center;
+}
+.user-name{
+	margin-bottom: 0.5em;
+}
+.user-name::before,
+.user-email::before,
+.user-phone::before{
+	font-size: 14px;
+	font-family: FontAwesome;
+	margin-right: 5px;
+}
+.user-name::before{
+	content: '\f2c0';
+	padding: 0 1px;
+}
+.user-email:before{
+	content: '\f003';
+}
+.user-phone:before{
+	content: '\f095';
+	padding: 0 2px;
+}
+.orders .fa-book{
+	font-size: 30px;
+}
+a.window{
+	display: inline-block;
+}

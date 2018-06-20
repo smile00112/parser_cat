@@ -1,0 +1,35 @@
+################################################################################
+@cms_body[]
+#-------------------------------------------------------------------------------
+<script src="./scripts/translit.js" type="text/javascript"></script>
+<script src="./scripts/actions.js" type="text/javascript"></script>
+<link href="./styles/style.css" rel="stylesheet" type="text/css">
+#-------------------------------------------------------------------------------
+# Если параметры передаются
+^if(def $form:id && def $form:idpage){
+	$element[^this.GetElements[$.IDs($form:id)]]
+# Выводим заголовок страницы
+	^cms.ShowPageHeader[SEO атрибуты для ^this.elementTypes.[$element.type].titleRE.lower[] "^textext:GetFixedText[$element.description;40;...]";$cms.currentModule.path;^this.GetClassInfo[]]
+	<p class="cms_h2">
+		<a href="../?id=$this.blockId&idpage=$form:idpage&parent=$form:parent^if(def $form:page){&page=$form:page}"><i class="fa fa-reply fa-3x inline blue mr10"></i>К ^this.elementTypes.0.titleDM.lower[]</a>
+	</p>
+	<div class="parameters" data-id="$form:id">
+		<div class="parameter_string first">
+			<div class="label">Адрес ^this.elementTypes.[$element.type].titleRE.lower[] (url):</div>
+			<div class="field"><input type="text" name="url" value="$element.url" class="cms_input save" onKeyUp="this.value=toTranslit(this.value).toLowerCase()"></div>
+		</div>
+		<div class="parameter_string">
+			<div class="label">Заголовок ^this.elementTypes.[$element.type].titleRE.lower[] (title):</div>
+			<div class="field"><input type="text" name="seo_title" value="$element.seo_title" class="cms_input save"></div>
+		</div>
+		<div class="parameter_string">
+			<div class="label">Ключевые слова ^this.elementTypes.[$element.type].titleRE.lower[] (keywords):</div>
+			<div class="field"><input type="text" name="seo_keywords" value="$element.seo_keywords" class="cms_input save"></div>
+		</div>
+		<div class="parameter_string">
+			<div class="label">Описание ^this.elementTypes.[$element.type].titleRE.lower[] (description):</div>
+			<div class="field"><input type="text" name="seo_description" value="$element.seo_description" class="cms_input save"></div>
+		</div>
+	</div>
+}
+################################################################################

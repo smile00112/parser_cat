@@ -1,0 +1,113 @@
+################################################################################
+@main[]
+^cms.ShowModalHeader[]
+#-------------------------------------------------------------------------------
+<link href="./styles/modal.css?v=0.01" rel="stylesheet" type="text/css">
+<script src="./scripts/order.js?v=0.01" type="text/javascript"></script>
+#-------------------------------------------------------------------------------
+^connect[$site:connectString]{
+	$order[^this.GetOrders[$.orderIDs($form:order_id)]]
+	$orderInfo[^this.GetArchiveOrders[$.orderIDs($form:order_id)$.resultType[hash]]]
+}
+^if(def $order){
+	$orderDate[^date::create[$order.date]]
+	<div class="cms_h1 order-name">$order.name</div>
+	<form class="order-info" data-order-id="$form:order_id" data-url="actions.html">
+		<div class="info-block main">
+			<div class="left-column">
+				<span class="cms_h1 order-header">Информация:</span>
+				<div class="block-string">
+					<span class="field-name">Статус:</span>
+					<span class="status-wrapper">
+						<span class="callout"></span>
+						<select name="status" class="cms_select">
+						^this.statuses.foreach[key;value]{
+							<option value="$key"^if($key eq $order.status){ selected}>$value.name</option>
+						}
+						</select>
+					</span>
+				</div>
+				<div class="block-string">
+					<span class="field-name">Дата:</span> $orderDate.day $dtf:rr-locale.month.[$orderDate.month] $orderDate.year
+				</div>
+				<div class="block-string">
+					<span class="field-name">Оплата:</span> $order.payment
+				</div>
+			</div><div class="right-column">
+				<span class="cms_h1 order-header">Заказчик:</span>
+				^if(def $order.user_first_name || def $order.user_last_name){
+				<div class="block-string">
+					<span class="user-name">$order.user_first_name $order.user_last_name</span>
+				</div>
+				}
+				^if(def $order.user_email){
+				<div class="block-string">
+					<span class="user-email">$order.user_email</span>
+				</div>
+				}
+				^if(def $order.user_phone){
+				<div class="block-string">
+					<span class="user-phone">$order.user_phone</span>
+				</div>
+				}
+			</div>
+		</div>
+		<div class="info-block more">
+			<div class="left-column">
+				<span class="cms_h1 order-header">Доставка:</span>
+				<div class="block-string">
+					<span class="field-name">Способ:</span> $order.delivery
+				</div>
+				<div class="block-string">
+					<span class="field-name">Город:</span> $order.city
+				</div>
+				^if(def $order.delivery_address){
+				<div class="block-string">
+					<span class="field-name">Адрес:</span> $order.delivery_address
+				</div>
+				}
+				$delivery_date[^dtf:create[$order.delivery_date]]
+				^if($delivery_date.year>1900){
+				<div class="block-string">
+					<span class="field-name">Отгрузка:</span> $delivery_date.day $dtf:rr-locale.month.[$delivery_date.month] $delivery_date.year
+				</div>
+				}
+			</div><div class="right-column">
+				<span class="cms_h1 order-header">Комментарий:</span>
+				<div class="block-string">
+					<span class="callout comment"></span>
+					<textarea name="comment">$order.comment</textarea>
+				</div>
+			</div>
+		</div>
+		<div><span class="cms_h1 order-header">Список товаров:</span></div>
+		<table class="order-info-table table_dsb">
+			<tr class="header">
+				<td>Артикул</td>
+				<td>Товар</td>
+				<td>Кол-во</td>
+				<td>Цена (руб.)</td>
+				<td>Стоимость (руб.)</td>
+			</tr>
+			$summ(0)
+		^orderInfo.foreach[key;value]{
+			$summ($summ+$value.itogo)
+			<tr>
+				<td class="artikul">$value.artikul</td>
+				<td class="name">$value.name</td>
+				<td class="count">$value.counts</td>
+				<td class="price">^value.price.format[%.2f]</td>
+				<td class="cost">^value.itogo.format[%.2f]</td>
+			</tr>
+		}
+			<tr class="footer">
+				<td colspan="4" class="aR">Итого:</td>
+				<td>^summ.format[%.2f]</td>
+			</tr>
+		</table>
+	</form>
+}{
+	<div class="cms_h1">Заказ не найден</div>
+}
+^cms.ShowModalFooter[]
+################################################################################

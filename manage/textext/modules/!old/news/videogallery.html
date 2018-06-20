@@ -1,0 +1,16 @@
+################################################################################
+@cms_body[]
+# Инициализируем класс videogallery
+^use[/classes/modules/videogallery.p]
+$videogallery[^videogallery::init[news;$form:news_id;$form:idpage]]
+# Получаем информацию о текущей новости
+$curr_news[^table::sql{select * from news where id='$form:news_id'}]
+# Выводим заголовок страницы
+
+^cms.ShowPageHeader[Видеогалерея новости^if(def $curr_news){ "$curr_news.head"};$cms.currentModule.path;^news.GetClassInfo[]]
+<br><a href="./?idpage=$form:idpage">Назад к новостям</a><br><br>
+# Выводим загруженные видео 
+^videogallery.show_add_videos[news]
+# Выводим форму для добавления видео
+^videogallery.form_add_video[]
+################################################################################

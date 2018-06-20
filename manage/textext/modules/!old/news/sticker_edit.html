@@ -1,0 +1,27 @@
+################################################################################
+@cms_body[]
+^if(def $form:id){
+ ^if($form:flag eq "yes"){
+# Изменяем значение имени стикера
+  $tmp[^news.UpdateStickerValue[$form:id;name;$form:name]]
+# Переходим к списку стикеров
+  $response:refresh[$.value(0)$.url[stickers.html?idpage=$form:idpage]]
+ }{
+  ^cms.ShowPageHeader[Стикеры новостей - Изменить стикер;$cms.currentModule.path;^news.GetClassInfo[]]
+  $sticker[^news.GetSticker[$form:id]]
+  <form method="post" action="sticker_edit.html">
+  <input type="hidden" name="id" value="$form:id">
+  <input type="hidden" name="idpage" value="$form:idpage">
+  <input type="hidden" name="flag" value="yes">
+  <table border="0" cellspacing="1" cellpadding="5" bgcolor="#999999">
+   <tr class="tN">
+    <td class="tH"><strong>Название стикера:</strong></td>
+    <td class="tN"><input type="text" name="name" value="$sticker.name" style="width: 200px^;"></td>
+   </tr>
+   <tr class="tN">
+    <td colspan="2"><input type="submit" name="save" value="Сохранить"></td>
+   </tr>
+  </table>
+ }
+}
+################################################################################

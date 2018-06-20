@@ -1,0 +1,11 @@
+################################################################################
+@cms_body[]
+^if(def $form:id && def $form:parent && def $form:idpage && def $form:photo_id && def $form:photo_path){
+ $res[^file:delete[${catalog.srcImagesFolder}/$form:id/${form:photo_path}]]
+ $res[^file:delete[${catalog.bigImagesFolder}/$form:id/${form:photo_path}]]
+ $res[^file:delete[${catalog.smallImagesFolder}/$form:id/${form:photo_path}]]
+ $res[^file:delete[${catalog.minImagesFolder}/$form:id/${form:photo_path}]]
+ $res[^catalog.DeleteGalleryById[$form:photo_id]]
+}
+$response:refresh[$.value(0)$.url[index.html?parent=$form:parent&idpage=$form:idpage&id=$form:idblock#$form:id]]
+################################################################################

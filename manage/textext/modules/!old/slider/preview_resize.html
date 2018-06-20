@@ -1,0 +1,17 @@
+@cms_body[]
+^if(def $form:id && def $form:idpage && def $form:idpage_name){	
+	$preview_width[^string:sql{select value from te_opt where id_te='$form:id' and name='preview_width'}[$.default{0}]]
+	$preview_height[^string:sql{select value from te_opt where id_te='$form:id' and name='preview_height'}[$.default{0}]]
+  	
+  ^MAIN:dbconnect[$images[^table::sql{select * from te_slideshow where id_te='$form:id'}]]
+	
+	^images.menu{
+    $bigpath[$prefpath/block/slideshow/big/${images.id}.${images.ext}]
+    $smallpath[$prefpath/block/slideshow/small/${images.id}.${images.ext}]
+    ^deletefile[$smallpath]
+    ^imageresize[$bigpath;$smallpath;$preview_width;$preview_height]	
+	}
+	$response:location[options.html?id=$form:id&idpage=$form:idpage&idpage_name=$form:idpage_name]
+}{
+ ^insert_error_fields[]
+}

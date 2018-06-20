@@ -1,0 +1,12 @@
+################################################################################
+@main[]
+^if(def $form:id){
+ ^connect[$site:connectString]{
+  $ext[^slider.GetImageExtById[$form:id]]
+  $res[^slider.DeleteImage[$form:id]]
+  $res[^file:delete[$slider.srcPath/${form:id}.${ext}]]
+  $res[^file:delete[$slider.bigPath/${form:id}.${ext}]]
+  $res[^file:delete[$slider.smallPath/${form:id}.${ext}]]
+ }
+}
+################################################################################

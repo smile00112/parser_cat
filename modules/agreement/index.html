@@ -1,0 +1,13 @@
+@main[]
+^connect[$site:connectString]{
+	$site[^site::create[]]
+	<html>
+		<head>
+			<meta http-equiv="Content-Type" content="text/html^; charset=utf-8" />
+			<link rel="stylesheet" href="${site.templateFolder}/styles/styles.css?ver=0.24" />
+		</head>
+		<body style="background: none">
+			^site.ShowPage[8]
+		</body>
+	</html>
+}

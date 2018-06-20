@@ -1,0 +1,59 @@
+################################################################################
+@cms_body[]
+^cms.ShowPageHeader[Стикеры новостей;$cms.currentModule.path;^news.GetClassInfo[]]
+<p><a href="index.html?idpage=$form:idpage">Назад к списку новостей</a></p>
+^add[]<br><br>
+$stickers[^news.GetStickers[;ASC]]
+^if(def $stickers){
+ <table border="0" cellspacing="1" cellpadding="5" bgcolor="#999999">
+  <tr class="tH">
+   <td>Имя</td>
+   <td>Сортировка</td>
+   <td>Действия</td>
+  </tr>
+  ^stickers.menu{
+  <form method="post" action="sticker_update.html">
+  <input type="hidden" name="id" value="$stickers.id">
+  <input type="hidden" name="idpage" value="$form:idpage">
+  <tr class="tN">
+   <td>$stickers.name</td>
+   <td><input type="text" name="sortir" value="$stickers.sortir" style="width: 50px^;text-align: center^;"></td>
+   <td>
+    <table border="0" cellspacing="0" cellpadding="0">
+     <tr>
+      <td align="center">
+       <input type="image" src="/manage/i/actions/save.gif" style="cursor:pointer" title="Изменить">
+       <br>
+       Изменить
+      </td>
+      </form>
+      <td>
+       &nbsp^;&nbsp^;
+      </td>
+      <td align="center">
+       <input type="image" src="/manage/i/actions/edit.gif" style="cursor:pointer" title="Редактировать" onclick="window.location.href='sticker_edit.html?id=$stickers.id&idpage=$form:idpage'">
+       <br>
+       Редактировать
+      </td>
+      <td>
+       &nbsp^;&nbsp^;
+      </td>
+      <td align="center">
+       <input type="image" src="/manage/i/actions/delete.gif" style="cursor:pointer" title="Удалить" onclick="if (confirm('Вы действительно хотите удалить этот стикер?')){window.location.href='sticker_del.html?id=$stickers.id&idpage=$form:idpage'}" >
+       <br>
+       Удалить
+      </td>
+     </tr>
+    </table>
+   </td>
+  </tr>
+  </form>
+  }
+ </table>
+}{<p>Не создан ниодин стикер!</p>}
+^add[]
+################################################################################
+@add[]
+<br>
+<a href="sticker_add.html?idpage=$form:idpage"><strong>Добавить стикер</strong></a>
+################################################################################

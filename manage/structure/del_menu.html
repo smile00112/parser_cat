@@ -1,0 +1,47 @@
+@main[]
+^connect[$site:connectString]{
+
+^if(def $form:id){
+
+	$count_children[^int:sql{select count(*) from menus where parent='$form:id'}]
+	$mmenu[^table::sql{select id from menus where id='$form:id' and mainpage='1'}]
+	^if($mmenu){
+
+		^insert_error_fields[
+			Нельзя удалять главную страницу!<br><br>
+			Сначала назначьте главной другую страницу, потом можно удалить эту.
+			]
+
+	}{
+
+		^if($count_children>0){
+		
+			^insert_error_fields[Нельзя удалять меню, пока есть подчиненные]
+		}{
+			^delmenu[]
+		
+		}
+
+	}
+
+
+
+}{
+^insert_error_fields[]
+
+}
+
+
+}
+
+
+##############################
+@delmenu[]
+	^void:sql{delete from menus where id='$form:id'}
+# 2 удаление textext
+	$VozvratUri[$servername/manage/structure/]
+	$response:location[$servername/manage/textext/te_deleteall.html?idpage=$form:id&idpage_name=text&uri=^VozvratUri.base64[]]
+	
+	
+	
+	

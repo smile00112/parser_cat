@@ -1,0 +1,17 @@
+@GetOrderString[order]
+$orderDate[^date::create[$order.date]]
+<tr class="order" data-id="$order.id">
+	<td class="order-id">$order.id</td>
+	<td class="order-city">$order.city</td>
+	<td class="order-date">$orderDate.day $dtf:rr-locale.month.[$orderDate.month] $orderDate.year</td>
+	<td class="order-name">$order.name</td>
+	<td class="user">
+		<div class="user-name">^if(def $order.user_first_name || def $order.user_last_name){$order.user_first_name $order.user_last_name}{Не известно}</div>
+		^if(def $order.user_email){<div class="user-email">$order.user_email</div>}
+		^if(def $order.user_phone){<div class="user-phone">$order.user_phone</div>}
+	</td>
+	<td class="$this.statuses.[$order.status].color">$this.statuses.[$order.status].name</td>
+	<td class="actions">
+		<a class="window" href="order.html?order_id=$order.id" title="Подробнее"><i class="fa fa-book inline pointer blue block"></i></a>
+	</td>
+</tr>

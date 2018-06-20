@@ -1,0 +1,44 @@
+################################################################################
+@cms_body[]
+# Выводим заголовок страницы
+^cms.ShowPageHeader[Перенаправление для раздела "^site:GetPageNameById[$form:idpage]";$cms.currentModule.path;^redirect.GetClassInfo[]]
+# Получаем строку редиректа (или ID внутренней страницы) и якорь
+$values[^redirect.GetRedirectField[$form:idpage]]
+<p class="cms_h2">
+	<a href="${cms.cmsFolder}/textext/?idpage=$form:idpage"><i class="fa fa-reply fa-3x inline blue mr10"></i>К блокам</a>
+</p>
+<form method="post" action="update.html">
+	<input type="hidden" name="idpage" value="$form:idpage">
+	<table border="0" cellspacing="1" cellpadding="5" bgcolor="#999999">
+		<tr class="tN">
+			<td class="aR">Куда перенаправить:</td>
+			<td class="aL"><select name="elm1">^new_select[]</select></td>
+		</tr>
+		<tr class="tN">
+			<td class="aR">Якорь / сайт</td>
+			<td class="aL"><input type="text" name="yakor" style="width:150" value="$values.anchor"/></td>
+		</tr>
+		<tr class="tN">
+			<td colspan="2" class="aL"><input type="submit" name="save" value="Сохранить" /></td>
+		</tr>
+	</table>
+</form>
+################################################################################
+@new_select[][mmenumain]
+$colors[
+	$.1[#E5EFFF]
+	$.2[#ffffcc]
+	$.3[#ffc6c6]
+	$.4[#666666]
+]
+^ShowPages[0;1]
+################################################################################
+@ShowPages[parent;level][parent;pages]
+$pages[^site:GetPagesByParent[$parent]]
+^if($pages){
+	^pages.menu{
+		<option style="padding-left: ^eval($level*10-10)^;background-color: $colors.$level" value="$pages.id" ^if($pages.id eq $values.field){selected}>$pages.name</option>
+		^ShowPages[$pages.id;^eval($level+1)]
+	}
+}
+################################################################################

@@ -1,0 +1,57 @@
+################################################################################
+@cms_body[]
+# Выводим заголовок страницы
+^cms.ShowPageHeader[Файлы для раздела "^site:GetPageNameById[$form:idpage]";$cms.currentModule.path;^this.GetClassInfo[]]
+# Выводим форму добавления файла
+#<a href="/manage/$cms_page_id/?id=$form:id&idpage=$form:idpage&idpage_name=$form:idpage_name">Вернуться в раздел</a><br>
+^show_add_form[]
+<hr>
+# Сортировка
+^if(def $form:order){$order[$form:order]}{$order[id]}
+^if(def $form:order_type){$order_type[$form:order_type]}{$order_type[desc]}
+# Список значений полей таблицы
+$table_values[^this.GetQueryTable[$this.filesTable.name;WHERE block_id=$form:id;$order;$order_type]]
+^if(def $table_values){
+<table border="0" cellpadding="5" cellspacing="1" bgcolor="#999999">
+ <tr class="tH">
+  <td>№</td>
+  <td align="center">^show_label[Имя файла;name;$order;$order_type]</td>
+  <td align="center">^show_label[Расширение файла;ext;$order;$order_type]</td>
+  <td>Комментарий</td>
+  <td align="center">^show_label[Дата;date;$order;$order_type]</td>
+  <td>Действия</td>
+ </tr>
+ $counter(0)
+ ^table_values.menu{
+ <tr class="tN">
+  ^counter.inc[]
+  <td>$counter</td>
+  <td align="left">$table_values.name</td>
+  <td align="left">$table_values.ext</td>
+  <td align="left">$table_values.comment</td>
+  <td>$table_values.date</td>
+  <td>
+   ^add_actions[$this.className;этот файл;$table_values.id;0;order=$form:order&order_type=$form:order_type]
+  </td>
+ </tr>
+ }
+</table>
+}{<strong>Не найдено ниодного файла</strong><br><br>}
+################################################################################
+@show_add_form[]
+<h3>Добавить новый файл<h3>
+<form method="post" enctype="multipart/form-data" action="add_${this.className}.html">
+ <input type="hidden" name="id" value="$form:id">
+ <input type="hidden" name="idpage" value="$form:idpage">
+ <input type="hidden" name="idpage_name" value="$form:idpage_name">
+ <table border="0" cellspacing="1" cellpadding="4" bgcolor="#999999">
+  <tr class="tN">
+   <td>Файл:</td>
+   <td><input type="file" name="multifiles" id="multifiles" multiple="true"></td>
+  </tr>
+  <tr class="tN">
+   <td colspan="2"><input type="submit" value="Добавить"></td>
+  </tr>
+ </table>
+</form>
+################################################################################

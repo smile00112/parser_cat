@@ -1,0 +1,37 @@
+.sizes .header{
+	text-align: center;
+	font-weight: bold;
+}
+.sizes td{
+	position: relative;
+}
+.sizes input[name=name]{
+	width: 250px;
+}
+.sizes input[name=sortir]{
+	width: 65px;
+	text-align: center;
+}
+.sizes input[name=description]{
+	width: 250px;
+}
+.sizes .actions span{
+	cursor: pointer;
+	font-size: 26px;
+	font-family: FontAwesome;
+}
+.sizes .visible{
+	margin-right: 10px;
+}
+.sizes .visible.true::before {
+	content: "\f06e";
+}
+.sizes .visible.false::before {
+	content: "\f070";
+}
+.sizes .delete::before {
+	content: "\f00d";
+}
+.sizes .callout{
+	right: 10px;
+}

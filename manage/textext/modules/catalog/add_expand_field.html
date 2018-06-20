@@ -1,0 +1,76 @@
+################################################################################
+@main[]
+^cms.ShowModalHeader[]
+$now[^date::now[]]
+^if(def $form:field && def $form:type_id && def $form:title){
+	$params[
+		$.field[$form:field]
+		$.type_id($form:type_id)
+		$.title[$form:title]
+	]
+	^connect[$site:connectString]{
+# Добавляем дополнительное поле
+		$answer[^this.InsertExpandField[$params]]
+	}
+	<div class="cms_h1 aC">$answer.text</div>
+	<br>
+	<script>
+		setTimeout(function(){
+			parent.^$.fancybox.close()^;
+		}, 1000)^;
+	</script>
+}{
+	^connect[$site:connectString]{
+		$this[^catalog_cms::create[$form:idblock]]
+	}
+	<style>
+		.table_dsb select,
+		.table_dsb input[type=text]{
+			height: 30px^;
+			width: 100%^;
+		}
+		.table_dsb td .caption{
+			float: left^;
+			line-height: 30px^;
+		}
+		.table_dsb td .value{
+			margin-left: 70px^;
+		}
+	</style>
+	<form method="post" enctype="multipart/form-data" action="add_expand_field.html">
+		<table class="table_dsb w100p">
+			<tr align="center">
+				<td><div class="cms_h1"><nobr>Добавление доп. поля</nobr></div></td>
+			</tr>
+			<tr align="center">
+				<td>
+					<div class="caption">Тип:</div>
+					<div class="value">
+						<select name="type_id">
+							^cms.MySQLfieldTypes.foreach[key;value]{
+								<option value="$key">$value.caption</option>
+							}
+						</select>
+					</div>
+				</td>
+			</tr>
+			<tr align="center">
+				<td>
+					<div class="caption">Название:</div>
+					<div class="value"><input type="text" name="field"></div>
+				</td>
+			</tr>
+			<tr align="center">
+				<td>
+					<div class="caption">Описание:</div>
+					<div class="value"><input type="text" name="title"></div>
+				</td>
+			</tr>
+			<tr align="center">
+				<td><input type="submit" value="Добавить"></td>
+			</tr>
+		</table>
+	</form>
+}
+^cms.ShowModalFooter[]
+################################################################################

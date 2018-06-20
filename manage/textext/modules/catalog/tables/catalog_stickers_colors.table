@@ -1,0 +1,7 @@
+field	sql_field	rename
+id	`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+name	`name` varchar(255) NOT NULL,
+color	`color` varchar(6) NOT NULL,
+text_color	`text_color` varchar(6) NOT NULL,
+sortir	`sortir` int(10) NOT NULL DEFAULT 0,
+	PRIMARY KEY (`id`)

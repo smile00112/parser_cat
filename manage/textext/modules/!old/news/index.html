@@ -1,0 +1,48 @@
+################################################################################
+@head[]
+<link href='styles/main.css' rel='stylesheet' type='text/css'>
+################################################################################
+@cms_body[]
+# Выводим заголовок страницы
+^cms.ShowPageHeader[Новости сайта;$cms.currentModule.path;^news.GetClassInfo[]]
+# Инициализируем $idpage
+$idpage[$form:idpage]
+^top_menu[1]
+<br>
+# Инициализируем количество новостей настранице
+$per_page(20)
+# 
+^if(def $form:page){$cpage($form:page)}{$cpage(1)}
+# Менюшка
+<table border="0" cellspacing="0" cellpadding="10">
+ <tr>
+  <td>
+   <a href="news_add_form.html?idpage=$idpage">Добавить запись</a>
+  </td>
+  <td>
+   <a href="text_form.html?idpage=$idpage">Верхний текстовый блок</a>
+  </td>
+  ^if($show_sticker){
+  <td>
+   <a href="stickers.html?idpage=$idpage">Стикеры</a>
+  </td>
+  }
+ </tr>
+</table> 
+# Получаем количество новостей
+$kolvoall(^int:sql{select count(*) from news where id_page='$idpage'})
+# Выводим скроллер
+^scroller:print_scroller2[^math:ceiling(^eval($kolvoall/$per_page));5;yes]
+# Получаем записи новостей
+$news[^table::sql{select * from news where id_page='$idpage' order by date_news desc}[$.limit($per_page) $.offset($cpage*$per_page-$per_page)]]
+# Если есть хоть одна
+^if($news){	
+ ^news.menu{
+# Выводим запись		
+  ^print_row_news[$news]			
+ }
+#	Если нет
+}{
+	<p><strong>Нет записей</strong></p>
+}
+################################################################################

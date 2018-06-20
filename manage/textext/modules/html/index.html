@@ -1,0 +1,35 @@
+@cms_body[]
+^if(def $form:id && def $form:idpage){
+
+	^edit_block[]
+}{
+
+	^insert_error_fields[]
+}
+
+
+#########################################################################################################
+@edit_block[]
+<img src="index.gif" border=0 align=absmiddle><font size=4>Редактирование текстового блока</font>
+
+$block[^table::sql{select id, content from te_text where id='$form:id'}]
+
+
+#^insert_tiny[1]
+<form method="post" enctype="multipart/form-data" action="save_block.html">
+^if(^block.count[]==0){<input type="hidden" name="ins" value="true">}
+<input type="hidden" name="id" value="$form:id">
+<input type="hidden" name="idpage" value="$form:idpage">
+<input type="hidden" name="idpage_name" value="$form:idpage_name">
+
+
+	<textarea name="elm1" rows="20" cols="80" style="width: 100%">
+		$block.content
+	</textarea>
+	<br />
+	<input type="submit" name="save" value="Сохранить" />
+	<input type="reset" name="reset" value="Отменить все изменения" />
+</form>
+
+
+

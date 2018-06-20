@@ -1,0 +1,18 @@
+field	sql_field	rename
+id	`id` int(1) unsigned NOT NULL AUTO_INCREMENT,
+block_id	`block_id` int(1) unsigned DEFAULT 0,	idpage
+name	`name` varchar(255) DEFAULT NULL,
+description	`description` varchar(255) NOT NULL,	descript
+link	`link` varchar(255) DEFAULT NULL,
+sortir	`sortir` tinyint(1) unsigned DEFAULT 0,
+visible	`visible` tinyint(1) DEFAULT 1,
+main	`main` tinyint(1) unsigned NOT NULL DEFAULT 0,
+parent	`parent` tinyint(1) unsigned DEFAULT 0,
+type	`type` tinyint(1) NOT NULL DEFAULT 1,
+url	`url` varchar(255) DEFAULT NULL,
+seo_title	`seo_title` varchar(255) DEFAULT NULL,
+seo_keywords	`seo_keywords` varchar(255) DEFAULT NULL,
+seo_description	`seo_description` varchar(255) DEFAULT NULL,
+text_before	`text_before` text,
+text_after	`text_after` text,
+	PRIMARY KEY (`id`)

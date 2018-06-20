@@ -1,0 +1,19 @@
+field	value
+id	`id` int(10) unsigned NOT NULL AUTO_INCREMENT
+date_news	`date_news` datetime DEFAULT NULL
+head	`head` varchar(255) DEFAULT NULL
+body	`body` text
+id_page	`id_page` int(10) unsigned DEFAULT NULL
+is_hidden	`is_hidden` char(1) DEFAULT 'n'
+full_text	`full_text` text
+top_index	`top_index` int(11) NOT NULL DEFAULT '0'
+sortir	`sortir` int(11) DEFAULT NULL
+spec_news	`spec_news` int(10) unsigned DEFAULT '0'
+id_group	`id_group` int(10) unsigned DEFAULT '0'
+user_id	`user_id` int(10) NOT NULL DEFAULT '0'
+podrazdel	`podrazdel` int(3) DEFAULT '0'
+url	`url` varchar(255) DEFAULT NULL
+title	`title` varchar(255) DEFAULT NULL
+keywords	`keywords` varchar(255) DEFAULT NULL
+description	`description` varchar(255) DEFAULT NULL
+visible_date	`visible_date` int(1) DEFAULT '0'

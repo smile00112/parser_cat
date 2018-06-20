@@ -1,0 +1,21 @@
+@main[]
+^connect[$connect_string]{
+	
+
+^if(def $form:c){
+
+$counter[^table::sql{select vopros from control_image where id='$form:c'}]
+^if(def $form:bgcolor){$bg[0x${form:bgcolor}]}{$bg[0xFFFFFF]}
+^if(def $form:w && def $form:h){
+	$square[^image::create($form:w;$form:h;$bg)] 
+}{
+	$square[^image::create(60;16;$bg)] 
+}
+^square.font[0123456789;/classes/digits.gif](0) 
+
+^square.text(0;0)[$counter.vopros] 
+$response:body[^square.gif[]]
+
+
+}
+}

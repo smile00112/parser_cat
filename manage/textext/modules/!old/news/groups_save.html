@@ -1,0 +1,8 @@
+@cms_body[]
+^if(def $form:idpage && def $form:group_id && def $form:name && def $form:sortir){
+	^void:sql{update news_group set name='$form:name', sortir='$form:sortir' where id=$form:id}
+	^make_rewrite[]
+	$response:location[groups.html?idpage=$form:idpage]
+}{
+	^insert_error_fields[]
+}

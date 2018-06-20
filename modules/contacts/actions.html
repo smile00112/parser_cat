@@ -1,0 +1,17 @@
+################################################################################
+@main[]
+^connect[$site:connectString]{
+	^switch[$form:action]{
+		^case[save_city]{
+			$answer[^contacts:SaveCity[$form:city_id]]
+		}
+		^case[DEFAULT]{
+			$answer[
+				$.error(true)
+				$.text[Неизвестное действие]
+			]
+		}
+	}
+}
+$result[^json:string[$answer]]
+################################################################################

@@ -1,0 +1,27 @@
+@ShowUserAccountTemplate[user;this]
+$response:charset[windows-1251]
+$request:charset[windows-1251]
+$postsParams[
+	$.owners_only(1)
+	$.count(100)
+	$.offset(0)
+]
+^if(def $cookie:vkontakte_access_token){
+$posts[^social:SearchUserPosts[$user.id;покупка;$postsParams]]
+^posts.count[]<br><br>
+^var_dump[$posts]
+# Выводим аккаунт пользователя
+<div class="user-account">
+	<div class="account-block">
+		<div class="account-block-name user-posts">Фото/посты</div>
+		<div class="user-posts-block">
+#		^if(!$posts.error){
+#			dfgdfgdfg
+#		}
+		</div>
+	</div>
+</div>
+}{
+	Нужна кука
+}
+################################################################################

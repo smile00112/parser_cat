@@ -1,0 +1,11 @@
+################################################################################
+@cms_body[]
+^if(def $form:id && def $form:idpage ){	
+ ^use[/manage/$cms_page_id/modules/$this.className/block_delete.p]
+ $mod[^block_delete::init[$form:id]]	
+ ^mod.deleteall[]	
+ $response:refresh[$.value(0)$.url[/manage/$cms_page_id/?idpage=$form:idpage&idpage_name=$form:idpage_name]]
+}{
+ ^insert_error_fields[]
+}
+################################################################################

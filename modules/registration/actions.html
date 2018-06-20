@@ -1,0 +1,36 @@
+################################################################################
+@main[]
+^connect[$site:connectString]{
+	^try{
+		^switch[$form:action]{
+			^case[register]{
+				^if(^captcha:CheckAnswer[$form:answerId;^form:answer.int(0)]){
+					$answer[^site:user.auth.NewUser[$form:fields]]
+				}{
+					$answer[
+						$.error(true)
+						$.errors[
+							$.answer[Неверно введены контрольные цифры]
+						]
+					]
+				}
+			}
+			^case[DEFAULT]{
+				$answer[
+					$.error(true)
+					$.text[Неизвестное действие]
+				]
+			}
+		}
+	}{
+		$exception.handled(true)
+		$answer[
+			$.error(true)
+			$.text[Ошибка выполнения действия]
+			$.exception[$exception]
+		]
+	}
+	^if($answer.error){$answer.captcha[^captcha:GetCaptcha[]]}
+}
+$result[^json:string[$answer]]
+################################################################################

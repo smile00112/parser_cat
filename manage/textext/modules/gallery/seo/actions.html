@@ -1,0 +1,18 @@
+################################################################################
+@main[]
+^connect[$site:connectString]{
+	^switch[$form:action]{
+		^case[save_field]{
+			$answer[^this.SaveElementProperty[$form:id;$form:field;$form:value]]
+			^if(!$answer.error && $form:field eq url){^make_rewrite[]}
+		}
+		^case[DEFAULT]{
+			$answer[
+				$.error(true)
+				$.text[Неизвестное действие]
+			]
+		}
+	}
+}
+$result[^json:string[$answer;$.indent(true)]]
+################################################################################

@@ -1,0 +1,18 @@
+################################################################################
+@cms_body[]
+# Если параметры передаются
+^if(def $form:id && def $form:idpage){
+	^try{
+		$file[^file::create[text;/sync/export.xls;^this.GetExportXLS[]]]
+		$response:download[$file]
+	}{
+# Выводим заголовок страницы
+		^cms.ShowPageHeader[Экспорт каталога;$cms.currentModule.path;^this.GetClassInfo[]]
+		<p class="cms_h2">
+			<a href="export.html?id=$idblock&idpage=$form:idpage&parent=$form:parent^if(def $form:page){&page=$form:page}"><i class="fa fa-reply fa-3x inline blue mr10"></i>К списку файлов экспорта</a>
+		</p>
+		$exception.handled(false)
+		<div class="cms_h1">Ошибка экспорта.</div>
+	}
+}
+################################################################################

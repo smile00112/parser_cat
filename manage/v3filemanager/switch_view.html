@@ -1,0 +1,12 @@
+^if(def $cookie:tmpl){
+}{
+	$cookie:tmpl[1]
+}
+$tmpl[$cookie:tmpl]
+
+^switch[$tmpl]{
+	^case[1]{$cookie:tmpl[2]}
+	^case[2]{$cookie:tmpl[1]}
+	^case[DEFAULT]{$cookie:tmpl[2]}
+}
+$response:location[index.html?url=/$form:url]

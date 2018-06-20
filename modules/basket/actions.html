@@ -1,0 +1,37 @@
+################################################################################
+@main[]
+^connect[$site:connectString]{
+	^switch[$form:action]{
+		^case[add-to-basket]{
+			^try{
+				$answer[^catalog:AddProductToBasket[$site:user.auth.session.id;$form:element_id;$form:count;^if($form:reset eq 'true'){true}{false};$.url[$form:url]]]
+				^if(!$answer.error && ^form:count.double(0)>0){
+					$basketInfo[
+						$.basket[
+							$.[$form:element_id]($answer.count)
+						]
+						$.stringIDs[$form:element_id]
+					]
+					^use[${site:templateFolder}${catalog:basketFolder}/basketElementsTemplate.html]
+					$answer.html[^ShowBasketElementsTemplate[$basketInfo;$.cityPrice(true)]]
+				}
+				$answer.basketInfo[^catalog:GetBasketInfo[$site:user.auth.session.id]]
+			}{
+				$exception.handled(true)
+				$answer[
+					$.error(true)
+					$.text[Ошибка выполнения]
+					$.exception[$exception]
+				]
+			}
+		}
+		^case[DEFAULT]{
+			$answer[
+				$.error(true)
+				$.text[Неизвестное действие]
+			]
+		}
+	}
+}
+$result[^json:string[$answer]]
+################################################################################

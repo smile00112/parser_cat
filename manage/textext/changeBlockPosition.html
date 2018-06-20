@@ -1,0 +1,8 @@
+################################################################################
+@cms_body[]
+^if(def $form:idpage && def $form:id){
+ $res[^textext.ChangeBlockPosition[$form:idpage;$form:id;$form:up]]
+}
+# Переходим к списку блоков страницы
+$response:refresh[$.value(0)$.url[/manage/$cms.currentModule.path/?idpage=$form:idpage]]
+################################################################################

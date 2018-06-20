@@ -1,0 +1,14 @@
+project	troub	name	type	maxl	sqlField	ob	event	info_type	public	comment	eng_public	eng_comment	deu_public	deu_comment
+main	y	login	text	30	username	*	new	1_system	Логин	Должен быть уникальным, допускаются как русские, так и латинские символы	Login		Login
+main	y	password	password	30		*	new	1_system	Пароль		Password		Parole
+main	y	confirm	password	30		*	new	1_system	Подтверждение пароля		Confirm password		Parole
+main	y	password	password	30			reg	1_system	Новый пароль		New password	If You want change password	Neue Parole
+main	n	confirm	password	30			reg	1_system	Подтверждение нового пароля		Confirm new password		Bestatigung der neuen Parole
+main	n	first_name	text	255	first_name		all	2_info	Имя		First Name		Namen
+main	n	last_name	text	255	last_name		all	2_info	Фамилия		LastName		Namen
+main	n	nickname	text	255	nickname		all	2_info	Никнейм		Nickname		Namen
+main	n	sex	text	255	sex		all	2_info	Пол		Sex		Namen
+main	n	birth_date	text	255	birth_date		all	2_info	День рождения		Birth date		Namen
+main	y	email	text	60	email	*	all	1_system	E-mail	Спамить не будем	E-mail		E-mail
+main	n	phone	text	31	phone		all	3_contact	Телефон		Phone		Telefon
+main	n	address	text	255	address		all	3_contact	Адрес		Address	address

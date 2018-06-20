@@ -1,0 +1,45 @@
+################################################################################
+@cms_body[]
+^if(def $form:all && $form:all eq all){^clean_all[]}
+^if(def $form:id){^clean_all[id]}
+# Выводим заголовок страницы   
+^cms.ShowPageHeader[Очистка модулей сайта;$cms.currentModule.path;^module_info[]]
+<br>
+# Назад к списку модулей
+<a href="./">Назад к списку модулей</a>
+<br><br>
+# Получаем список блоков сайта
+$curblocks[^table::sql{SELECT id, namemenu, pathblock FROM cmc_block}]
+<table border="0" cellspacing="0" cellpadding="5">
+ <tr valign="top">  
+	<td align="center">
+   <p>Выборочно</p>
+   <table cellpadding="5" cellspacing="1" bgcolor="#999999">
+    ^curblocks.menu{
+     ^if(-f "${cms.cmsFolder}/${curblocks.pathblock}/clean_all.p"){
+    <tr class="tNs">
+     <td>
+      <a style="cursor:pointer" onclick="if (confirm('Вы хотите очистить $curblocks.namemenu?')){window.location.href='clean_all.html?id=$curblocks.id'}">$curblocks.namemenu</a>
+     </td>
+    </tr>
+     }
+    }
+   </table> 
+  </td>
+  <td>
+	 <a href="clean_all.html?all=yes">Очистить все блоки!!!</a>
+	</td> 
+ </tr>
+</table>  
+################################################################################
+@clean_all[id]
+$curblocks[^table::sql{SELECT id, namemenu, pathblock FROM cmc_block ^if(def $id){WHERE id='$form:id'}}]  
+^curblocks.menu{
+ ^if(-f "${cms.cmsFolder}/${curblocks.pathblock}/clean_all.p"){
+  ^use[${cms.cmsFolder}/${curblocks.pathblock}/clean_all.p]
+  $mod[^clean_all::init[]]
+  ^mod.clean[]    
+  $curblocks.namemenu - OK <br>
+ }
+}
+################################################################################

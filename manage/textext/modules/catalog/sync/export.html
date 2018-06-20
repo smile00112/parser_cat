@@ -1,0 +1,29 @@
+################################################################################
+@cms_body[]
+#-------------------------------------------------------------------------------
+<link href="./styles/style.css" rel="stylesheet" type="text/css">
+#-------------------------------------------------------------------------------
+# Если параметры передаются
+^if(def $form:id && def $form:idpage){
+# Выводим заголовок страницы
+	^cms.ShowPageHeader[Экспорт каталога;$cms.currentModule.path;^this.GetClassInfo[]]
+	$info[^this.GetCatalogInfo[]]
+	<p class="cms_h2">
+		<a href="../?id=$idblock&idpage=$form:idpage&parent=$form:parent^if(def $form:page){&page=$form:page}"><i class="fa fa-reply fa-3x inline blue mr10"></i>К каталогу</a>
+	</p>
+	<p class="block_file">В разделе <strong>$info.elementsCount</strong> видимых и <strong>$info.hiddenElementsCount</strong> скрытых элементов.</p>
+	<p class="block_file">В разделе <strong>$info.categoriesCount</strong> видимых категорий и <strong>$info.hiddenCategoriesCount</strong> скрытых категорий.</p>
+	<br>
+	<p class="block_file">Вы можете скачать каталог в одном из следующих форматов:</p>
+	<br>
+	<span class="block_file">
+		<a href="export_xls.html?id=$idblock&idpage=$form:idpage&parent=$form:parent^if(def $form:page){&page=$form:page}"><i class="fa fa-file-excel-o fa-3x inline blue mr10"></i>XLS файл</a>
+	</span>
+	<span class="block_file ml20">
+		<a href="export_xml.html?id=$idblock&idpage=$form:idpage&parent=$form:parent^if(def $form:page){&page=$form:page}"><i class="fa fa-file-code-o fa-3x inline blue mr10"></i>XML файл</a>
+	</span>
+	<span class="block_file ml20">
+		<a href="export_text.html?id=$idblock&idpage=$form:idpage&parent=$form:parent^if(def $form:page){&page=$form:page}"><i class="fa fa-file-text-o fa-3x inline blue mr10"></i>Текстовый файл</a>
+	</span>
+}
+################################################################################

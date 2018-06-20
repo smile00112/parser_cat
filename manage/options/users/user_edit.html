@@ -1,0 +1,48 @@
+################################################################################
+@main[]
+<html>
+ <head>^cms.ShowTemplate[${cms.templateFolder}/header_light.html]</head>
+ <body class="FloatWindow">
+^if($form:login eq $cookie:adm_login || $cms.cmsUserLevel>=$admins.level){
+ $str[$form:password1]
+ ^if(def $form:login && (($form:password1 eq $form:password2 && ^str.length[]>0) || def $form:fio)){
+  $info[
+   $.login[$form:login]
+   $.fio[$form:fio]
+   $.password[^users.CryptPassword[$form:password1]]
+  ]
+  ^if(^form:password1.length[]==0){^info.delete[password]}
+  ^connect[$site:connectString]{$tmp[^users.UpdateAdminInfo[$info]]}
+  <h1 class="cms_h1">Информация успешно изменена!</h1>
+ }{
+# Получаем информацию о пользователе
+  ^connect[$site:connectString]{$admin[^users.GetAdmin[$form:login]]}
+  ^if($admin){
+   <h1 class="cms_h1 aC">Изменение пароля для <font color="#cc0000">$admin.fio</font></h1>
+   <form method="post" action="user_edit.html">
+   <input name="login" type="hidden" value="$admin.login">
+   <table border="0" cellpadding="6" align="center" style="border: 1px dashed #999999^;">
+    <tr>
+     <td align="right">ФИО:</td>
+     <td><input type="text" name="fio" style="width: 240px" value="$admin.fio"></td>
+    </tr>
+    <tr>
+     <td align="right">Новый пароль:</td>
+     <td><input type="password" name="password1" style="width: 240px"></td>
+    </tr>
+    <tr>
+     <td align="right">Еще раз:</td>
+     <td><input type="password" name="password2" style="width: 240px"></td>
+    </tr>
+    <tr>
+     <td colspan="2" align="center">
+      <input type="submit" value="Сохранить">
+     </td>
+    </tr>
+   </table>
+   </form>
+  }
+ }
+}{<h1 class="cms_h1 aC">Доступ запрещён!</h1>}
+</html>
+################################################################################

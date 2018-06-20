@@ -1,0 +1,148 @@
+################################################################################
+@cms_body[]
+#-------------------------------------------------------------------------------
+<link		href="./styles/style.css" rel="stylesheet" type="text/css">
+<script	src="./scripts/actions.js" type="text/javascript"></script>
+#------------------------------------ jcrop ------------------------------------
+<link		href="${cms.templateFolder}/libraries/jcrop/css/jquery.Jcrop.css" rel="stylesheet" type="text/css">
+<script	src="${cms.templateFolder}/libraries/jcrop/js/jquery.Jcrop.min.js"></script>
+<script	src="./scripts/crop.js"></script>
+#-------------------------------------------------------------------------------
+^if(def $form:parent){$cparent($form:parent)}{$cparent(0)}
+# Если параметры передаются
+^if(def $form:id && def $form:idpage){
+# Определяем страницу
+	^if(!def $form:page){$currentPage(1)}{$currentPage($form:page)}
+	$params[
+		$.blockID($form:id)
+		$.parent($cparent)
+		$.offsetCount(^eval(($currentPage-1)*$this.perPage))
+	]
+	$elements[^this.GetElements[$params]]
+#	Выводим заголовок страницы
+	^cms.ShowPageHeader[Галерея раздела "^site:GetPageNameById[$form:idpage]";$cms.currentModule.path;^this.GetClassInfo[]]
+	^if(!def $elements){
+		$headerText[Добавить элемент]
+	}{
+		^if($elements.type){
+			$headerText[Добавить изображение]
+		}{
+			$headerText[Добавить галерею]
+		}
+	}
+	<p class="cms_h2">
+		<a href="${cms.cmsFolder}/textext/?idpage=$form:idpage"><i class="fa fa-reply fa-3x inline blue mr10"></i>К блокам</a>
+		^if($cms.cmsUserLevel>0){
+		<span id="addSlideBtn" data-width="440" data-href="add_element.html?idpage=$form:idpage&idblock=$idblock&element_type=$elements.type&parent=$form:parent" data-title="$headerText" data-reload="true" class="link pointer ml20" onClick="^$(this).OpenFancybox()^;">
+			<i class="fa fa-plus fa-3x inline blue mr10"></i>$headerText</span>
+		<a href="./options.html?id=$idblock&idpage=$form:idpage^if(def $form:parent){&parent=$form:parent}^if($currentPage>1){&page=$currentPage}" class="ml20"><i class="fa fa-cog fa-3x inline blue mr10"></i>К настройкам</a>
+			^if($elements.type){
+		<span data-width="830" data-href="edit_text.html?gallery_id=$form:parent" data-title="Текст перед галереей" class="link pointer ml30" onClick="^$(this).OpenFancybox()^;">
+			<i class="fa fa-long-arrow-up fa-3x inline blue mr5"></i><i class="fa fa-file-text-o fa-3x inline blue mr10"></i>Пред. текст</span>
+		<span data-width="830" data-href="edit_text.html?gallery_id=$form:parent&position=after" data-title="Текст после галереи" class="link pointer ml20" onClick="^$(this).OpenFancybox()^;">
+			<i class="fa fa-long-arrow-down fa-3x inline blue mr5"></i><i class="fa fa-file-text-o fa-3x inline blue mr10"></i>Пост. текст</span>
+			}
+		}
+	</p>
+#	Вывод навигационного меню
+^if($form:parent>0){
+	<p class="breadcrumbs"><a href="?id=$idblock&idpage=$form:idpage&parent=0">Галерея</a> ^header_page[$cparent]</p>
+}
+	<h1 class="cms_h1 no-images"^if(def $elements){ style='display:none'}>Изображения не найдены</h1>
+# Выводим скроллер
+	$params.count(true)
+	^scroller:print_scroller2[^math:ceiling(^eval(^this.GetElements[$params]/$this.perPage));5;yes]
+	$imagesHeight(^eval(320/$this.imagesAspectRatio))
+	^if($elements.CLASS_NAME eq "table"){
+	<div class="elements"><!--
+	^elements.menu{
+		$image(false)
+--><div data-id="$elements.id" class="block_element">
+			<div class="block_image image_main">
+			^if(def $elements.name){
+			<div id="image_${elements.id}" style="height: ${imagesHeight}px^;line-height: ${imagesHeight}px^;">
+				<span class="editThumb" href="#cropImg" title="Обрезать изображение" data-idblock="$idblock" data-id="$elements.id" data-width="$this.imagesWidth.small" data-ratio="$this.imagesAspectRatio" data-big="${this.imagesFolder.src}/${elements.name}" data-small="${this.imagesFolder.small}/${elements.name}">
+					<i class="fa fa-crop fa-2x blue pointer"></i>
+				</span>
+				^if(!$elements.type){<span data-id="$elements.id" class="image_delete" title="Удалить изображение галереи" onClick="^$(this).DeleteImage()^;">Х</span>}
+				<a href="./?id=$form:id&idpage=$form:idpage&parent=$elements.id"><img src="${this.imagesFolder.big}/${elements.name}" title="$elements.description"></a>
+			</div>
+			}
+			^if(!def $elements.name || !$elements.type){
+			<div id="no_image_${elements.id}" style="height:${imagesHeight}px^;line-height:${imagesHeight}px^;^if(def $elements.name){display:none}">
+				<div class="image"><a href="./?id=$form:id&idpage=$form:idpage&parent=$elements.id">Нет изображения</a></div>
+				<span data-width="440" data-href="add_gallery_image.html?idpage=$form:idpage&idblock=$idblock&id=$elements.id" data-title="Добавление изображения галереи" data-reload="true" class="link" onClick="^$(this).OpenFancybox()^;" style="position:absolute^; left: 10px^; top: 10px^;">
+					<i class="fa fa-plus fa-3x inline blue mr10"></i>
+				</span>
+			</div>
+			}
+			</div>
+			<div class="block_fields">
+				<div class="block_string">
+					<div class="label main">Описание:</div>
+					<div class="field"><input type="text" name="description" value="$elements.description" class="cms_input" onChange="^$(this).Save()^;"></div>
+				</div>
+				^if($this.settings.showLinks){
+				<div class="block_string">
+					<div class="label main">Ссылка:</div>
+					<div class="field"><input type="text" name="link" value="$elements.link" onChange="^$(this).Save()^;" class="cms_input"></div>
+				</div>
+				}
+				<div class="block_string">
+					<div class="label main">Элемент:</div>
+					<div class="field mr15">^if($elements.type){Изображение}{Галерея}</div>
+					^if(!$elements.type){
+					<div class="actions">
+						<span data-width="830" data-href="edit_text.html?gallery_id=$elements.id" data-title="Текст перед галереей" class="link pointer mr20" onClick="^$(this).OpenFancybox()^;">
+							<i class="fa fa-long-arrow-up fa-2x inline blue"></i><i class="fa fa-file-text-o fa-2x inline blue"></i></span>
+						<span data-width="830" data-href="edit_text.html?gallery_id=$elements.id&position=after" data-title="Текст после галереи" class="link pointer mr20" onClick="^$(this).OpenFancybox()^;">
+							<i class="fa fa-long-arrow-down fa-2x inline blue"></i><i class="fa fa-file-text-o fa-2x inline blue"></i></span>
+						<a href="./?id=$form:id&idpage=$form:idpage&parent=$elements.id"><i class="fa fa-pencil-square fa-2x inline pointer blue" title="Перейти в галерею"></i></a>
+					</div>
+					}
+				</div>
+				^if($this.settings.showParent){
+				<div class="block_string">
+					<div class="label main">Родитель:</div>
+					<div class="field"><input type="text" name="parent" value="$elements.parent" onChange="^$(this).Save()^;" class="cms_input"></div>
+				</div>
+				}
+				<div class="block_string">
+					<div class="label main">Позиция:</div>
+					<div class="field"><input data-id="$elements.id" data-prev="$elements.sortir" type="text" name="sortir" value="$elements.sortir" onChange="^$(this).Save()^;" class="cms_input"></div>
+					<div class="actions">
+					^if(!$elements.type){
+						<a href="./seo/?id=${elements.id}&idblock=${form:id}&idpage=${form:idpage}&parent=$form:parent^if($currentPage>1){&page=$currentPage}"><i class="fa fa-bar-chart-o fa-2x inline pointer blue" title="SEO атрибуты"></i></a>
+					}
+						<i class="fa ^if($elements.visible == 1){fa-eye}{fa-eye-slash} fa-3x inline pointer blue" title="^if($elements.visible == 1){Скрыть}{Отобразить}" onClick="^$(this).ChangeVisible()^;"></i>
+						<span class="fa-stack fa-2x inline pointer red" title="Удалить" onClick="^$(this).Delete()^;">
+							<i class="fa fa-square-o fa-stack-2x"></i>
+							<i class="fa fa-times fa-stack-1x"></i>
+						</span>
+					</div>
+				</div>
+			</div>
+		</div><!--
+	}
+--></div>
+	}{^var_dump[$elements]}
+	<div id="cropImg" style="display:none">
+		<div class="controls">
+			<button id="reset">По умолчанию</button>
+			<button id="crop">Обрезать</button>
+		</div>
+		<div id="targetWrap"></div>
+		<h1 class="cropAnswerText"></div>
+	</div>
+}{
+	$response:refresh[$.value(0)$.url[${cms.cmsFolder}/]]
+}
+################################################################################
+@header_page[currentElementId][elementId;elementName]
+^if($currentElementId>0){
+	$element[^this.GetElements[$.IDs($currentElementId)]]
+	$elementName[$element.description]
+	$elementId[$element.id]
+	^header_page[$element.parent] / <a^if($currentElementId != $form:parent){ href="?id=$idblock&idpage=$form:idpage&parent=$elementId"}>$elementName</a>
+}
+################################################################################

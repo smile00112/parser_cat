@@ -1,0 +1,6 @@
+field	sql_field	rename
+id	`id` int(1) unsigned NOT NULL AUTO_INCREMENT,
+element_id	`element_id` int(11) NOT NULL,	idcatalog
+top_text	`top_text` text,
+bottom_text	`bottom_text` text,
+	PRIMARY KEY (`id`)

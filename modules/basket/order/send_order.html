@@ -1,0 +1,64 @@
+################################################################################
+@main[]
+^connect[$site:connectString]{
+	^if($site:user.isRegUser){
+		^try{
+			^if(^catalog:GetBasketSum[$site:user.auth.session.id]>0){
+				$fields[
+					$.payment[$form:payment]
+					$.delivery[$form:delivery]
+					$.delivery_address[$form:delivery_address]
+				]
+				$orderId(^catalog:OrderBasket[$site:user.id;$site:user.auth.session.id;$fields])
+				^if($orderId>0){
+#					Отправляем e-mail администратору
+					$res[^catalog:SendMail[
+						$.order_id($orderId)
+						$.template[adminMail.html]
+					]]
+#					Отправляем e-mail пользователю
+					^if(def $site:user.email){
+						$res[^catalog:SendMail[
+							$.mail[$site:user.email]
+							$.order_id($orderId)
+							$.template[userMail.html]
+							$.subject[Вы заказали товар в интернет-магазине $env:SERVER_NAME]
+						]]
+					}
+					$answer[
+						$.error(false)
+						$.text[Заказ оформлен. В ближайшее время с Вами свяжется наш менеджер.]
+					]
+				}{
+					$answer[
+						$.error(true)
+						$.errorType[order]
+						$.text[Ошибка формирования заказа]
+					]
+				}
+			}{
+				$answer[
+					$.error(true)
+					$.errorType[empty_basket]
+					$.text[Корзина пуста]
+				]
+			}
+		}{
+			$exception.handled(true)
+			$answer[
+				$.error(true)
+				$.errorType[exception]
+				$.text[Ошибка выполнения функции]
+				$.exception[$exception]
+			]
+		}
+	}{
+		$answer[
+			$.error(true)
+			$.errorType[auth]
+			$.text[Нужна авторизация]
+		]
+	}
+}
+$result[^json:string[$answer]]
+################################################################################

@@ -1,0 +1,7 @@
+################################################################################
+@cms_body[]
+^if(def $form:id && def $form:id_block && def $form:idpage){
+ $res[^galleries_list.ChangeBlockPosition[$form:id_block;$form:id;$form:up]]
+}
+$response:refresh[$.value(0)$.url[index.html?id=$form:id_block&idpage=$form:idpage]]
+################################################################################

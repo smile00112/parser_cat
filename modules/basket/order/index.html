@@ -1,0 +1,18 @@
+################################################################################
+@body_init[]
+^site.SetCurrentPage[0;$.header[Оформление покупки]]
+################################################################################
+@text[]
+^if(^catalog:GetBasketSum[$site:user.auth.session.id]>0){
+	^if($site:user.isRegUser){
+		^catalog:ShowOrder[]
+	}{
+		^site:user.ShowRegistrationForm[$.template[registerInvitation.html]]
+	}
+}{
+	$response:refresh[
+		$.value(0)
+		$.url[${catalog:basketFilesFolder}/]
+	]
+}
+################################################################################

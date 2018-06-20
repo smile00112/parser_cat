@@ -1,0 +1,43 @@
+################################################################################
+@cms_body[]
+$oImg[^NConvert::create[
+#	Путь, где лежит nconvert
+ $.sScriptPath[/cgi-bin/]
+#	Имя самого файла nconvert
+ $.sScriptName[nconvert]
+ ^if(def $sFormat){$.sFormat[$sFormat]}
+]]
+
+$params[ 
+ $.bKeepRatio(1)
+ $.sResizeType[decr]
+]
+# Если передаётся id блока и сама картинка
+^if(def $form:files){
+ ^if(def $form:width){$width($form:width)}{$width(300)}
+# Перебираем все выбранные картинки 
+ ^form:files.multifiles.foreach[sNum;fValue]{
+# Инициализируем пути к фоткам
+  $srcpath[/images/${textext.className}/src/${form:idpage}/${fValue.name}]
+  $bigpath[/images/${textext.className}/big/${form:idpage}/${fValue.name}]
+  $smallpath[/images/${textext.className}/small/${form:idpage}/${fValue.name}]
+  ^if(-f '$bigpath'){}{
+# Сохраняем оригинал фотки 
+   $res[^fValue.save[binary;$srcpath]]
+# Сохраняем картинки
+   $res[^oImg.resize[$srcpath;$bigpath;800;99999;$params]]
+   $res[^oImg.resize[$srcpath;$smallpath;$width;99999;$params]]
+# Удаляем оригинал
+#   $res[^file:delete[$srcpath]]
+  }
+ }
+# Переходим к галерее 
+ $response:refresh[
+  $.value(0)
+  $.url[materials.html?idpage=$form:idpage&idpage_name=$form:idpage_name&width=$width]
+ ]
+# Иначе выводим ошибку 
+}{
+ ^insert_error_fields[]
+}
+################################################################################

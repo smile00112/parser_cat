@@ -1,0 +1,47 @@
+################################################################################
+@cms_body[]
+# Если что-то передаётся
+^if(def $form:idm){
+ ^edit_block[]
+}{
+# Переходим к списку элементов
+ $response:refresh[
+  $.value(0)
+  $.url[${cms.cmsFolder}/${cms.currentModulePath}/]
+ ] 
+}
+################################################################################
+@edit_block[]
+# Получаеминформацию о модуле
+$sitemod[^table::sql{select id, namemenu, descript from cmc_block where id='$form:idm'}]
+# Выводим заголовок страницы   
+^cms.ShowPageHeader[Редактирование описания блока "$sitemod.namemenu";$cms.currentModule.path;^module_info[]]
+<br>
+# Назад к списку модулей
+<a href="./">Назад к списку модулей</a>
+<br>
+^cms.InsertTiny[]
+^sitemod.menu{
+<br>
+<form method="post" enctype="multipart/form-data" action="ch.html">
+ <table border="0" width="90%" cellspacing="1" cellpadding="5"> 
+  <input type="hidden" name="id" value="$sitemod.id">
+  <tr>
+   <td colspan="2"> 
+    <textarea id="elm" name="elm1" rows="20" cols="80" style="width: 100%">
+     $sitemod.descript
+    </textarea>
+   </td>
+  </tr>
+  <tr>
+   <td>
+    <input type="submit" name="save" value="Сохранить" />
+   </td>
+	 <td align="right"> 
+    <input type="reset" name="reset" value="Отменить все изменения" />
+   </td>
+  </tr>
+ </table>
+</form>
+}
+################################################################################

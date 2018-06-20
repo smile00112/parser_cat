@@ -1,0 +1,25 @@
+################################################################################
+@main[]
+^cms.ShowModalHeader[header_light.html]
+<link href="./styles/add.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="./scripts/add_image.js"></script>
+^if(def $form:image){
+	^connect[$site:connectString]{$answer[^this.AddImage[$form:video_id;$form:image]]}
+}
+<form method="post" enctype="multipart/form-data" action="$cms.currentFile"^if(def $form:image){ style="display:none"}>
+	<input type="hidden" name="video_id" value="$form:element_id">
+	<table class="table_dsb w100p">
+		<tr class="aC">
+			<td><div class="cms_h1 nobr">Добавление изображения для ^if($form:element_type){видео}{видеогалереи}</div></td>
+		</tr>
+		<tr>
+			<td><input type="file" name="image" accept="image" class="cms_input w100p"></td>
+		</tr>
+		<tr class="aC">
+			<td><input type="submit" value="Добавить"></td>
+		</tr>
+	</table>
+</form>
+<div class="cms_h1 message^if(def $form:image){ show}^if($answer.error){ red}"^if(!def $form:image){ style="display:none"}>$answer.text</div>
+^cms.ShowModalFooter[]
+################################################################################

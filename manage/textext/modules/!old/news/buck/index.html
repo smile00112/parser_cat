@@ -1,0 +1,324 @@
+@cms_body[]
+^use[/classes/dtf.p]
+<img src="index.gif" border=0 align=absmiddle> <font size=4>Новости сайта</font>
+<br>
+$idpage[$form:idpage]
+
+^if(!def $form:where){
+	$where[news]
+}{
+	$where[$form:where]
+}
+^switch[$where]{
+	^case[group]{^group[]}
+	^case[genre]{^genre[]}
+	^case[spec]{^spec[]}
+	^case[date]{^date[]}
+	^case[news]{^news[]}
+}	
+
+
+
+<!-- ВСЕ ТЕМЫ НОВОСТЕЙ -->
+@group[]
+<h5><a href="index.html?idpage=$idpage">Новости</a></h5>
+<h5><a href="index.html?idpage=$idpage&where=date">Поиск по дате</a></h5>
+^if(def $form:add_group && def $form:name && def $form:sortir){
+	^use[/classes/gke/gke_text_utilits.p]
+	$rewrite[^text_utilits:translit_text[$form:name]]
+	^void:sql{insert into news_group (name, sortir, id_page,rewrite) values ('$form:name', '$form:sortir', $form:idpage,'^rewrite.lower[]')}
+	^make_rewrite[]
+	$response:location[^get_curent_path[]/index.html?idpage=$idpage&where=$where]
+}
+^if(def $form:group_id && def $form:name && def $form:rewrite && def $form:sortir){
+	^void:sql{update news_group set name='$form:name',  rewrite='$form:rewrite', sortir='$form:sortir' where id='$form:group_id'}
+	^make_rewrite[]
+}
+
+$all_gr[^table::sql{select * from news_group where id_page=$form:idpage order by sortir}]
+^if(!def $all_gr){
+	<b>Разделы новостей отсутствуют</b>
+}{
+	<table cellpadding="4">
+		<tr>
+			<td><b>Название темы</b></td>
+			<td><b>Rewrite</b></td>
+			<td><b>Порядок</b></td>
+			<td></td>
+			<td></td>
+		</tr>
+		^all_gr.menu{
+			<form>
+			<input type="hidden" name="where" value="$where">
+			<input type="hidden" name="group_id" value="$all_gr.id">
+			<input type="hidden" name="idpage" value="$all_gr.id_page">
+			<tr>
+				<td><input name="name" value="$all_gr.name" style="width: 200"></td>
+				<td><input name="rewrite" value="$all_gr.rewrite" style="width: 200"></td>
+				<td><input name="sortir" value="$all_gr.sortir"></td>
+				<td><input type="submit" value="Сохранить" style="font-size: 11^; background-color: White"></td>
+				<td>
+					<span style="text-decoration: underline^; cursor: pointer^; color: #003399" 
+						onClick="if (confirm('Уверены, что хотите удалить тему?'))(window.location.href = 'del_group.html?where=$where&id_group=$all_gr.id&idpage=$form:idpage')">
+							Удалить
+						</span>
+				</td>
+			</tr>
+			</form>
+		}
+	</table>
+}
+<br>
+<form>
+<input type="hidden" name="where" value="$where">
+<input type="hidden" name="add_group" value="y">
+<input type="hidden" name="idpage" value="$form:idpage">
+	<table>
+		<tr>
+			<td colspan="2"><b>Добавить тему</b></td>
+		</tr>
+		<tr>
+			<td align="right">Название темы <span style="font-size: 12^; font-family: Tahoma^; color: #FF0000">*</span></td>
+			<td><input name="name" style="width: 300"></td>
+		</tr>
+		<tr>
+			<td align="right">Порядок <span style="font-size: 12^; font-family: Tahoma^; color: #FF0000">*</span></td>
+			<td><input name="sortir" style="width: 300"></td>
+		</tr>
+#		<tr>
+#			<td align="right">Rewrite<span style="font-size: 12^; font-family: Tahoma^; color: #FF0000">*</span></td>
+#			<td><input name="rewrite" style="width: 300"></td>
+#		</tr>
+		<tr>
+			<td></td>
+			<td><input type="submit" value="Добавить"></td>
+		</tr>
+	</table>
+</form>	
+	
+
+
+
+
+
+
+<!-- МЫ В РАЗДЕЛЕ НОВОСТЕЙ -->
+@news[]
+<h5><a href="index.html?idpage=$idpage&where=date">Поиск по дате</a></h5>
+<h5><a href="index.html?idpage=$idpage&where=group">Темы новостей</a></h5>
+#<h5><a href="index.html?idpage=$idpage&where=spec">Спец новости</a></h5>
+^if(!def $form:news_id){
+	^show_all_news[]
+}
+
+
+
+
+
+
+
+<!-- ВЫВЕСТИ ВСЕ НОВОСТИ -->
+@show_all_news[]
+
+
+
+
+
+
+^if(!def $form:sp){
+	$page(1)
+}{
+	$page[$form:sp]
+}
+^if(def $form:delete_photo){
+	$x[$form:delete_photo]
+	^if(-f "/i_news/${x}.gif"){
+		^file:delete[/i_news/${x}.gif]
+	}
+	^if(-f "/i_news/${x}.jpg"){
+		^file:delete[/i_news/${x}.jpg]
+	}
+}
+^if(def $form:delete_ico){
+	$x[$form:delete_ico]
+	^if(-f "/i_news/ico/${x}.gif"){
+		^file:delete[/i_news/ico/${x}.gif]
+	}
+	^if(-f "/i_news/ico/${x}.jpg"){
+		^file:delete[/i_news/ico/${x}.jpg]
+	}
+}
+$kolvo(20)
+<br>
+
+<a href="add_news.html?idpage=$idpage">Добавить запись</a><br><br>
+$kolvoall(^int:sql{select count(*) from news where id_page='$idpage'})
+$news[^table::sql{select * from news where id_page='$idpage' order by date_news desc}]
+
+
+
+^if($news){
+	<table width="94%" border="0">
+		^news.menu{
+			^print_row_news[$news]
+			
+		}
+		<tr>
+	</table>
+}{
+	Нет записей
+}
+
+
+
+
+
+@print_row_news[table_news]
+			<tr>
+				$datapr[^date::create[$table_news.date_news]]
+				<td valign="top">
+			
+					$curr_photo[^table::sql{select * from news_gallery where news_id='$table_news.id'}[$.limit(1)]]		
+					$small[/images/news/s_$curr_photo.path]
+					
+					^insert_img[$small]
+					
+					
+					
+					<div style="background: transparent url($filename) no-repeat scroll left top^; width: 160px^; height: 160px"/>
+					^if($table_news.spec_news==1){<img src="spec.gif" border="0">}
+					</div>
+					^if($table_news.spec_news==1){
+						<br>
+						<span style="color:red">Спецновость</span>
+						<br>
+						c $table_news.dstart по $table_news.dend
+					}
+					
+				</td>
+				<td valign=top>
+					<p class="date_news"> ^dtf:format[%d %h %Y;$datapr;$dtf:rr-locale]</p>
+					<p class="title_news">$table_news.head</p>
+						^untaint{$table_news.body}
+				</td>
+				<td align="center" valign="top">
+					<a href="javascript: if (confirm('Вы хотите удалить данную позицию?')){window.location.href='del_news.html?id=$table_news.id&idpage=$idpage'}">Удалить</a> <br><br> 
+					<a href="change_news.html?idpage=$idpage&news_id=$table_news.id">Изменить</a>
+					
+				</td>
+			</tr>
+		
+			
+			
+			<tr>
+				<td></td>
+				<td>
+					<p style="padding-top: 5"><a href="gallery.html?idpage=$form:idpage&news_id=$table_news.id">Фотогалерея</a></p>
+					<HR width="100%" style="margin-left:0px^; margin-right:0px^;margin-top:10px^;margin-bottom:0px">
+				</td>
+				<td></td>
+			</tr>
+
+
+
+
+
+
+
+<!-- ВСЕ НОВОСТИ ЗА УКАЗАННУЮ ДАТУ -->
+@date[]
+<h5><a href="index.html?idpage=$idpage">Новости</a></h5>
+<h5><a href="index.html?idpage=$idpage&where=group">Темы новостей</a></h5>
+$months[
+	$.1[января]
+	$.2[февраля]
+	$.3[марта]
+	$.4[апреля]
+	$.5[мая]
+	$.6[июня]
+	$.7[июля]
+	$.8[августа]
+	$.9[сентября]
+	$.10[октября]
+	$.11[ноября]
+	$.12[декабря]
+]
+^if(def $form:year && def $form:month && def $form:day){
+	$now[^date::create[${form:year}-${form:month}-${form:day}]]
+	$nextDay[^date::create[${form:year}-${form:month}-${form:day}]]
+	^nextDay.roll[day](1)
+}{
+	$now[^date::now[]]
+	$nextDay[^date::now(1)]
+}
+^if(!def $form:sp){
+	$page(1)
+}{
+	$page[$form:sp]
+}
+<form>
+	<input type="hidden" name="where" value="$form:where">
+	<input type="hidden" name="idpage" value="$form:idpage">
+	<table border="0" cellspacing="4" cellpadding="0" width="300">
+		<tr>
+			<td>
+				<b>День</b><br>
+			</td>
+			<td>
+				<b>Месяц</b><br>
+			</td>
+			<td>
+				<b>Год</b><br>
+			</td>
+		</tr>
+		<tr>
+			<td width="150">
+				<select name="day" style="width: 100%">
+					^for[i](1;31){
+						<option value="$i" ^if($now.day == $i){selected}>^i.format[%02d]</option>
+					}
+				</select>
+			</td>
+			<td width="200">
+				<select name="month" style="width: 100%">
+					^for[i](1;12){
+						<option value="$i" ^if($now.month == $i){selected}>$months.$i</option>
+					}
+				</select>
+			</td>
+			<td width="150">
+				<select name="year" style="width: 100%">
+					^for[i](0;4){
+						<option value="^eval($now.year + $i - 2)" ^if($now.year == ^eval($now.year + $i - 2)){selected}>^eval($now.year + $i - 2)</option>
+					}
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="3"><input type="submit" value="Просмотреть новости" style="background-color: White"></td>
+		</tr>
+	</table>
+</form>
+$kolvo(20)
+$kolvoall(^int:sql{select count(*) from news where date_news>='${now.year}-${now.month}-${now.day}' and id_page='$form:idpage' and date_news<'${nextDay.year}-${nextDay.month}-${nextDay.day}'})
+
+
+#$news[^table::sql{select * from news where id_page='$idpage' and  date_news>='${now.year}-${now.month}-${now.day}' and date_news<'${nextDay.year}-${nextDay.month}-${nextDay.day}' order by date_news desc limit ^eval($page*$kolvo - $kolvo), $kolvo}]
+$news[^table::sql{select * from news where id_page='$idpage' and  date_news>='${now.year}-${now.month}-${now.day}' and id_page='$form:idpage' and date_news<'${nextDay.year}-${nextDay.month}-${nextDay.day}' order by date_news desc}[]]
+
+
+
+
+
+^if($news){
+	<table width="94%" border="0">
+		^news.menu{
+			^print_row_news[$news]
+		}
+	</table>
+}{
+	<h3>^dtf:format[%d %h %Y;$datapr;$dtf:rr-locale]: новостей нет.</h3>
+}
+
+
+

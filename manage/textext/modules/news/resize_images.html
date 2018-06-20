@@ -1,0 +1,16 @@
+################################################################################
+@cms_body[]
+^if(def $form:id && def $form:idpage && $cms.cmsUserLevel==$cms.maxUserLevel){
+# Выводим заголовок страницы
+	^cms.ShowPageHeader[Настройки новостей;$cms.currentModule.path;^this.GetClassInfo[]]
+	<p class="cms_h2">
+		<a href="${cms.cmsFolder}/textext/?idpage=$form:idpage"><i class="fa fa-reply fa-3x inline blue mr10"></i>К блокам</a>
+		<a href="./options.html?id=$idblock&idpage=$form:idpage" class="ml20"><i class="fa fa-cog fa-3x inline blue mr10"></i>К настройкам</a>
+		<a id="addSlideBtn" href="./?id=$form:id&idpage=$form:idpage" class="ml20 addForm"><img src="${cms.cmsFolder}/${cms.currentModulePath}/index.png" class="inline mr10" width="64">К новостям</a>
+		<a href="edit_images.html?id=$form:id&idpage=$form:idpage" class="ml20 addForm"><i class="fa fa-picture-o fa-3x inline blue mr10"></i>Изменить изображения</a>
+	</p>
+	<p class="cms_h1">Функция в разработке!</p>
+}{
+	$response:refresh[$.value(0)$.url[${cms:cmsFolder}/]]
+}
+################################################################################

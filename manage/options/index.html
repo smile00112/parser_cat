@@ -1,0 +1,50 @@
+################################################################################
+@cms_body[]
+<style>
+	.blocks{
+		margin: 2em^;
+		font-size: 16px^;
+		text-align: center^;
+		font-family: 'Cuprum',Tahoma;
+		max-width: 900px^;
+	}
+	.block{
+		width: 120px^;
+		margin: 0 10px 30px^;
+		display: inline-block^;
+		text-align: center^;
+		vertical-align: top^;
+		text-decoration: none^;
+	}
+	.block:hover{
+		font-weight: bold^;
+	}
+	.caption{
+		display: block^;
+		margin-top: 0.5em^;
+	}
+</style>
+# Выводим шапку
+^cms.ShowPageHeader[Опции сайта <font color="red">$cms.domain</font>;$cms.currentModule.path;^module_info[]]
+# Получаем список установленных опций
+$tbl_options[^modules:GetModules[$.parent($cms.currentModule.id)$.levelEL($cms.cmsUserLevel)]]
+# Если список не пуст
+^if(def $tbl_options){
+	<div class="blocks">
+	^tbl_options.menu{<!--
+		$index_image_extention[^cms.GetImageExtention[${cms.cmsFolder}/${tbl_options.path}/]]
+		--><a class="block" href="${cms.cmsFolder}/${tbl_options.path}/" title="$tbl_options.description">
+		^if($index_image_extention ne 'no'){
+			<img src="${cms.cmsFolder}/${tbl_options.path}/index.${index_image_extention}">
+		}{
+			<img src="${cms.imagesFolder}/no.png">
+		}
+			<span class="caption">$tbl_options.caption</span>
+		</a><!--
+	}
+	--></div>
+}{
+# Если список не пуст 
+	<h1>Опции не установлены !!!</h1>
+}
+################################################################################

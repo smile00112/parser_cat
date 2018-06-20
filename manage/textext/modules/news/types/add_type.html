@@ -1,0 +1,43 @@
+################################################################################
+@main[]
+^ShowModalHeader[header_light.html]
+^if(def $form:name){
+	$params[
+		$.name[$form:name]
+	]
+# Добавляем новость
+	^connect[$site:connectString]{
+		$res(^this.InsertType[$params])
+	}
+	<div class="cms_h1 aC">
+	^switch($res){
+		^case(1){
+			Тип новости добавлен
+			<script>parent.^$.fancybox.close()^;</script>
+		}
+		^case(0){Во время добавления типа новости возникла ошибка!}
+		^case(-1){Заполнены не все поля}
+	}
+		</div>
+	<br>
+}{
+	<form method="post" enctype="multipart/form-data" action="add_type.html">
+		<input type="hidden" name="id" value="$form:id">
+		<table class="table_dsb w100p">
+			<tr align="center">
+				<td><div class="cms_h1"><nobr>Добавление типа новости</nobr></div></td>
+			</tr>
+			<tr align="center">
+				<td><div class="inline">Название:</div></td>
+			</tr>
+			<tr align="center">
+				<td><input type="text" name="name" class="w100p"></td>
+			</tr>
+			<tr align="center">
+				<td><input type="submit" value="Добавить"></td>
+			</tr>
+		</table>
+	</form>
+}
+^ShowModalFooter[]
+################################################################################

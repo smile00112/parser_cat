@@ -1,0 +1,23 @@
+################################################################################
+@cms_body[]
+# Выводим шапку
+^cms.ShowPageHeader[Выполнение SQL-запроса в базе данных: <font color="cc0000">$sql_table</font>;$cms.currentModule.path;^module_info[]]
+<p>Введите sql-запрос и нажмите "Выполнить".</p>
+<form name="sql_query_form" method="post" action="index.html">
+	<textarea name="sql_query" style="width: 100%^; height: 100px^;">$form:sql_query</textarea>
+	<br><br>
+	<input type="submit" value="Выполнить">
+</form>
+# Если какой-либо запрос был передан, пробуем выполнить его
+^if(def $form:sql_query){  
+	^try{
+		^connect[$site:connectString]{^void:sql{${form:sql_query}}}
+		$result_query_exec[Запрос выполнен!]
+	}{
+		$exception.handled(1)
+		$error_query_exec[Ошибка!!!]
+	}
+	^if(def $error_query_exec){<p align="justify"><b>$error_query_exec</b></p>}
+	^if(def $result_query_exec){<p align="justify"><b>$result_query_exec</b></p>}
+}
+################################################################################

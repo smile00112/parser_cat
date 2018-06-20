@@ -1,0 +1,44 @@
+################################################################################
+@main[]
+^cms.ShowModalHeader[]
+^if(def $form:idpage && def $form:name && def $form:pref_block){
+	^connect[$site:connectString]{
+# Добавляем блок
+		$res[^textext.InsertPageBlock[$form:idpage;$form:name;$form:pref_block]]
+	}
+		<div class="cms_h1 aC">Блок добавлен</div>
+		<br>
+		<script>parent.^$.fancybox.close()^;</script>
+}{
+	^connect[$site:connectString]{
+		$blocks[^modules:GetModules[$.type(1)]]
+		$disabledBlocks[^textext.GetDisabledBlocks[$form:idpage]]
+<form method="post" action="add_block.html">
+	<input type="hidden" name="idpage" value="$form:idpage">
+	<table class="table_dsb w100p">
+		<tr class="aC">
+			<td colspan="2"><div class="cms_h1"><nobr>Добавление блока</nobr></div></td>
+		</tr>
+		<tr>
+			<td>Название:</td>
+			<td><input type="text" name="name" class="w100p"></td>
+		</tr>
+		<tr>
+			<td>Тип блока:</td>
+			<td>
+				<select name="pref_block" class="w100p">
+				^blocks.menu{
+					<option value="$blocks.name" ^if(^textext.CheckDisabledBlock[$blocks.name;$disabledBlocks]){disabled}>$blocks.caption</option>
+				}
+				</select>
+			</td>
+		</tr>
+		<tr class="aC">
+			<td colspan="2"><input type="submit" value="Добавить"></td>
+		</tr>
+	</table>
+</form>
+	}
+}
+^cms.ShowModalFooter[]
+################################################################################

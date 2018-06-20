@@ -1,0 +1,92 @@
+################################################################################
+@cms_body[]
+# Если есть id
+^if(def $form:id && def $form:idblock && def $form:idpage){
+# Выводим шапку
+^cms.ShowPageHeader[Команда - Галерея сотрудника;$cms.currentModule.path;^team.GetClassInfo[]]
+<p class="cms_h2">
+	<a href="index.html?id=$form:idblock&idpage=$form:idpage"><i class="fa fa-reply fa-3x inline blue mr10"></i>К сотрудникам</a>
+</p>
+$images[^team.GetEmployeeImages[$form:id]]
+^if(def $images){
+	$countcol(3)
+	<table border="0" width="100%" cellspacing="0" cellpadding="0">
+		<tr>
+	$counter(0)
+	^images.menu{
+		<td align="center" valign="top" style="padding:10 0px^;border-bottom: 1px solid #999999^;">
+			<table border="0" cellspacing="1" cellpadding="5" bgcolor="#999999" width="$team.imagesWidth.gallery_small">
+				<tr class="tN">
+					<form method="post" action="save_image_property.html">
+					<input type="hidden" name="id" value="$images.id">
+					<input type="hidden" name="employee_id" value="$form:id">
+					<input type="hidden" name="idblock" value="$form:idblock">
+					<input type="hidden" name="idpage" value="$form:idpage">
+					<td colspan="3">
+						<a href="edit_descript.html?id=$images.id&id_te=$form:id&idpage=$form:idpage&idpage_name=$form:idpage_name">
+							<img src="$team.imagesGalleryPath.small/$images.name" alt="$images.description" title="$images.description">
+						</a>
+					</td>
+				</tr>
+				<tr class="tN">
+					<td colspan="3">
+						<a href="edit_description.html?id=$images.id&employee_id=$form:id&idpage=$form:idpage&idblock=$form:idblock">
+							^if(def $images.description){$images.description}{Внести описание}
+						</a>
+					</td>
+				</tr>
+				<tr class="tN">
+					<td>Сортировка:</td>
+					<td><input type="text" name="sortir" value="$images.sortir" class="myinput" style="width:40px^;"></td>
+					<td><input type="submit" name="save" value="Сохранить" style="width:80" class="mybutton"></td>
+				</tr>
+				</form>
+				<tr class="tN">
+					<td colspan="3"><input style="width:80" class="mybutton" type="button" value="Удалить" onclick="if (confirm('Вы хотите удалить данную позицию?')){window.location.href='del_gallery_image.html?id=$images.id&employee_id=$form:id&idpage=$form:idpage&idblock=$form:idblock'}"></td>
+				</tr>
+			</table>
+		</td>
+	^counter.inc[]
+	$count_mod($counter)
+	^count_mod.mod($countcol)
+	^if($count_mod eq 0){</tr><tr>}
+	}
+		</tr>
+	</table>
+}{
+	<br>
+	<div class="cms_h1">Изображения не найдены.</div>
+	<br><br><br><br><br>
+}
+<form method="post" enctype="multipart/form-data" action="add_gallery_image.html">
+<input type="hidden" name="id" value="$form:id">
+<input type="hidden" name="idblock" value="$form:idblock">
+<input type="hidden" name="idpage" value="$form:idpage">
+<br />
+<div class="cms_h1">Закачать новое изображение:</div>
+<br>
+<table border="0" cellspacing="1" cellpadding="5" bgcolor="#999999">
+	<tr class="tH">
+		<td colspan="2">
+			Общее описание для всех загружаемых изображений
+		</td>
+	</tr>
+	<tr class="tN">
+		<td colspan="2">
+			<textarea name="description" rows="1" style="width: 410px^;"></textarea>
+		</td>
+	</tr>
+	<tr class="tN">
+		<td>
+			<input type="file" name="multifiles" id="multifiles" multiple="true" size="40" style="width: 335px^; font-size:14px^;  border-width: 1px^; color: #000033^; background-color: #f9f9f9^;">
+		</td>
+		<td class="aR"><input type="submit" value="Закачать" style="width: 70px"></td>
+	</tr>
+</table>
+</form>
+<p>Можно выбрать несколько, общим объемом не более 60 Мегабайт</p>
+}{
+# Переходим к списку сотрудников
+	$response:refresh[$.value(0)$.url[/manage/^textext:GetModulePathByName[$team.className]/modules/$team.className/?id=$form:idblock&idpage=$form:idpage]]
+}
+################################################################################

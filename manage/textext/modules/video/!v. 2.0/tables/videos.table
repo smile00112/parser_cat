@@ -1,0 +1,12 @@
+field	sql_field	rename
+id	`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+block_id	`block_id` int(1) unsigned NOT NULL,	id_te
+block_name	`block_name` varchar(25) NOT NULL,	module
+user_id	`user_id` int(1) unsigned NOT NULL,
+hoster	`hoster` varchar(100) NOT NULL,
+name	`name` varchar(150) NOT NULL,
+src	`src` varchar(255) NOT NULL,
+image	`image` varchar(255) NOT NULL,
+visible	`visible` tinyint(1) NOT NULL,	enable
+sortir	`sortir` int(10) NOT NULL,
+	PRIMARY KEY (`id`)

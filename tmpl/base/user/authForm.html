@@ -1,0 +1,52 @@
+@ShowAuthFormTemplate[this]
+^if($this.isRegUser){
+	$tpuri[${servername}${request:uri}]
+	<div class="current-user-substrate">
+		<div class="current-user">
+			<a href="${this.folders.main}/">
+				<div class="user-info">
+					<div class="user-avatar">
+						^if(-f "${this.folders.user.avatars.small}/$this.avatar"){
+							<div class="user-avatar-image" style="background-image: url('${this.folders.user.avatars.small}/$this.avatar')"></div>
+						}{
+							<div class="user-no-avatar"></div>
+						}
+					</div>
+					<div class="user-name">$this.first_name $this.last_name</div>
+				</div>
+			</a>
+			<div class="user-actions">
+				<a href="${this.folders.user.account}/">Личный кабинет</a>
+				<a href="${this.folders.main}/logout.html?resp=^tpuri.base64[]">Выход</a>
+			</div>
+		</div>
+	</div>
+}{
+	^site:AddToQueue[
+		<script type="text/javascript" src="//ulogin.ru/js/ulogin.js"></script>
+		<script type="text/javascript" src="${site:templateFolder}/scripts/external-auth.js"></script>
+		<link type="text/css" rel="stylesheet" href="${site:templateFolder}/styles/external-auth.css">
+	]
+	<div class="form_auth">
+		<form class="js" action="${this.folders.main}/login.html" method="post" data-function='Reload'>
+			<label>Логин:<br><input type="text" name="login" class="required" required/></label>
+			<label>Пароль:<br><input type="password" name="password" class="required" required/></label>
+			<br class="clear">
+			<input type="submit" value="Вход" class="submit"/>
+			<a href="${this.folders.user.registration}/" title="Регистрация">Регистрация</a>
+			<br class="clear">
+		</form>
+# 		<div class="social-auth">
+# 			<div class="social-button vk"></div>
+# 		</div>
+
+# 		<div id="uLogin" data-ulogin="display=panel^;theme=classic^;fields=first_name,last_name^;providers=vkontakte,facebook,twitter,instagram^;hidden=other^;redirect_uri=http%3A%2F%2Fiqlife.websun-com.ru%2Fmodules%2Fsocial%2Fexternal-auth.html^;mobilebuttons=0^;"></div>
+		<div id="uLogin" class="external-auth" data-ulogin="display=buttons^;fields=first_name,last_name,email,nickname,bdate,sex,phone,photo_big,city,country^;callback=HandleToken" data-url="${social:handlersPath}/external-auth.html" data-url-choice="${social:handlersPath}/external-choice.html"><!--
+			--><div class="vkontakte" data-uloginbutton = "vkontakte" title="Войти через VKontakte"/></div><!--
+			--><div class="facebook" data-uloginbutton = "facebook" title="Войти через Facebook"/></div><!--
+			--><div class="twitter" data-uloginbutton = "twitter" title="Войти через Twitter"/></div><!--
+			--><div class="instagram" data-uloginbutton = "instagram" title="Войти через Instagram"/></div><!--
+			--><div class="window" data-uloginbutton = "window" title="Войти через другой сервис"/></div><!--
+		--></div>
+	</div>
+}

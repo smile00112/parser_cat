@@ -1,0 +1,27 @@
+################################################################################
+# Использовался для переноса данных с сайта rt32.ru
+################################################################################
+@cms_body[]
+$counter(0)
+$cities[^table::sql{SELECT * FROM contacts_cities}]
+$currencies[^table::sql{SELECT * FROM catalog_currencies}]
+$elements[^table::sql{SELECT * FROM catalog_prices_old}]
+^elements.menu{
+	$value[^hash::create[]]
+	$value.element_id($elements.catalog_id)
+	$value.price($elements.price)
+	$currency[^elements.currency.upper[]]
+	^if(^currencies.locate($currencies.char_code eq $currency) ){
+		$value.currency_id($currencies.id)
+	}{
+		$value.currency_id(0)
+	}
+	^if(^cities.locate($cities.code == $elements.city_code) ){
+		$value.city_id($cities.id)
+	}{
+		$value.city_id(0)
+	}
+	^void:sql{INSERT INTO catalog_prices (city_id, element_id, price, currency_id) VALUES ($value.city_id, $value.element_id, $value.price, $value.currency_id)}
+}
+<h1>Готово</h1>
+################################################################################

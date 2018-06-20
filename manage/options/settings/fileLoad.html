@@ -1,0 +1,9 @@
+################################################################################
+@cms_body[]
+^if(def $form:file){
+ ^if(-f "$form:file.name"){^file:delete[/${form:file.name}]}
+ $res[^form:file.save[binary;/${form:file.name}]]
+}
+# Переходим к списку настроек
+$response:refresh[$.value(0)$.url[${cms.cmsFolder}/${cms.currentModule.path}/^if(def $error){?error=^error.base64[]}]]
+################################################################################

@@ -1,0 +1,62 @@
+################################################################################
+@main[]
+^ShowModalHeader[header_light.html]
+^if(def $form:id && def $form:multifiles){
+	^connect[$site:connectString]{
+		$res(1)
+		^try{
+			^form:files.multifiles.foreach[sNum;fValue]{
+				$params[
+					$.file[$fValue]
+					$.news_id[$form:id]
+					$.description[$form:description]
+					$.visible(1)
+				]
+#				Добавляем изображения
+				$insert_res(^this.InsertImage[$params])
+				^if($insert_res<1){$res($insert_res)}
+			}
+		}{
+			$exception.handled(false)
+			$res(0)
+		}
+	}
+	<div class="cms_h1 aC">
+	^switch($res){
+		^case(1){
+			Изображения добавлены
+			<script>parent.^$.fancybox.close()^;</script>
+		}
+		^case(0){Во время добавления изображений возникла ошибка!}
+		^case(-1){Заполнены не все поля}
+	}
+	</div>
+	<br>
+}{
+	<form method="post" enctype="multipart/form-data" action="add_images.html">
+		<input type="hidden" name="id" value="$form:id">
+		<input type="hidden" name="idblock" value="$form:idblock">
+		<div class="cms_H1 aC">Добавить новые изображения</div>
+		<table class="table_dsb w100p">
+			<tr class="aC">
+				<td colspan="2">Общее описание для всех загружаемых изображений:</td>
+			</tr>
+			<tr class="aC">
+				<td colspan="2">
+					<textarea name="description" rows="2" class="w100p"></textarea>
+				</td>
+			</tr>
+			<tr class="aC">
+				<td>
+					<input type="file" name="multifiles" id="multifiles" multiple="true" style="position: relative^;left:-10px^;">
+				</td>
+				<td class="aR"><input type="submit" value="Закачать"></td>
+			</tr>
+			<tr class="aC">
+				<td colspan="2"><div style="font-size: 14px^;">Можно выбрать несколько, общим объемом не более ^eval($LIMITS.post_max_size/1024/1024) Mb.</div></td>
+			</tr>
+		</table>
+	</form>
+}
+^ShowModalFooter[]
+################################################################################

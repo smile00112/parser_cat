@@ -1,0 +1,14 @@
+################################################################################
+@main[]
+^connect[$site:connectString]{
+ ^if(def $form:block_id && def $form:login){
+  ^try{
+   $tmp[^users.ChangeUserAccessToBlock[$form:login;$form:block_id]]
+   $result(1)
+  }{
+   $exception.handled(1)
+   $result(0)
+  }
+ }{$result(0)}
+}
+################################################################################

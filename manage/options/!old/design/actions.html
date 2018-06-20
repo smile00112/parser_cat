@@ -1,0 +1,48 @@
+################################################################################
+@main[]
+^connect[$site:connectString]{
+	^switch[$form:action]{
+		^case[delete_property]{
+			^if(def $form:id){
+				^try{
+					$result(^this.DeleteProperty[$form:id])
+				}{
+					$exception.handled(true)
+					$result(0)
+				}
+			}{$result(-1)}
+		}
+		^case[reload_default_image]{
+			^if(def $form:id){
+				^try{
+					$result(^this.ReloadDefaultImage[$form:id])
+				}{
+					$exception.handled(true)
+					$result(0)
+				}
+			}{$result(-1)}
+		}
+		^case[update_property_field]{
+			^if(def $form:id && def $form:field){
+				^try{
+					$result(^this.UpdatePropertyField[$form:id;$form:field;$form:value])
+				}{
+					$exception.handled(true)
+					$result(0)
+				}
+			}{$result(-1)}
+		}
+		^case[update_color_property]{
+			^if(def $form:id && def $form:value){
+				^try{
+					$result(^this.UpdatePropertyField[$form:id;value;$form:value])
+				}{
+					$exception.handled(true)
+					$result(0)
+				}
+			}{$result(-1)}
+		}
+		^case[DEFAULT]{$result(-1)}
+	}
+}
+################################################################################

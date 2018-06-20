@@ -1,0 +1,65 @@
+################################################################################
+@main[]
+^connect[$connect_string]{
+# Инициализируем массив ответа
+	$answer[
+		$.error(false)
+		$.html[]
+	]
+# Если данные передаются через POST-запрос
+	^if($env:REQUEST_METHOD eq "POST"){
+# Если передан id страницы или её url
+		^if( (def $form:id && ^form:id.int(0)>0) || (def $form:url && $form:url ne "") ){
+# Подключаем класс site.p
+			^use[site.p]
+# Создаем экземпляр класса site.p
+			$site[^site::create[]]
+# Если передан id страницы
+			^if(def $form:id){
+				$id(^form:id.int[])
+				$site.currentPageId($id)
+			}{
+# Если передан url страницы
+				$page_info[^site:GetPageByUrl[^form:url.trim[both;/]]]
+				^if(def $page_info){
+					$id($page_info.page.id)
+					$site.currentPageId($page_info.page.id)
+				}{
+					$id(0)
+				}
+			}
+# Если id страницы больше 0
+			^if($id>0){
+# Пробуем получить текст страниц
+				^try{
+					^use[text_extended.p]
+					$module[^text_extended::init[$id]]
+					^if(def $page_info.element_id){
+						$answer.html[^module.show[$.id($page_info.element_id)]]
+					}{
+						$answer.html[^module.show[]]
+					}
+				}{
+					$exception.handled(1)
+					$answer.error(true)
+					$answer.html[
+						<h1 align="center">Ошибка загрузки модуля</h1>
+						<p align="center">Функция: <strong>$exception.source</strong>, ошибка: <strong>$exception.comment</strong></p>
+						<p align="center">Файл: <strong>$exception.file</strong>, строка: <strong>$exception.lineno</strong></p>
+					]
+				}
+			}{
+					$answer.error(true)
+					$answer.html[<h1>Страница с таким адресом не найдена</h1>]
+			}
+		}{
+				$answer.error(true)
+				$answer.html[<h1>Не передан id или url страницы</h1>]
+		}
+	}{
+			$answer.error(true)
+			$answer.html[<h1>Метод GET не поддерживается</h1>]
+	}
+}
+^json:string[$answer;$.indent(true)]
+################################################################################

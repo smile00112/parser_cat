@@ -1,0 +1,16 @@
+################################################################################
+@main[]
+^if(def $form:newsId){
+ ^connect[$site:connectString]{$gallery[^table::sql{SELECT * FROM news_gallery WHERE news_id=$form:newsId ORDER BY sortir}]}
+ ^if(def $gallery){
+  $counter(0)
+  field	value	descript^#0A
+  ^gallery.menu{
+   ^counter.inc[]
+  image_${counter}	${env:SERVER_NAME}${newsImagesFolder}/b_${gallery.path}^if(def $gallery.descript){	^untaint{$gallery.descript}}^#0A
+  }
+ }{error	1^#0A}
+}{
+error	1^#0A
+}
+################################################################################

@@ -1,0 +1,37 @@
+################################################################################
+@main[]
+# Если хоть какое-то изображение передаётся
+^if(def $form:logo || def $form:header || def $form:background){
+# Определяем какое
+	^if(def $form:logo){
+		$image[$form:logo]
+		$name[logo]
+	}{
+		^if(def $form:header){
+			$image[$form:header]
+			$name[header]
+		}{
+			$image[$form:background]
+			$name[background]
+		}
+	}
+# Получаем расширение старого изображения
+	$ext[^site:GetImageExtention[${site:templateFolder}/images/;$name]]
+# Получаем путь к старому изображению
+	$oldFile[${site:templateFolder}/images/${name}.${ext}]
+# Если изображение существует - удаляем его
+	^if(-f $oldFile){$res[^file:delete[$oldFile]]}
+# Получаем расширение нового изображения
+	$ext[^file:justext[$image.name]]
+# Сохраняем новое изображение
+	$res[^image.save[binary;${site:templateFolder}/images/${name}.${ext}]]
+}
+^connect[$site:connectString]{
+# Если хоть какое-то изображение передаётся
+	^if(def $form:background_color){
+		$res[^this.SaveProperty[^site:GetTemplateName[];background_color;$form:background_color]]
+	}
+}
+# Переходим к изменению дизайна
+$response:refresh[$.value(0)$.url[index.html]]
+################################################################################

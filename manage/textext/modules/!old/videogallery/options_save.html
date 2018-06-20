@@ -1,0 +1,7 @@
+################################################################################
+@cms_body[]
+^if(def $form:id){
+ ^void:sql{update te_opt set value='$form:value' where id='$form:id'}
+}
+$response:refresh[$.value(0) $.url[options.html?id=$form:idte&idpage=$form:idpage&idpage_name=$form:idpage_name]]
+################################################################################

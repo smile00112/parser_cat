@@ -1,0 +1,40 @@
+################################################################################
+@head[]
+^$.fn.Save = function(){
+	tinyMCE.triggerSave()^;
+	var value = ^$("#body").attr("value")^;
+	^$.post("actions.html", { action: "save_field", id: $form:id, field: "body", value: value }, function(data){
+		if(data > 0){
+			^$("#ok").fadeIn()^;
+			setTimeout(function(){^$('#ok').fadeOut()^;parent.^$.fancybox.close()^;},1000)^;
+		}
+	})^;
+}^;
+################################################################################
+@main[]
+^ShowModalHeader[]
+^if(def $form:id){
+	^connect[$site:connectString]{$news[^this.GetNewsById[$form:id]]}
+	^cms:InsertTiny[body]
+	<table width="820" cellpadding="5" align="center">
+		<tr>
+			<td class="aC"><span class="cms_h1 aC">Анонс для новости: "^textext:GetFixedText[$news.head;40;...]"</span></td>
+		</tr>
+		<tr>
+			<td><textarea id="body" rows="2" style="width: 100%^;">$news.body</textarea></td>
+		</tr>
+		<tr>
+			<td>
+				<span class="cms_h1 pointer" onClick="^$(this).Save()^;">
+					<img src="${cms.imagesFolder}/actions/save.png" class="inline mr10" width="40">
+					Сохранить
+					<img id="ok" src="${cms.imagesFolder}/actions/ok.png" class="inline ml10 noDisplay" width="40">
+				</span>
+			</td>
+		</tr>
+	</table>
+}{
+	<div class="cms_h1 aC">Неизвестный анонс</div>
+}
+^ShowModalFooter[]
+################################################################################

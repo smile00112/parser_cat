@@ -1,0 +1,29 @@
+.external-auth{
+	margin-top: 10px;
+}
+.external-auth > div{
+	width: 32px;
+	height: 32px;
+	cursor: pointer;
+	display: inline-block;
+	margin-left: 10px;
+	background: rgba(0, 0, 0, 0) url("https://ulogin.ru/version/2.0/img/providers-32-classic.png?version=img.2.0.0") no-repeat;
+}
+.external-auth > div:first-child{
+	margin-left: 0;
+}
+.external-auth .vkontakte{
+	background-position: 0px -36px;
+}
+.external-auth .facebook{
+	background-position: 0px -138px;
+}
+.external-auth .twitter{
+	background-position: 0px -172px;
+}
+.external-auth .instagram{
+	background-position: 0px -784px;
+}
+.external-auth .window{
+	background-position: 0px -1px;
+}

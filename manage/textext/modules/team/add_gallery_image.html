@@ -1,0 +1,11 @@
+################################################################################
+@cms_body[]
+^if(def $form:multifiles){
+# Перебираем все выбранные картинки
+	^form:files.multifiles.foreach[sNum;fValue]{
+		$res(^team.SaveGalleryImage[$form:id;$fValue;$form:description])
+	}
+}
+# Переходим к списку сотрудников
+$response:refresh[$.value(0)$.url[/manage/^textext:GetModulePathByName[$team.className]/gallery.html?id=$form:id&idblock=$form:idblock&idpage=$form:idpage]]
+################################################################################

@@ -1,0 +1,116 @@
+################################################################################
+@cms_body[] 
+# Выводим шапку    
+^cms.ShowPageHeader[Настройки сайта <font color="red">$cms.domain</font>;$cms.currentModule.path;^module_info[]]
+# Ссылка на возвращение к списку блоков
+<p class="cms_h2">
+	<a href="../"><img src="${cms.imagesFolder}/actions/back.png" class="inline mr10" width="40">К списку блоков</a>
+</p>
+# Пробуем получить настройки
+^try{
+ $table_settings[^table::sql{SELECT * FROM site_settings ORDER BY sortir}]
+# Если таблицы нет, то создаём её 
+}{
+# Обработали ошибку
+ $exception.handled(1)
+# Загружаем поля таблицы $table   
+ $mysql_table[^table::load[${cms.cmsFolder}/${cms.currentModuleName}/tables/mysql/settings.table]]
+# Создаём таблицу $table
+ ^create_sql_table[site_settings;$mysql_table]
+# Записываем настройки по умолчанию 
+ ^create_new_settings[]
+# Получаем настройки по умолчанию 
+ $table_settings[^table::sql{SELECT * FROM site_settings ORDER BY sortir}]
+}
+<p><a href="update_htaccess.html"><strong>Сохранить изменения</strong></a></p>
+<table border="0" cellpadding="5" cellspacing="0">
+ <tr valign="top" height="1">
+  <td rowspan="2">
+   <h2>Настройки сайта</h2>
+   <table cellpadding="5" cellspacing="1" bgcolor="#999999">
+    <tr class="tH">
+     <td>Название настройки</td>
+     <td>Значение</td>
+     <td colspan="2">Действия</td>
+    </tr>
+   ^table_settings.menu{
+    ^if($table_settings.type_field ne 10000){
+    ^if($table_settings.type_field ne 5){
+    <form method="post" action="settings_save.html">
+    <input type="hidden" name="id" value="$table_settings.id">
+    <input type="hidden" name="idte" value="$form:id">
+    <input type="hidden" name="idpage" value="$form:idpage">
+    <input type="hidden" name="idpage_name" value="$form:idpage_name">
+    <tr class="tN">
+     <td align="left">$table_settings.named</td>
+     <td>
+   	 ^switch[$table_settings.type_field]{
+       ^case[0]{<input type="text" name="value" value="$table_settings.value" style="width:250px">}
+       ^case[1]{<input type="checkbox" name="value" ^if($table_settings.value==1){checked} value="1">}
+   		 ^case[2]{^GetRadio[$table_settings.name;$table_settings.value]}
+       ^case[3]{^GetSelect[$table_settings.name;$table_settings.value;width:250px]}
+   	 }
+     </td>
+     <td><input type="submit" name="save" value="Сохранить"></td>
+     <td><input type="reset" name="reset" value="Отменить"></td>
+    </tr>
+    </form>
+    }{<tr class="tH"><td colspan="3">$table_settings.named</td></tr>}
+   }
+   }
+   </table>
+  </td>
+  <td width="1">^LoadFaviconForm[]</td>
+ </tr>
+ <tr valign="top">
+  <td width="1">^try{^LoadFilesForm[]}{$exception.handled(true)<h1>Текущая версия parser $env:PARSER_VERSION менее 3.4.3. Обновите версию parser!</h1>}</td>
+ </tr>
+</table>
+################################################################################
+@LoadFaviconForm[]
+<h2>Иконка для сайта</h2>
+<form method="post" enctype="multipart/form-data" action="faviconLoad.html">
+	<table cellpadding="5" cellspacing="1" bgcolor="#999999">
+		<tr class="tN">
+			<td>^if(-f "/favicon.ico"){<img border="0" src="/favicon.ico">}{<strong><font color="red">Нет</font></strong>}</td>
+			<td><input type="file" name="favicon"></td>
+			<td><input type="submit" name="save" value="Загрузить"></td>
+		</tr>
+	</table>
+</form>
+<p align="justify">Загрузите ico файл размером не более чем 16 на 16 пикселей. Если размер изображения будет больше - <font color="red"><strong>иконка может не отображаться</strong></font> в результатах поисковых запросов!</p>
+^if(def $form:error){<p><strong><font color="red">^string:base64[$form:error]</font></strong></p>}
+################################################################################
+@LoadFilesForm[]
+<br>
+<h2>Файлы в корне сайта (для CEO)</h2>
+$files[^file:list[/]]
+^if(def $files){
+	^files.menu{
+		^if(!$files.dir){
+			^switch[$files.name]{
+				^case[auto.p;.htaccess;index.html;goto.html;config.p;robots.txt;sitemap.xml;browserconfig.xml;favicon.ico]{}
+				^case[DEFAULT]{
+					$filesHTML[$filesHTML<tr><td><strong>$files.name</strong></td><td style="position: relative^;"><a href="fileDel.html?name=$files.name"><i style="top: 2px^;" class="fa fa-times fa-stack-1x pl10"></i></a></td></tr>]
+				}
+			}
+		}
+	}
+}
+^if($filesHTML eq "" ){
+	<p>Файлы не найдены</p>
+}{
+	<table border="0">
+		$filesHTML
+	</table>
+	<br>
+}
+<form method="post" enctype="multipart/form-data" action="fileLoad.html">
+<table width="100%" cellpadding="5" cellspacing="1" bgcolor="#999999">
+	<tr class="tN">
+		<td align="left"><input type="file" name="file"></td>
+		<td width="1"><input type="submit" name="save" value="Загрузить"></td>
+	</tr>
+</table>
+</form>
+################################################################################

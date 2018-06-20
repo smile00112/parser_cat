@@ -1,0 +1,73 @@
+################################################################################
+@main[]
+^connect[$site:connectString]{
+	^switch[$form:action]{
+# 		^case[create]{
+# 			$answer[^this.Insert[$.params[$params]]]
+# 		}
+		^case[save-field]{
+			$answer[^this.SaveField[$form:id;$form:field;$form:value]]
+		}
+		^case[rename-field]{
+			$answer[^this.RenameField[$form:old_name;$form:new_name]]
+			^if(!$answer.error){
+				$answer[^this.SaveField[$form:id;$form:field;$form:new_name]]
+			}
+		}
+		^case[save-option]{
+			$answer[^this.UpdateOptionValue[$form:id;$form:value]]
+		}
+# 		^case[delete]{
+# 			$answer[^this.Delete[$form:id]]
+# 		}
+# 		^case[update-visible]{
+# 			$answer[^this.SetVisible[$form:id]]
+# 		}
+# 		^case[save-option]{
+# 			^if(def $form:id){
+# 				^try{
+# 					$res[^textext:UpdateOptionValue[$form:id;$form:value]]
+# 					$answer[
+# 						$.error(false)
+# 						$.text[Настройка сохранена]
+# 					]
+# 				}{
+# 					$exception.handled(true)
+# 					$answer[
+# 						$.error(true)
+# 						$.text[Ошибка сохранения настройки]
+# 						$.exception[$exception]
+# 					]
+# 				}
+# 			}{$result(-1)}
+# 		}
+# 		^case[get-element-string]{
+# 			^if(def $form:id){
+# 				^ShowTemplate[./responseString.html]
+# 				$answer[^this.GetResponses[$.IDs($form:id)$.resultType[hash]]]
+# 				^if(!^answer.contains[error]){
+# 					$element[$answer.[$form:id]]
+# 					$element.id($form:id)
+# 					$answer[
+# 						$.error(false)
+# 						$.html[^GetString[$element]]
+# 					]
+# 				}
+# 			}{
+# 				$answer[
+# 					$.error(true)
+# 					$.text[Неизвестный отзыв]
+# 					$.id($form:id)
+# 				]
+# 			}
+# 		}
+		^case[DEFAULT]{
+			$answer[
+				$.error(true)
+				$.text[Неизвестное действие $form:action]
+			]
+		}
+	}
+}
+$result[^json:string[$answer;$.indent(true)]]
+################################################################################

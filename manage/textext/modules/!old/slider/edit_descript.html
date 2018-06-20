@@ -1,0 +1,43 @@
+@cms_body[]
+^if(def $form:id && def $form:idpage){
+	^check_options[]
+	^edit_block[]
+}{
+
+	^insert_error_fields[]
+}
+#########################################################################################################
+@edit_block[]
+<img src="index.gif" border="0" align="absmiddle"><font size="4">Редактирование блока галереи</font>
+<br><br>
+<a href="index.html?id=$form:id_te&idpage=$form:idpage&idpage_name=$form:idpage_name">Галерея</a>
+<br><br>
+$block[^table::sql{SELECT id, descript, ext, sortir FROM te_slideshow WHERE id='$form:id' ORDER BY sortir}]
+
+^insert_tiny[1]
+
+^insert_img[$prefpath/block/slideshow/small/${block.id}.$block.ext]
+
+<table width="100%" border="0" cellspacing="1" cellpadding="5" bgcolor="#999999">	
+	<tr class="tH">
+		<td>Описание</td>
+	</tr>
+	<form method="post" enctype="multipart/form-data" action="save_block.html">
+	<input type="hidden" name="id" value="$block.id">
+	<input type="hidden" name="id_te" value="$form:id_te">
+	<input type="hidden" name="idpage" value="$form:idpage">
+	<input type="hidden" name="idpage_name" value="$form:idpage_name">
+	<input type="hidden" name="edit_descript" value="yes">
+	<tr class="tN">	
+		<td>
+			<textarea id="elm1" name="descript" rows="20" cols="80" style="width: 100%">
+			$block.descript
+			</textarea>
+		</td>
+	</tr>
+	<tr class="tN">
+		<td><input type="submit" name="save" value="Сохранить" /></td>
+	</tr>	
+	</form>
+</table>
+<br>

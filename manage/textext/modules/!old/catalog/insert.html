@@ -1,0 +1,12 @@
+################################################################################
+@main[]
+^connect[$site:connectString]{
+ ^if(def $form:name){
+  ^if(!def $form:parent){$parent(0)}{$parent($form:parent)}
+  ^if(!def $form:sortir){$sortir(^catalog.GetNextSortir[$form:idpage;parent])}{$sortir($form:sortir)}
+  $id[^catalog.Insert[$form:name;$form:idpage;$parent;$sortir;$form:type]]
+  ^make_rewrite[]
+  $response:refresh[$.value(0)$.url[index.html?parent=$parent&idpage=$form:idpage&id=$form:idblock#$id]]
+ }{^insert_error_fields[]}
+}
+################################################################################

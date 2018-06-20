@@ -1,0 +1,14 @@
+################################################################################
+@main[]
+^connect[$site:connectString]{
+ ^if(def $form:login){
+  ^try{
+   $tmp[^users.UpdateUserAccess[$form:login]]
+  }{
+   $exception.handled(1)
+  }
+ }
+# Переходим к списку пользователей
+ $response:refresh[$.value(0)$.url[${cms.cmsFolder}/${users.modulePath}/access.html?login=$form:login]]
+}
+################################################################################

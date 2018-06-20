@@ -1,0 +1,31 @@
+@PrepareHistory[history]
+^if(def $history){
+	^if($history.CLASS_NAME eq 'hash'){
+		$replaces[
+			$.[<function>][<span class='tB red'>]
+			$.[</function>][</span>]
+			$.[<params>][<span class='tB'>]
+			$.[</params>][</span>]
+			$.[<table>][<span class='tB green'>]
+			$.[</table>][</span>]
+			$.[<variable>][<span class='tB'>]
+			$.[</variable>][</span>]
+			$.[<highlight>][<span class='tB'>]
+			$.[</highlight>][</span>]
+		]
+		^history.foreach[num;value]{
+			<p align="justify">
+				<strong><u>Версия ^value.version.format[%.2f] ($value.date):</u></strong>
+				^if($value.changes>0){
+				<ol>
+					^value.changes.foreach[num;text]{
+					<li>^str_replace[$text;$replaces]</li>
+					}
+				</ol>
+				}
+			</p>
+		}
+	}{
+		$history
+	}
+}

@@ -1,0 +1,7 @@
+################################################################################
+@main[]
+^if(def $form:name && def $form:id){
+ ^use[textext.p]
+ $result(^connect[$site:connectString]{^textext::UpdatePageBlockName[$form:id;$form:name]})
+}{$result(0)}
+################################################################################

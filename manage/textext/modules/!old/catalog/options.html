@@ -1,0 +1,50 @@
+################################################################################
+@cms_body[]
+^if(def $form:id && def $form:idpage){
+ ^edit_block_options[]
+}{
+ ^insert_error_fields[]
+}
+################################################################################
+@edit_block_options[]
+# Выводим заголовок страницы
+^cms.ShowPageHeader[Настройки каталога для раздела "^site:GetPageNameById[$form:idpage]";$cms.currentModule.path;^catalog.GetClassInfo[]]
+<table border="0" cellspacing="0" cellpadding="0">
+ <tr>
+  <td><a href="/manage/textext/?idpage=$form:idpage">К списку блоков</a></td>
+  <td style="padding-left:20px^;"><a href="index.html?id=$form:id&idpage=$form:idpage">К каталогу</a></td>
+  <td style="padding-left:20px^;"><a href="options_clear.html?id=$form:id&idpage=$form:idpage">Очистить настройки</a></td>
+ </tr>
+</table>
+<br>
+$count(^textext:GetOptionsCount[$form:id])
+^if($count==0){$res[^catalog.CreateNewOptions[$form:id]]}
+$table_opt[^textext:GetOptions[$form:id]]
+<table cellpadding="5" cellspacing="1" bgcolor="#999999"> 
+ <tr class="tH">
+  <td>Название настройки</td>
+  <td>Значение</td>
+  <td colspan="2">Действия</td>
+ </tr>
+ ^table_opt.menu{
+ <form method="post" action="options_edit.html">
+ <input type="hidden" name="id" value="$table_opt.id">
+ <input type="hidden" name="idte" value="$form:id">
+ <input type="hidden" name="idpage" value="$form:idpage">
+ ^if($table_opt.type_field!=2){
+ <tr class="tN">
+  <td>$table_opt.named</td>
+  <td>
+   ^switch[$table_opt.type_field]{
+    ^case[0]{<input type="text" name="value" value="$table_opt.value" style="width:50px">}
+    ^case[1]{<input type="checkbox" name="value" ^if($table_opt.value==1){checked} value="1">}
+   }
+  </td>
+  <td><input type="submit" name="save" value="Сохранить"></td>
+  <td><input type="reset" name="reset" value="Отменить"></td>
+ </tr> 
+ }{<tr class="tN"><td colspan="4"><hr></td></tr>}
+ </form>
+ }
+</table>
+################################################################################

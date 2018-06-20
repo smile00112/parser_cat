@@ -1,0 +1,29 @@
+^if(def $form:text && def $form:guest_name && def $form:block_id && def $form:unit_id && def $form:code && def $form:maxid){
+	$params[
+		$.text[$form:text]
+		$.guest_name[$form:guest_name]
+		$.block_id($form:block_id)
+		$.unit_id($form:unit_id)
+	]
+# 	^if(def $form:user_id){$params.user_id($form:user_id)}
+	^if(def $form:parent){$params.parent($form:parent)}
+	^use[site.p;$.replace(true)]
+	^use[comments.p;$.replace(true)]
+	^use[controlimage.p;$.replace(true)]
+	$check[^controlimage:proverka_controlimage[^form:code.int[];$form:maxid]]
+	^if(def $check){
+		^connect[$site:connectString]{
+			$answer(^comments:AddComment[$params])
+		}
+		^switch($answer){
+			^case(-1){$result[Недостаточно параметров]}
+			^case(0){$result[Ошибка добавления комментария]}
+			^case(1){$result[Комментарий добавлен]}
+			^case[DEFAULT]{$result[Неизвестный ответ]}
+		}
+	}{
+		$result[Вы неверно ввели код]
+	}
+}{
+	$result[Пожалуйста, заполните все поля]
+}

@@ -1,0 +1,17 @@
+################################################################################
+@cms_body[]
+# Получаем путь к модулю
+^connect[$site:connectString]{
+	^if(def $form:login && def $form:fio && def $form:password1 && $form:password1 eq $form:password2){
+		$admins[^table::sql{SELECT login FROM admins WHERE login='$form:login'}]
+		^if(!def $admins){
+			$tmp[^void:sql{INSERT INTO admins (login, password, fio, level) VALUES ('$form:login', '^math:crypt[$form:password1;$cms.cryptValue]','$form:fio', '$form:level')}]
+		}
+	}
+}
+# Переходим к списку элементов
+$response:refresh[
+	$.value(0)
+	$.url[${cms.cmsFolder}/${cms.currentModulePath}/]
+]
+################################################################################

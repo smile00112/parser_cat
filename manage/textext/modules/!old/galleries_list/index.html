@@ -1,0 +1,76 @@
+################################################################################
+@cms_body[]
+# Выводим шапку
+^cms.ShowPageHeader[Оглавление фотогалереи для раздела "^site:GetPageNameById[$form:idpage]";textext/modules/${galleries_list.className};^galleries_list.GetClassInfo[]]<br>
+<a href="/manage/textext/?idpage=$form:idpage">Назад к списку блоков</a><br><br>
+# ------------------------------------------------------------------------------
+# Получаем список всех галерей
+$table_values[^galleries_list.GetGalleriesList[$form:id]]
+^if(def $table_values){
+ <table cellpadding="5" cellspacing="1" bgcolor="#999999">
+	<tr class="tH">
+	 <td align="center">id</td>
+	 <td align="center">Страница</td>
+	 <td align="center">Название</td>
+	 <td align="center">Тип блока</td>
+   <td align="center">Изображение</td>
+	 <td align="center">Комментарий</td>
+   <td>Действия</td>
+	</tr>
+ $rown(0)
+ ^table_values.menu{
+  ^rown.inc(1)
+  $blockInfo[^textext:GetBlockInfo[$table_values.id_block]]
+  $ext[^site:GetImageExtention[${galleries_list.imagesPath.small}/;$table_values.id]]
+  <tr class="tN">
+   <td align="center">$table_values.id</td>
+	 <td align="left">^site:GetPageNameById[$table_values.id_page]</td>
+	 <td align="left">$table_values.name</td>
+   <td align="center">^if($blockInfo.pref_block eq 'gallery'){Галерея}{Оглавление}</td>
+   <td>^if($ext ne 'no'){<a href="${galleries_list.imagesPath.big}/${table_values.id}.${ext}" class="fancybox"><font color="green"><b>Да</b></font></a>}{<font color="red"><b>Нет</b></font>}</td>
+   <td align="center">$table_values.comment</td>
+   <td align="center">
+    <table border="0" cellpadding="2" cellspacing="0">
+     <tr>
+      ^if(^table_values.count[]>1){
+      <td width="22">^if($rown>1){<a href="changeBlockPosition.html?up=yes&id=$table_values.id&id_block=$form:id&idpage=$form:idpage"><img src="/manage/i/actions/up.gif" border="0" alt="Поднять выше" title="Поднять выше"></a>}{&nbsp^;}</td>
+      <td width="22">^if($rown<^table_values.count[]){<a href="changeBlockPosition.html?id=$table_values.id&id_block=$form:id&idpage=$form:idpage"><img src="/manage/i/actions/down.gif" border="0" alt="Опустить ниже" title="Опустить ниже"></a>}{&nbsp^;}</td>
+      }
+      <td width="22"><a href="edit.html?id=$table_values.id&id_block=$form:id&idpage=$form:idpage"><img src="/manage/i/actions/edit.gif" border="0" alt="Редактировать" title="Редактировать"></a></td>
+      <td width="22"><img src="/manage/i/actions/delete.gif" style="cursor:pointer" alt="Удалить" title="Удалить" onclick="if (confirm('Вы хотите удалить данную позицию?')){window.location.href='del.html?id=$table_values.id&id_block=$form:id&idpage=$form:idpage'}"></td>
+     </tr>
+    </table>
+   </td>
+  </tr>
+ }
+ </table>
+}{<strong>Не найдено ниодной записи</strong><br>}
+<hr>
+<br>
+# Выводим форму для добавления галереи
+$galleries[^galleries_list.GetGalleries[]]
+^if(def $galleries){
+<form method="post" action="add.html">
+ <input type="hidden" name="id" value="$form:id">
+ <input type="hidden" name="idpage" value="$form:idpage">
+ <table cellpadding="5" cellspacing="1" bgcolor="#999999">
+  <tr class="tH">
+   <td colspan="2">Добавить галерею</td>
+  </tr>
+  <tr class="tN">
+   <td>
+    <select name="id_block">
+    ^galleries.menu{
+     ^if($galleries.id ne $form:id){<option value="$galleries.id" ^if(^galleries_list.CheckGalleryPresent[$galleries.id;$form:id]==1){disabled}>^site:GetPageNameById[$galleries.idpage]</option>}
+    }
+    </select>
+   </td>
+   <td><input type="submit" value="Добавить"></td>
+	</tr>
+ </table>
+</form>
+<p>Выберите галерею (или её оглавление) из списка и добавьте для отображения в блоке.</p>
+}{
+<p>Не найдено ниодной галереи. Сначала добавьте страницы с галереями в структуре сайта.</p>
+}
+################################################################################

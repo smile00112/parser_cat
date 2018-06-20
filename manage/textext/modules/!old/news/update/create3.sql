@@ -1,0 +1,1 @@
+CREATE TABLE IF NOT EXISTS news_group ( id int(11) unsigned NOT NULL auto_increment, name varchar(255) default NULL, rewrite varchar(255) default NULL, sortir int(10) unsigned default NULL, id_page int(10) unsigned default '0', PRIMARY KEY  (id) )

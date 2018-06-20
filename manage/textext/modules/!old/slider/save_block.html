@@ -1,0 +1,13 @@
+################################################################################
+@cms_body[]
+^if(def $form:id){
+	^if(def $form:edit_descript){
+		^void:sql{update te_slideshow set descript='$form:descript' where id='$form:id'}
+	}{
+	 $tmp[$form:link]
+	 $link[^tmp.trim[left;http://]] 
+		^void:sql{update te_slideshow set sortir='$form:sortir', link='$link' where id='$form:id'}
+	}
+}
+$response:location[index.html?id=$form:id_te&idpage=$form:idpage&idpage_name=$form:idpage_name]
+################################################################################

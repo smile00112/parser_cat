@@ -1,0 +1,29 @@
+################################################################################
+@CLASS
+orders
+################################################################################
+@OPTIONS
+locals
+################################################################################
+@create[folder]
+$self.mainFolder[$folder]
+$self.email[kolibri@bryansk.in]
+################################################################################
+@ClassInfo[]
+$result[
+ $.classVersion[1.0]
+ $.classBuildDate[17.07.2013]
+ $.classDeveloper[Баранов Вадим Сергеевич]
+ $.classNmae[orders]
+ $.classDescription[Заказ запчастей]
+]
+################################################################################
+@ShowTemplate[filename]
+$t[^file::load[text;$filename]]
+$template[^untaint{$t.text}]
+$result[^process{$template}]
+################################################################################
+@ShowOrderForm[]
+^self.ShowTemplate[/tmpl${self.mainFolder}/orderForm.html]
+^self.ShowOrderFormTemplate[]
+################################################################################

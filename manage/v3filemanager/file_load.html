@@ -1,0 +1,63 @@
+@main[]
+<html>
+	<head>
+		<link href="/i/univ.css" rel="stylesheet" type="text/css">
+		<script type="text/javascript" src="/lib/jquery.js"></script>
+		<link href="/manage/v3filemanager/css/style.css" rel="stylesheet" type="text/css">
+		<script type="text/javascript" src="/manage/v3filemanager/js/jquery-1.8.2.js"></script>
+		<script type="text/javascript" src="/manage/v3filemanager/js/jquery-ui-1.9.1.custom.min.js"></script>
+		<script type="text/javascript" src="/manage/v3filemanager/js/script.js"></script>
+		<!-- plupload -->
+		<link rel="stylesheet" href="/manage/v3filemanager/plupload/jquery.plupload.queue/css/jquery.plupload.queue.css" type="text/css" media="screen" />
+		<script type="text/javascript" src="/manage/v3filemanager/plupload/browserplus-min.js"></script>
+		<script type="text/javascript" src="/manage/v3filemanager/plupload/plupload.js"></script>
+		<script type="text/javascript" src="/manage/v3filemanager/plupload/plupload.silverlight.js"></script>
+		<script type="text/javascript" src="/manage/v3filemanager/plupload/plupload.flash.js"></script>
+		<script type="text/javascript" src="/manage/v3filemanager/plupload/plupload.browserplus.js"></script>
+		<script type="text/javascript" src="/manage/v3filemanager/plupload/plupload.html5.js"></script>
+		<script type="text/javascript" src="/manage/v3filemanager/plupload/jquery.plupload.queue/jquery.plupload.queue.js"></script>
+		<script type="text/javascript" src="/manage/tiny/tiny_mce_popup.js"></script>
+		<script type="text/javascript" src="/manage/tiny/tiny_mce.js"></script>
+	</head>
+	<body>
+		$uri_get[$form:url]
+		<script type="text/javascript">
+		^$(function() {
+			^$("#uploader").pluploadQueue({
+				runtimes : 'html5,silverlight,flash',
+				url : 'upload.html',
+				rename: true,
+				multipart_params: {url_get: '$uri_get'},
+				flash_swf_url : '/manage/v3filemanager/plupload/plupload.flash.swf',
+				silverlight_xap_url : '/manage/v3filemanager/plupload/plupload.silverlight.xap'
+			});
+		});
+		</script>
+		<div id='formFile'>
+			<form id="file_load" >
+				<div id="uploader" style=''>
+					<div id='wnd_title' style='width:100%;height:16px;font-weight:bold;'>
+#			Во время загрузки плагина
+						<p style="text-align:center;display:block;" id="ld">Загрузка плагина...
+						<br><br>
+						<img src="/manage/i/loader.gif" width=64 height=64>
+						</p>
+#			Если плагин не загрузился
+						<p style="text-align:center;display:none;" id="foo">Ваш браузер не поддерживает Flash, Silverlight, HTML5
+						</p>
+						<script>
+						(function(){
+							setTimeout(function(){
+								var foo = document.getElementById('foo');
+								foo.style.display = 'block';
+								var ld = document.getElementById('ld');
+								ld.style.display = 'none';
+							}, 5000);
+						})();
+						</script>
+					</div>
+				</div>
+			</form>
+		</div>
+	</body>
+</html>

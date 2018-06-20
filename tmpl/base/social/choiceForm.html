@@ -1,0 +1,47 @@
+@ShowChoiceFormTemplate[user]
+<!DOCTYPE html>
+<html>
+	<head>
+		<link href='http://fonts.googleapis.com/css?family=Cuprum&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+		<link type="text/css" rel="stylesheet" href="${site:templateFolder}/styles/choice.css">
+		<script src="/lib/jquery/jquery-1.11.2.min.js"></script>
+		<script type="text/javascript" src="${site:templateFolder}/scripts/choice.js"></script>
+	</head>
+	<body>
+		<div class="choiceBlock">
+			<div class="newUser">
+				<h1>Новый аккаунт</h1>
+				<form action="${social:handlersPath}/bind.html" method="post">
+					<input type="hidden" name="action" value="new">
+					<input type="hidden" name="account_id" value="$user.account_id">
+					<div class="regString">
+						<div class="label">Логин:</div><div class="field"><input type="text" name="login" value="$user.nickname"/></div>
+					</div><div class="regString">
+						<div class="label">Пароль:</div><div class="label"><input type="password" name="password"/></div>
+					</div>
+					<div class="regString submit">
+						<input class="button" type="submit" value="Создать"/>
+					</div>
+				</form>
+				<div class="message"></div>
+				<p>Создать новый аккаунт на основании данных из профиля в соц. сети.</p>
+			</div><div class="linkUser">
+				<h1>Существующий аккаунт</h1>
+				<form action="${social:handlersPath}/bind.html" method="post">
+					<input type="hidden" name="action" value="bind">
+					<input type="hidden" name="account_id" value="$user.account_id">
+					<div class="regString">
+						<div class="label">Логин:</div><div class="field"><input type="text" name="login"/></div>
+					</div><div class="regString">
+						<div class="label">Пароль:</div><div class="label"><input type="password" name="password"/></div>
+					</div>
+					<div class="regString submit">
+						<input class="button" type="submit" value="Привязать"/>
+					</div>
+				</form>
+				<div class="message"></div>
+				<p>Привязать профиль соц. сети к существующему аккаунту на сайте.</p>
+			</div>
+		</div>
+	</body>
+</html>

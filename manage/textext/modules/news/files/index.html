@@ -1,0 +1,50 @@
+################################################################################
+@cms_body[]
+#-------------------------------------------------------------------------------
+<script src="./scripts/actions.js" type="text/javascript"></script>
+<link href="./styles/style.css" rel="stylesheet" type="text/css">
+#-------------------------------------------------------------------------------
+# Если параметры передаются
+^if(def $form:id && def $form:idpage){
+# Выводим заголовок страницы
+	^cms.ShowPageHeader[Файлы для новости "^textext:GetFixedText[^this.GetNewsNameById[$form:id];40;...];$cms.currentModule.path;^this.GetClassInfo[]]
+	<p class="cms_h2">
+		<a href="../?id=$idblock&idpage=$form:idpage&page=${form:newspage}"><i class="fa fa-reply fa-3x inline blue mr10"></i>К новости</a>
+		^if($cms.cmsUserLevel>0){
+		<span id="addSlideBtn" data-width="400" data-href="add_files.html?id=$form:id" data-title="Добавить файлы" data-reload="true" class="pointer ml20" onClick="^$(this).OpenFancybox()^;">
+			<i class="fa fa-plus fa-3x inline blue mr10"></i>Добавить файлы
+		</span>
+		}
+	</p>
+	$params[
+		$.limitCount(9999999)
+	]
+	$files[^this.GetFiles[$form:id;$params]]
+	^if(!def $files){
+	<h1 class="cms_h1">Файлы не добавлены</h1>
+	}{
+	<div class="files">
+		<div class="file_string">
+			<div class="name">Файл</div>
+			<div class="description">Имя</div>
+			<div class="sort">Сортировка</div>
+			<div class="actions">Действие</div>
+		</div>
+		^files.menu{
+		<div class="file_string" data-id="$files.id">
+			<div class="name">$files.name</div>
+			<div class="description"><input type="text" name="descript" value="$files.descript" class="cms_input" onChange="^$(this).Save()^;"></div>
+			<div class="sort"><input type="text" name="sortir" value="$files.sortir" class="cms_input" onChange="^$(this).SavePosition()^;"></div>
+			<div class="actions">
+				<i class="fa ^if($files.visible == 1){fa-eye}{fa-eye-slash} fa-3x inline pointer pl5 pr30 blue" title="^if($files.visible == 1){Скрыть}{Отобразить}" onClick="^$(this).ChangeVisible()^;"></i>
+				<span class="fa-stack fa-2x inline pointer blue delete" title="Удалить" onClick="^$(this).Delete()^;">
+					<i class="fa fa-square-o fa-stack-2x"></i>
+					<i class="fa fa-times fa-stack-1x"></i>
+				</span>
+			</div>
+		</div>
+		}
+	</div>
+	}
+}
+################################################################################

@@ -1,0 +1,40 @@
+@ShowLastNewsTemplate[newsPageId;count;link]
+# Список новостей
+$tb_news[^news:GetNews[$newsPageId;$count]]
+# Если есть хоть 1 новость
+^if($tb_news){
+ <ul class="news lastNews">
+ $pageUrl[^self.GetPageUrlById[$tb_news.id_page]]
+ ^if(def $link){<a href="/$pageUrl/"><h2>Новости</h2></a>}{<h2>Новости</h2>}
+ ^tb_news.menu{
+   $dt_news[^dtf:create[$tb_news.date_news;^date::now[]]]
+   $gallery_one[^news:GetGallery[$tb_news.id;yes]]
+   $news_url[/$pageUrl/^news:GetNewsUrl[$tb_news]/]
+   $authorName[^user::GetUserNameById[$tb_news.user_id]]
+   <li>
+    <div class="nImg">
+     ^if(def $gallery_one.path){
+      <a href="$news_url">
+       <img src="${news:imagesFolder}/s_$gallery_one.path" alt="$gallery_one.descript" title="$gallery_one.descript">
+      </a>
+     }{
+      <a href="$news_url">
+       <img src="${news:imagesFolder}/no_image.png" alt="$site:name" title="$site:name" align="left"/>
+      </a>
+     }
+    </div>
+    <div class="nCont">
+#     <span class="nInfo">
+#      Автор: ^if($tb_news.user_id>0){<a href="${user:userInfoFolder}/?user_id=$tb_news.user_id" title="$authorName">$authorName</a>}{Администратор}<br/>
+#      <b>^dtf:format[%d %h %Y;$dt_news;$dtf:rr-locale]</b>
+#     </span>
+     <h5 class="nHeader"><a href="$news_url">$tb_news.head</a></h5>
+#     <div class="nText">
+#      ^untaint{$tb_news.body}
+#     </div>
+    </div>
+   </li>
+  }
+ </ul>
+ <span class="text_right"><a href="/$pageUrl/">Все новости</a></span>
+}

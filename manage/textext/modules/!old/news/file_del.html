@@ -1,0 +1,10 @@
+@cms_body[]
+		
+	^if(def $form:news_id && def $form:idpage && def $form:delete_file){
+			$photo_path[^table::sql{select * from news_files where id='$form:delete_file'}]
+			$big[/nfiles/news/b_${photo_path.path}]
+			^try{^file:delete[$big]}{$exception.handled(1)}
+			^void:sql{delete from news_files where id='$form:delete_file'}
+	}
+$response:location[files.html?idpage=$form:idpage&news_id=$form:news_id]
+

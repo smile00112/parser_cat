@@ -1,0 +1,4 @@
+AuthName "You must authorize"
+AuthType Basic
+Require valid-user
+AuthUserFile "/var/www/websun/data/www/cat.websun-com.ru/cgi-bin/.htpasswd"

@@ -1,0 +1,42 @@
+################################################################################
+@cms_body[]
+# Выводим шапку
+^cms.ShowPageHeader[Материалы для раздела "^site:GetPageNameById[$form:idpage]";$cms.currentModule.path;^textext.GetClassInfo[]]
+ <br>
+ <a href="./?idpage=$form:idpage&idpage_name=$form:idpage_name"><strong>Назад к списку блоков</strong></a>
+ ^if(def $form:width){$width($form:width)}{$width(300)}
+ $path[/images/${textext.className}/small/${form:idpage}/]
+ $images[^textext:GetMaterialsImages[$form:idpage]]
+ ^if($images>0){
+  <div class="material_images">
+  ^images.foreach[key;value]{
+   <span class="material">
+    <img src="${path}${value.full_name}" width="100">
+    <a href="del_image.html?image=$value.full_name&idpage=$form:idpage&idpage_name=$form:idpage_name&width=$width">x</a>
+   </span>
+  }
+  </div>
+ }{<br>}
+ ^show_image_add_form[]
+# ------------------------------------------------------------------------------
+################################################################################
+@show_image_add_form[]
+<h2>Добавить новые изображения<h2>
+<form method="post" enctype="multipart/form-data" action="add_images.html">
+ <input type="hidden" name="id" value="$form:id">
+ <input type="hidden" name="idpage" value="$form:idpage">
+ <input type="hidden" name="idpage_name" value="$form:idpage_name">
+ <table border="0" cellspacing="1" cellpadding="4" bgcolor="#999999">
+  <tr class="tN">
+   <td><strong>Ширина</strong></td>
+   <td><input type="text" name="width" value="$width"></td>
+  </tr>
+  <tr class="tN">
+   <td colspan="2"><input type="file" name="multifiles" id="multifiles" multiple="true"></td>
+  </tr>
+  <tr class="tN">
+   <td colspan="2"><input type="submit" value="Добавить"></td>
+  </tr>
+ </table>
+</form>
+################################################################################

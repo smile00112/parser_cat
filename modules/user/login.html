@@ -1,0 +1,26 @@
+################################################################################
+@main[]
+^if(def $form:login && def $form:password){
+	^connect[$site:connectString]{
+		$loginStatus[^site:user.auth.LogIn[$form:login;$form:password]]
+		^if($loginStatus.login){
+			$answer[
+				$.error(false)
+				$.text[Пользователь авторизован]
+				$.user[$loginStatus.user]
+			]
+		}{
+			$answer[
+				$.error(true)
+				$.text[Неверная пара логин/пароль]
+			]
+		}
+	}
+}{
+	$answer[
+		$.error(true)
+		$.text[Переданы не все параметры]
+	]
+}
+$result[^json:string[$answer;$.indent(true)]]
+################################################################################

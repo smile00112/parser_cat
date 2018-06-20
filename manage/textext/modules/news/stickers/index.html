@@ -1,0 +1,46 @@
+################################################################################
+@cms_body[]
+#-------------------------------------------------------------------------------
+<script src="./scripts/actions.js" type="text/javascript"></script>
+#-------------------------------------------------------------------------------
+# Если параметры передаются
+^if(def $form:id && def $form:idpage){
+# Выводим заголовок страницы
+	^cms.ShowPageHeader[Стикеры;$cms.currentModule.path;^this.GetClassInfo[]]
+	<p class="cms_h2">
+		<a href="../?id=$idblock&idpage=$form:idpage&page=${form:newspage}"><i class="fa fa-reply fa-3x inline blue mr10"></i>К новости</a>
+		^if($cms.cmsUserLevel>0){
+		<span id="addSlideBtn" data-width="400" data-href="add_sticker.html?id=$form:id" data-title="Добавить стикер" data-reload="true" class="pointer ml20" onClick="^$(this).OpenFancybox()^;">
+			<i class="fa fa-plus fa-3x inline blue mr10"></i>Добавить стикер
+		</span>
+		}
+	</p>
+	$params[
+		$.limitCount(9999999)
+	]
+	$stickers[^this.GetStickers[$params]]
+	^if(!def $stickers){
+		<h1 class="cms_h1">Стикеры не добавлены</h1>
+	}{
+		<table class="table_dsb">
+			<tr class="aC">
+				<td class="aL">Имя</td>
+				<td>Сортировка</td>
+				<td>Действие</td>
+			</tr>
+			^stickers.menu{
+			<tr data-id="$stickers.id">
+				<td><input type="text" name="name" value="$stickers.name" class="cms_input" style="width: 200px^;" onChange="^$(this).Save()^;"></td>
+				<td class="aC"><input type="text" name="sortir" value="$stickers.sortir" class="cms_input aC" style="width: 35px^;" onChange="^$(this).SavePosition()^;"></td>
+				<td>
+					<span class="fa-stack fa-2x inline pointer pl30 blue delete" title="Удалить" onClick="^$(this).Delete()^;">
+						<i class="fa fa-square-o fa-stack-2x"></i>
+						<i class="fa fa-times fa-stack-1x"></i>
+					</span>
+				</td>
+			</tr>
+			}
+		</table>
+	}
+}
+################################################################################

@@ -1,0 +1,52 @@
+################################################################################
+@inMain[]
+^cms.ShowModalHeader[]
+^if(def $form:element_id){
+	^connect[$site:connectString]{
+		$element[^this.GetVideo[$.IDs($form:element_id)]]
+		$elementName[Изменение родителя для $this.elementTypes.[$element.type].titleRE: "^textext:GetFixedText[$element.name;40;...]"]
+		$allElements[^this.GetVideo[$.blockIDs($element.block_id)$.type(0)$.excludeIDs($form:element_id)]]
+		<link href="./styles/parent.css" rel="stylesheet" type="text/css">
+		<script src="./scripts/parent.js" type="text/javascript"></script>
+		<div class="header cms_h1^if(^elementName.length[]>45){ small}">$elementName</div>
+		<div class="elements" data-element-id="$form:element_id">
+			<div class="elements-table">
+				<ul class="element-string^if($elementChilds){ close}" data-id="0">
+					<li>
+						<span class="element-name-wrapper">
+							^if($allElements){<i class="fa fa-chevron-up"></i>}<span class="element-name">Корневой родитель</span>
+						</span>
+					</li><li>
+						<div id="callout_0" class="callout"></div>
+						<input type="checkbox"^if($element.parent == 0){ checked}>
+					</li>
+					^ShowGalleries[$allElements;0;$element.parent]
+				</ul>
+			</div>
+		</div>
+	}
+}{
+	<h1>Неизвестный элемент</h1>
+}
+^cms.ShowModalFooter[]
+################################################################################
+@ShowGalleries[allElements;parent;currentParent;counter][elements;elementChilds]
+^if(!def $counter){$counter(1)}
+$elements[^allElements.select($allElements.parent eq $parent)]
+^if(def $elements){
+	^elements.menu{
+		$elementChilds[^allElements.select($allElements.parent == $elements.id)]
+		<ul class="element-string^if($elementChilds){ close}" data-id="$elements.id">
+			<li>
+				<span style="margin-left: ^eval($counter*20)px^;" class="element-name-wrapper">
+					^if($elementChilds){<i class="fa fa-chevron-up"></i>}<span class="element-name">$elements.name</span>
+				</span>
+			</li><li>
+				<div id="callout_$elements.id" class="callout"></div>
+				<input type="checkbox"^if($elements.id == $currentParent){ checked}>
+			</li>
+			^if($elementChilds){^ShowGalleries[$allElements;$elements.id;$currentParent;^eval($counter+1)]}
+		</ul>
+	}
+}
+################################################################################

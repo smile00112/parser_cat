@@ -1,0 +1,10 @@
+@cms_body[]
+^if(def $form:idpage && def $form:name && def $form:sortir){
+	^use[/classes/gke/gke_text_utilits.p]
+	$rewrite[^text_utilits:translit_text[$form:name]]
+	^void:sql{insert into news_group (name, sortir, id_page,rewrite) values ('$form:name', '$form:sortir', $form:idpage,'^rewrite.lower[]')}
+	^make_rewrite[]
+	$response:location[groups.html?idpage=$form:idpage]
+}{
+	^insert_error_fields[]
+}

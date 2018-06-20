@@ -1,0 +1,50 @@
+################################################################################
+@main[]
+^connect[$site:connectString]{
+	^switch[$form:action]{
+		^case[add]{
+			$params[
+				$.blockIDs[$form:idblock]
+				$.type($form:type)
+				$.parent($form:parent)
+				$.name[^if(def $form:name){$form:name}{^if(!$form:type){Новая видеогалерея}}]
+				$.src[$form:src]
+			]
+			$answer[^this.InsertVideo[$params]]
+			^if(!$answer.error){^make_rewrite[]}
+		}
+		^case[crop_image]{
+			$params[
+				$.x($form:x)
+				$.y($form:y)
+				$.width($form:width)
+				$.height($form:height)
+			]
+			$answer[^this.CropImage[$form:element_id;$params]]
+		}
+		^case[delete_image]{
+			$answer[^this.DeleteImage[$form:id]]
+		}
+		^case[update_visible]{
+			$answer[^this.SetVisible[$form:id]]
+		}
+		^case[delete]{
+			$answer[^this.DeleteVideo[$form:id]]
+		}
+		^case[save_field]{
+			$answer[^this.SaveField[$form:id;$form:field;$form:value]]
+		}
+		^case[change_parent]{
+			$answer[^this.ChangeParent[$form:element_id;$form:parent]]
+			^if(!$answer.error){^make_rewrite[]}
+		}
+		^case[DEFAULT]{
+			$answer[
+				$.error(true)
+				$.text[Неизвестное действие $form:action]
+			]
+		}
+	}
+}
+$result[^json:string[$answer;$.indent(true)]]
+################################################################################

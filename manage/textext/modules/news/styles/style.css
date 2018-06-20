@@ -1,0 +1,96 @@
+.block_news{
+	border-bottom:	1px dashed #999999;
+	padding:				10 0px;
+	vertical-align: top;
+}
+
+.block_news:after {
+	content:				'';
+	display:				block;
+	clear:					both;
+}
+
+.block_news .block_image{
+	float:					left;
+	min-width:			200px;
+	padding-right:	10px;
+	font-size:			20px;
+	text-align:			center;
+}
+
+.block_news .block_image .image_main {
+	margin-bottom:	5px;
+	display:				table;
+  vertical-align:	middle;
+	border:					1px dashed #999999;
+}
+
+.block_news .block_image .image_main > div {
+	display:				table-cell;
+  vertical-align:	middle;
+}
+
+.block_news .block_fields{
+	overflow:				hidden;
+	font-family:		"Cuprum",Tahoma;
+	font-size:			16px;
+}
+
+.block_news .block_fields .block_string{
+	padding:				5 0px;
+	border-bottom:	1px dashed #999999;
+	line-height:		30px;
+}
+
+.block_news .block_fields .block_string.multiple.first{
+	padding-top:		0px;
+}
+
+.block_string.multiple .field, .block_string.multiple .label{
+	display:				inline-block;
+  vertical-align:	middle;
+}
+
+.block_string.multiple .label{
+	line-height:		30px;
+}
+
+.block_news .block_fields .label{
+	text-align:			right;
+	padding:				0 15px;
+}
+
+.block_news .block_fields .main{
+	float:					left;
+	width:					70px;
+	padding-left:		0px;
+	line-height:		30px;
+}
+
+.block_news .block_fields .field{
+	overflow:				hidden;
+}
+
+.block_news .block_fields .field > input[type="text"]{
+	width:					100%;
+}
+
+.block_news .block_fields .field .date{
+	width:					72px!important;
+}
+
+.block_news .block_fields .field .time{
+	width:					35px!important;
+}
+
+.block_news .block_image .image_main .editThumb{
+	position:				absolute;
+	left:						0;
+	top:						0;
+	font-size:			14px;
+}
+
+.news_image{
+	font-family:		"Cuprum",Tahoma;
+	font-size:			26px;
+}

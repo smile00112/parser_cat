@@ -1,0 +1,5 @@
+field	sql_field	rename
+id	`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+id_page	`id_page` int(11) unsigned NOT NULL DEFAULT '0',
+full_text	`full_text` text,
+	PRIMARY KEY (`id`)

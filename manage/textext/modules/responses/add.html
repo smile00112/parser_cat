@@ -1,0 +1,77 @@
+################################################################################
+@cms_body[]
+# Если что-то передаётся, то пробуем это добавить
+^if(def $form:last_name){
+# ^if(def $form:last_name && def $form:first_name && def $form:opinion){
+# Инициализируем переменную first_name значением поля first_name
+ $first_name[$form:first_name]
+# Инициализируем переменную last_name значением поля last_name
+ $last_name[$form:last_name]
+# Инициализируем переменную organisation значением поля organisation
+ $organisation[$form:organisation]
+# Инициализируем переменную post значением поля post
+ $post[$form:post]
+# Инициализируем переменную site значением поля site
+ $site[$form:site]
+# Инициализируем переменную opinion значением поля opinion
+ $opinion[$form:opinion]
+# Добавляем сотрудника в базу данных
+ $res[^responses.Insert[$last_name;$first_name;$organisation;$post;$site;$opinion]]
+# Переходим к списку отзывов
+ $response:refresh[$.value(0)$.url[/manage/${cms.currentModulePath}/?id=$form:idblock&idpage=$form:idpage]]
+}{
+# Выводим шапку
+^cms.ShowPageHeader[Отзывы - Добавить отзыв;$cms.currentModule.path;^responses.GetClassInfo[]]
+<a href="index.html?id=$form:idblock&idpage=$form:idpage">Назад к списку отзывов</a><br><br>
+<form method="post" action="add.html">
+<input type="hidden" name="idblock" value="$form:idblock">
+<input type="hidden" name="idpage" value="$form:idpage">
+<table cellspacing="1" cellpadding="5" bgcolor="#999999">
+ <tr>
+  <td class="tH">Отзыв:</td>
+#   <td class="tH">Фамилия:</td>
+  <td class="tH">ФИО:</td>
+  <td class="tN">
+   <input type="text" name="last_name" size="30" style="width:210px^;">
+  </td>
+ </tr>
+ <tr height="1">
+  <td rowspan="5" class="tN">
+   ^cms.InsertTiny[]
+   <textarea id="elm" name="opinion" rows="2" cols="80" style="width: 100%">$form:elm_body</textarea>
+  </td>
+#   <td class="tH">Имя:</td>
+#   <td class="tN">
+#    <input type="text" name="first_name" size="30" style="width:210px^;">
+#   </td>
+#  </tr>
+#  <tr height="1">
+#   <td class="tH">Организация:</td>
+#   <td class="tN">
+#    <input type="text" name="organisation" size="30" style="width:210px^;">
+#   </td>
+#  </tr>
+#  <tr height="1">
+#   <td class="tH">Должность:</td>
+#   <td class="tN">
+#    <input type="text" name="post" size="30" style="width:210px^;">
+#   </td>
+#  </tr>
+#  <tr height="1">
+#   <td class="tH">Сайт:</td>
+#   <td class="tN">
+#    <input type="text" name="site" size="30" style="width:210px^;">
+#   </td>
+#  </tr>
+#  <tr>
+#   <td colspan="2" class="tN">&nbsp^;</td>
+#  </tr>
+ <tr>
+  <td colspan="3" class="tN">
+   <input type="submit" value="Сохранить">
+  </td>
+ </tr>
+</table>
+</form>
+}
+################################################################################

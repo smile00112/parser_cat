@@ -1,0 +1,10 @@
+field
+`id` int(1) unsigned NOT NULL AUTO_INCREMENT,
+`page_id` int(1) unsigned NOT NULL,
+`block_id` int(1) unsigned NOT NULL,
+`name` varchar(255) NOT NULL,
+`ext` varchar(5) NOT NULL,
+`comment` varchar(255) NOT NULL,
+`sortir` int(1) unsigned NOT NULL,
+`creation_date` datetime NOT NULL,
+PRIMARY KEY (`id`)

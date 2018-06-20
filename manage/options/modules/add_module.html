@@ -1,0 +1,127 @@
+################################################################################
+@main[]
+^cms.ShowModalHeader[]
+# Если передаются необходимые параметры для добавления
+^if(def $form:description && def $form:name && def $form:path){
+# Инициализируем настройки добавления
+	$params[
+		$.type($form:type)
+		$.level($form:level)
+		$.description[$form:description]
+		$.name[$form:name]
+		$.path[$form:path]
+	]
+	^if(def $form:sortir){$params.sortir($form:sortir)}
+# Подключаемся к БД
+	^connect[$site:connectString]{
+		$res[^this.InsertModule[$params]]
+		^make_rewrite[]
+	}
+	^if(!$res.error){
+		$answerText[Модуль добавлен]
+	}{
+		$answerText[$res.text]
+	}
+	<div class="cms_h1 aC">$answerText</div>
+	<br>
+	<script>
+		setTimeout(function(){
+			parent.^$.fancybox.close()^;
+		}, 1000)^;
+	</script>
+}{
+	<style>
+		form .add_string{
+			padding: 10px 0^;
+			text-align: center^;
+			border-bottom: 1px dashed #999999^;
+		}
+		form .add_column{
+			width: 60%^;
+			display: inline-block^;
+		}
+		form .add_column.first{
+			width: 40%^;
+		}
+		form .add_field_title{
+			float: left^;
+			width: 70px^;
+			font-size: 16px^;
+			line-height: 23px^;
+			text-align: right^;
+			font-family: "Cuprum",Tahoma^;
+		}
+		form .add_field_title.first{
+			width: 50px^;
+		}
+		form .add_field{
+			margin-left: 75px^;
+		}
+		form .add_field.first{
+			margin-left: 55px^;
+		}
+		form .add_field select,
+		form .add_field input[type="text"]{
+			width: 100%^;
+			font-size: 16px^;
+			font-family: "Cuprum", Tahoma^;
+		}
+		form input[type="submit"]{
+			cursor: pointer^;
+		}
+	</style>
+	<form method="post" enctype="multipart/form-data" action="add_module.html">
+		<div class="add_string">
+			<span class="cms_h1">Добавление модуля</div>
+		</div>
+		<div class="add_string">
+			<div class="add_column first">
+				<div class="add_field_title first">Тип:</div>
+				<div class="add_field first">
+					<select name="type" class="typeSelect">
+						<option value="0">Модуль сайта</option>
+						<option value="1">Блок страницы</option>
+					</select>
+				</div>
+			</div><div class="add_column">
+				<div class="add_field_title">Название:</div>
+				<div class="add_field">
+					<input type="text" name="description">
+				</div>
+			</div>
+		</div>
+		<div class="add_string">
+			<div class="add_column first">
+				<div class="add_field_title first">Имя:</div>
+				<div class="add_field first">
+					<input type="text" name="name">
+				</div>
+			</div><div class="add_column">
+				<div class="add_field_title">Путь:</div>
+				<div class="add_field">
+					<input type="text" name="path">
+				</div>
+			</div>
+		</div>
+		<div class="add_string">
+			<div class="add_column first">
+				<div class="add_field_title first">Доступ:</div>
+				<div class="add_field first">
+					<select name="level" class="levelSelect">
+						^users:cmsUserLevels.foreach[key;value]{
+						<option value="$value.level">$value.label</option>
+						}
+					</select>
+				</div>
+			</div><div class="add_column">
+				<div class="add_field_title">Порядок:</div>
+				<div class="add_field">
+					<input type="text" name="sortir">
+				</div>
+			</div>
+		</div>
+		<div class="add_string"><input type="submit" value="Добавить"></div>
+	</form>
+}
+^cms.ShowModalFooter[]
+################################################################################

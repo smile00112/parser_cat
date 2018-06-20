@@ -1,0 +1,52 @@
+################################################################################
+@main[]
+^cms.ShowModalHeader[header_light.html]
+<link href="./styles/add.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="./scripts/add.js"></script>
+^if(!def $form:element_type){
+	$headerText[Добавление элемента]
+}{
+	^if($form:element_type){
+		$headerText[Добавление видео]
+	}{
+		$headerText[Добавление видеогалереи]
+	}
+}
+<form>
+	<input type="hidden" name="idblock" value="$form:idblock">
+	<input type="hidden" name="parent" value="^if(def $form:parent){$form:parent}{0}">
+	<table class="table_dsb w100p">
+		<tr class="aC">
+			<td colspan="2"><div class="cms_h1 nobr">$headerText</div></td>
+		</tr>
+		^if(!def $form:element_type){
+		<tr>
+			<td>Тип:</td>
+			<td>
+				<select name="type" class="cms_select w100p">
+					<option value="0">Видеогалерея</option>
+					<option value="1" selected>Видео</option>
+				</select>
+			</td>
+		</tr>
+		}{
+			<input type="hidden" name="type" value="$form:element_type">
+		}
+		<tr>
+			<td style="width:50px">Название:</td>
+			<td><input type="text" name="name" class="cms_input w100p"></td>
+		</tr>
+		^if(!def $form:element_type || $form:element_type == 1){
+		<tr>
+			<td style="vertical-align:top">Ссылка:</td>
+			<td><textarea name="src" class="cms_textarea w100p"></textarea></td>
+		</tr>
+		}
+		<tr class="aC">
+			<td colspan="2"><input type="submit" value="Добавить"></td>
+		</tr>
+	</table>
+</form>
+<div class="cms_h1 message" style="display:none"></div>
+^cms.ShowModalFooter[]
+################################################################################

@@ -1,0 +1,95 @@
+################################################################################
+@cms_body[]
+$curr_news[^table::sql{select * from news where id='$form:news_id'}]
+^cms.ShowPageHeader[Фотогалерея новости "$curr_news.head";$cms.currentModule.path;^news.GetClassInfo[]]
+^if(def $curr_news){
+ <a href="index.html?idpage=$form:idpage">Вернуться в раздел новостей</a>  
+ ^try{
+  $curr_photo[^table::sql{SELECT id, news_id, path, descript, sortir FROM news_gallery WHERE news_id='$curr_news.id' ORDER BY sortir}]
+ }{
+# Обработали ошибку
+  $exception.handled(1)
+  ^insert_table_field[/manage/news/tables/alter/;news_gallery] 
+  $curr_photo[^table::sql{SELECT id, news_id, path, descript, sortir FROM news_gallery WHERE news_id='$curr_news.id' ORDER BY sortir}]
+ } 
+ ^if(def $curr_photo){^show_photo[]}
+ <hr>  
+ <form method="post" enctype="multipart/form-data" action="gallery_add.html">
+  <input type="hidden" name="news_id" value="$form:news_id">
+  <input type="hidden" name="idpage" value="$form:idpage">
+  <p><b>Закачать новое изображение:</b></p> 
+  <table border="0" cellspacing="1" cellpadding="5" bgcolor="#999999">
+   <tr class="tH">
+    <td colspan="2">
+     Общее описание для всех загружаемых изображений
+    </td>
+   </tr>
+   <tr class="tN">
+    <td colspan="2">
+     <textarea name="description" rows="1" style="width: 410px^;"></textarea>
+    </td>
+   </tr> 
+   <tr class="tN">
+    <td>
+     <input type="file" name="multifiles" id="multifiles" multiple="true" size="40" style="width: 335px^; font-size:14px^;  border-width: 1px^; color: #000033^; background-color: #f9f9f9^;">
+    </td>
+    <td class="aR"><input type="submit" value="Закачать" style="width: 70px"></td>
+   </tr>
+  </table>   
+ </form>
+ <p>Можно выбрать несколько, общим объемом не более ^eval($LIMITS.post_max_size/1024/1024) Мегабайт</p>  
+}{
+ <p>Новость не найдена.</p>
+}
+################################################################################
+@show_photo[]
+$row_length(3)
+<table border="0" width="100%">
+ ^curr_photo.menu{
+  ^if(^curr_photo.line[] % $row_length == 1){
+ <tr>
+ }
+ <td width="^eval(100/$row_length) %" align="center" valign="top" style="padding:10 0px^;border-bottom: 1px solid #999999^;">
+  <form method="post" enctype="multipart/form-data" action="save_block_gallery.html">
+   <input type="hidden" name="id" value="$curr_photo.id">
+   <input type="hidden" name="news_id" value="$form:news_id">
+   <input type="hidden" name="idpage" value="$form:idpage">  
+   <table border="0" cellspacing="1" cellpadding="5" bgcolor="#999999">
+    <tr class="tN"> 
+     <td colspan="3">
+      <a href="gallery_edit.html?id=$curr_photo.id&idpage=$form:idpage&news_id=$form:news_id">
+       <img src="/images/news/s_$curr_photo.path" alt="$curr_photo.descript" title="$curr_photo.descript">
+      </a>
+     </td>
+    </tr>
+    <tr class="tN">
+     <td colspan="3">
+      <a href="gallery_edit.html?id=$curr_photo.id&idpage=$form:idpage&news_id=$form:news_id">
+       ^if(def $curr_photo.descript){$curr_photo.descript}{Внести описание}
+      </a>
+     </td>
+    </tr>
+    <tr class="tN">
+     <td>Сортировка:</td>
+     <td><input type="text" name="sortir" value="$curr_photo.sortir" class="myinput" style="width:40"></td>
+     <td><input type="submit" name="save" value="Сохранить" style="width:80" class="mybutton"></td>
+    </tr>   
+    <tr class="tN">
+     <td colspan="3">
+      <a href="javascript: if (confirm('Вы хотите удалить данную позицию?')){window.location.href='gallery_del.html?idpage=$form:idpage&news_id=$form:news_id&delete_photo=$curr_photo.id'}">Удалить</a>      
+     </td>
+    </tr>
+   </table>
+  </form> 
+ </td>
+ ^if(^curr_photo.line[] % $row_length == 0){</tr>}
+ }
+ $i(^curr_photo.count[] % $row_length)
+ ^if($i != 0){^while($i % $row_length != 0){
+ <td>&nbsp^;</td>
+ ^i.inc[]
+ }
+ </tr>
+}
+</table>
+################################################################################

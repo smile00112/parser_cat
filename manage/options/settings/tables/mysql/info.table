@@ -1,0 +1,7 @@
+field
+`sortir` int(10) unsigned NOT NULL,
+`creation_date` datetime NOT NULL,
+`create_user_login` varchar(16) NOT NULL,
+`modify_date` datetime NOT NULL,
+`modify_user_login` varchar(16) NOT NULL,
+PRIMARY KEY (`id`)

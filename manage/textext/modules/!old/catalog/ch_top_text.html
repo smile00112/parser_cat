@@ -1,0 +1,36 @@
+################################################################################
+@cms_body[]
+^if(def $form:idpage && def $form:parent && def $form:destinationtext){
+# Выводим шапку
+^cms.ShowPageHeader[Каталог для раздела "^site:GetPageNameById[$form:idpage]";$cms.currentModule.path;^catalog.GetClassInfo[]]
+$chstext[^table::sql{select * from catalog_text where idpage='$form:idpage' and idcatalog='$form:parent'}]
+^if($chstext){
+#loading...
+}{^void:sql{insert into catalog_text (idpage, idcatalog) values ('$form:idpage', '$form:parent')}}
+$stext[^table::sql{select * from catalog_text where idpage='$form:idpage' and idcatalog='$form:parent'}]
+^cms.InsertTiny[]
+<br>
+<form method="post" enctype="multipart/form-data" action="ch_text_ok.html">
+ <table width="100%" border=0 cellspacing=1 cellpadding=5 bgcolor=#999999>
+  <input type="hidden" name="destinationtext" value="$form:destinationtext">
+  <input type="hidden" name="parent" value="$form:parent">
+  <input type="hidden" name="idpage" value="$form:idpage">
+  <input type="hidden" name="id" value="$stext.id">
+  <tr class="tN">
+   <td>
+    Контент
+    <textarea id="elm" name="elm1" rows="20" cols="80" style="width: 100%">
+     $stext.[$form:destinationtext]
+    </textarea>
+   </td>
+  </tr>
+  <tr class="tN">
+   <td colspan="2">
+    <input type="submit" name="save" value="Сохранить" />
+    <input type="reset" name="reset" value="Отменить все изменения" />
+   </td>
+  </tr>
+ </table>
+</form>
+}
+################################################################################

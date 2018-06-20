@@ -1,0 +1,22 @@
+################################################################################
+@main[]
+$answer[
+	$.error(false)
+]
+^if(def $form:id && def $form:property){
+	$answer.result(^connect[$site:connectString]{^textext::UpdatePageProperty[$form:id;$form:property;$form:value]})
+	^if($answer.result<1){
+		$answer.error(true)
+		$answer.text[Ошибка выполнения функции]
+		$answer.function[UpdatePageProperty]
+	}
+}{
+	$answer.error(true)
+	$answer.text[Ошибка передачи параметров]
+	$answer.form[^hash::create[]]
+	^form:fields.foreach[field;value]{
+		$answer.form.[$field][$value]
+	}
+}
+$result[^json:string[$answer]]
+################################################################################

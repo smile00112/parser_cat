@@ -1,0 +1,424 @@
+################################################################################
+@cms_body[]
+# Хэш, содержащий список модулей и их версий, которые требуются для работы модуля проверки
+$require[
+	$.cms(2.22)
+	$.textext(1.81)
+]
+#-------------------------------------------------------------------------------
+<script	src="./scripts/actions.js" type="text/javascript"></script>
+#-------------------------------------------------------------------------------
+# Если параметры передаются
+^if(def $form:module_name && !def $classNotFound && $cms.cmsUserLevel==$cms.maxUserLevel){
+# Инициализируем хэш, который содержит кол-во ошибок модуля
+	$error[
+		$.path(0)
+		$.tables(0)
+		$.options(0)
+		$.notFound(0)
+	]
+# Выводим заголовок страницы
+	^cms.ShowPageHeader[$this.classModuleDescription - Проверка работоспособности модуля;$cms.currentModule.path;^this.GetClassInfo[]]
+	<p id="addSlideBtn" class="cms_h2">
+		<a href="../"><i class="fa fa-reply fa-3x inline blue mr10"></i>К модулям</a>
+	</p>
+	<table data-name="$form:module_name" class="table_dsb">
+# -------------------------- Проверка версий классов ---------------------------
+# Инициализируем хэш со классами, которые нужно обновить
+	$younger_versions[^hash::create[]]
+# Пробегаем хэш со списком необходимых для работы классов
+	^require.foreach[className;version]{
+		$currentClassVersion(^process{^$${className}:classVersion})
+# Если версия класса ниже чем необходимая для работы
+		^if($currentClassVersion<$version){
+# Добавляем имя класса в список для обновления
+			$younger_versions.[$className][$currentClassVersion]
+		}
+	}
+# Если все версии классов не ниже необходимых
+	^if(!def $younger_versions){
+# --------------------------- Проверка пути к модулю ---------------------------
+# Если в классе определена переменная modulePath
+		^if(def $this.modulePath){
+# Если указан неверный путь к модулю
+			$modulePath[^modules:GetModules[$.name[$this.className]]]
+			$modulePath[$modulePath.path]
+			^if($modulePath ne $this.modulePath){
+# Увеличиваем счётчик ошибки
+				^error.path.inc[]
+				<tr>
+					<td colspan="2" class="aC"><div class="cms_h1">Путь к модулю</div></td>
+				</tr>
+				<tr>
+					<td class="aC">
+						<i class="fa fa-pencil-square-o fa-2x pointer blue" title="Исправить путь к модулю" onClick="^$(this).EditPath()^;"></i>
+					</td>
+					<td>
+						<div class="cms_h2">Путь <strong>/$modulePath/</strong> к модулю является некорректным.</div>
+					</td>
+				</tr>
+			}
+		}{
+			^error.notFound.inc[]
+				<tr>
+					<td class="aC">
+						<i class="fa fa-exclamation-triangle fa-2x blue" title="Переменная ^$modulePath класса ${form:module_name}_cms.p не найдена!"></i>
+					</td>
+					<td>
+						<div class="cms_h2">Переменная <strong>^$modulePath</strong> класса <strong>${form:module_name}_cms.p</strong> не найдена!</div>
+					</td>
+				</tr>
+		}
+# ------------------------------ Проверка таблиц -------------------------------
+# Если в классе определена переменная moduleTables
+		^if(def $this.moduleTables){
+# Получаем список всех таблиц сайта
+			$tables[^cms:GetAllTablesList[]]
+# Для всех необходимых таблиц модуля
+			^this.moduleTables.necessary.foreach[key;necessaryTableName]{
+# Если таблицы в базе нет
+				^if(!^tables.locate[table_name;$necessaryTableName]){
+# Инициализируем флаг для определения того, отсутствует ли поле, или его нужно переименовать, а содержимое оставить
+					$rename(false)
+# Если в хэше rename что-то есть
+					^if(def $this.moduleTables.rename){
+# Пробегаем весь список с названиями таблиц для переименования
+						^this.moduleTables.rename.foreach[oldName;newName]{
+# Если лишнее поле найдено в списке для переименования
+							^if($necessaryTableName eq $newName){
+# Получаем новое имя поля (в которое нужно переименовать старое)
+								$old_name[$oldName]
+# Переводим флаг в режим "переименование"
+								$rename(true)
+							}
+						}
+					}
+# Увеличиваем счётчик ошибки
+					^error.tables.inc[]
+					^if($error.tables==1){
+					<tr>
+						<td colspan="2" class="aC"><div class="cms_h1">Таблицы</div></td>
+					</tr>
+					}
+					^if(-f "$cms:cmsFolder/$this.modulePath/tables/${necessaryTableName}.table"){
+					<tr data-name="$necessaryTableName" data-old-name="$old_name">
+						<td class="aC">
+						^if($rename){
+							<i class="fa fa-pencil-square-o fa-2x pointer blue" title="Переименовать таблицу" onClick="^$(this).RenameTable()^;"></i>
+						}{
+							<i class="fa fa-plus fa-2x pointer blue" title="Добавить таблицу" onClick="^$(this).InsertTable()^;"></i>
+						}
+						</td>
+						<td>
+						^if($rename){
+							<div class="cms_h2">Таблица <strong>$necessaryTableName</strong> не найдена, так как сейчас называется <strong>$old_name</strong>.</div>
+						}{
+							<div class="cms_h2">Таблица <strong>$necessaryTableName</strong> не найдена.</div>
+						}
+						</td>
+					</tr>
+					}{
+# Увеличиваем счётчик ошибки
+					^error.tables.inc[]
+					^if($error.tables==1){
+					<tr>
+						<td colspan="2" class="aC"><div class="cms_h1">Таблицы</div></td>
+					</tr>
+					}
+					<tr>
+						<td class="aC">
+							<i class="fa fa-exclamation-triangle fa-2x blue"></i>
+						</td>
+						<td>
+							<div class="cms_h2">Файл с описанием таблицы <strong>$necessaryTableName</strong> не найден.</div>
+						</td>
+					</tr>
+					}
+# Если есть, то проверяем все её поля
+				}{
+# Если есть файл с описанием полей таблицы
+					^if(-f "$cms:cmsFolder/$this.modulePath/tables/${necessaryTableName}.table"){
+# Загружаем его
+						$loaded_table[^table::load[$cms:cmsFolder/$this.modulePath/tables/${necessaryTableName}.table]]
+# Создаём хэш для списка полей, которых нет в файле
+						$not_found[^hash::create[]]
+# Получаем его hash по полю Field
+						$loaded_table_hash[^loaded_table.hash[field]]
+# Также получаем все поля текущей таблицы
+						$table_fields[^cms:GetTableFieldsList[$necessaryTableName]]
+# Также получаем все дополнительные поля текущей таблицы
+						^if(^this.moduleTables.contains[expandFields]){
+							$expandFields[^table::sql{SELECT * FROM $this.moduleTables.expandFields}]
+							$expandFields[^expandFields.hash[field]]
+						}{
+							$expandFields[^hash::create[]]
+						}
+# Пробегаем все поля текущей таблицы
+						^table_fields.menu{
+# Если поля нет в файле и в дополнительных полях
+							^if(!^loaded_table_hash.contains[$table_fields.Field] && !^expandFields.contains[$table_fields.Field]){
+# Добавляем его в хэш с ненайденными в файле полями
+								$not_found.[$table_fields.Field][$loaded_table_hash.[$table_fields.Field].rename]
+# А если есть
+							}{
+# Удаляем из хэша с полями
+								^loaded_table_hash.delete[$table_fields.Field]
+							}
+						}
+# Если не все поля опознаны
+						^if($not_found>0){
+# Увеличиваем счётчик ошибки
+							^error.tables.inc[]
+							^if($error.tables==1){
+					<tr>
+						<td colspan="2" class="aC"><div class="cms_h1">Таблицы</div></td>
+					</tr>
+							}
+# Для каждого лишнего поля
+							^not_found.foreach[key;val]{
+# Инициализируем флаг для определения того, отсутствует ли поле, или его нужно переименовать, а содержимое оставить
+								$rename(false)
+# Если лишнее поле найдено в списке для переименования
+								^if(^loaded_table.locate[rename;$key]){
+# Получаем новое имя поля (в которое нужно переименовать старое)
+									$new_name[$loaded_table.field]
+# Удаляем из хэша поле с имененм $new_name
+									^loaded_table_hash.delete[$new_name]
+# Переводим флаг в режим "переименование"
+									$rename(true)
+								}
+					<tr data-name="$necessaryTableName">
+						<td class="aC">
+						^if($rename){
+							<i class="fa fa-pencil-square-o fa-2x pointer blue" title="Переименовать поле" data-field="$key" onClick="^$(this).RenameField()^;"></i>
+						}{
+							<i class="fa fa-times fa-2x pointer blue" title="Удалить поле" data-field="$key" onClick="^$(this).DeleteField()^;"></i>
+						}
+						</td>
+						<td>
+						^if($rename){
+							<div class="cms_h2">Поле <strong>$new_name</strong> таблицы <strong>$necessaryTableName</strong> не найдено, так как сейчас называется <strong>$key</strong>.</div>
+						}{
+							<div class="cms_h2">Поле <strong>$key</strong> таблицы <strong>$necessaryTableName</strong> лишнее.</div>
+						}
+						</td>
+					</tr>
+							}
+						}
+# Если есть поля, которые нужно добавить
+						^if($loaded_table_hash>0){
+							^loaded_table_hash.foreach[key;val]{
+								^if(def $key){
+# Увеличиваем счётчик ошибки
+									^error.tables.inc[]
+					<tr data-name="$necessaryTableName">
+						<td class="aC">
+							<i class="fa fa-plus fa-2x pointer blue" title="Добавить поле" data-field="$key" onClick="^$(this).InsertField()^;"></i>
+						</td>
+						<td>
+							<div class="cms_h2">Поле <strong>$key</strong> таблицы <strong>$necessaryTableName</strong> не найдено.</div>
+						</td>
+					</tr>
+								}
+							}
+						}
+					}{
+# Увеличиваем счётчик ошибки
+					^error.tables.inc[]
+					^if($error.tables==1){
+					<tr>
+						<td colspan="2" class="aC"><div class="cms_h1">Таблицы</div></td>
+					</tr>
+					}
+					<tr>
+						<td class="aC">
+							<i class="fa fa-exclamation-triangle fa-2x blue"></i>
+						</td>
+						<td>
+							<div class="cms_h2">Файл с описанием таблицы <strong>$necessaryTableName</strong> не найден.</div>
+						</td>
+					</tr>
+					}
+				}
+			}
+			^if($this.moduleTables.superfluous is hash){
+# Для всех лишних таблиц модуля
+				^this.moduleTables.superfluous.foreach[key;val]{
+# Если таблицы в базе нет
+					^if(^tables.locate[table_name;$val]){
+# Увеличиваем счётчик ошибки
+						^error.tables.inc[]
+						^if($error.tables==1){
+						<tr>
+							<td colspan="2" class="aC"><div class="cms_h1">Таблицы</div></td>
+						</tr>
+						}
+						<tr data-name="$val">
+							<td class="aC">
+								<i class="fa fa-times fa-2x pointer blue" title="Удалить таблицу" onClick="^$(this).DeleteTable()^;"></i>
+							</td>
+							<td>
+								<div class="cms_h2">Найдена неиспользуемая таблица <strong>$val</strong>.</div>
+							</td>
+						</tr>
+					}
+				}
+			}
+		}{
+			^error.notFound.inc[]
+				<tr>
+					<td class="aC">
+						<i class="fa fa-exclamation-triangle fa-2x blue" title="Переменная ^$moduleTables класса ${form:module_name}_cms.p не найдена!"></i>
+					</td>
+					<td>
+						<div class="cms_h2">Переменная <strong>^$moduleTables</strong> класса <strong>${form:module_name}_cms.p</strong> не найдена!</div>
+					</td>
+				</tr>
+		}
+# ----------------------- Проверка настройки всех блоков -----------------------
+# Если в классе определена переменная moduleOptions
+		^if(def $this.moduleOptions){
+# Получаем список всех блоков в системе этого типа
+			$blocksList[^textext:GetBlocksListByName[$this.className]]
+# Если они созданы
+			^if(def $blocksList){
+# Пробегаем все блоки
+				^blocksList.menu{
+# Создаём копию хэша со списком необходимых настроек
+					$main_options[^hash::create[$this.moduleOptions.main]]
+# Получаем все настройки блока
+					$options[^textext:GetOptions[$blocksList.id]]
+# Если они есть
+					^if(def $options){
+# Создаём хэш для списка настроек, которых нет в списке
+						$not_found[^hash::create[]]
+# Пробегаем все настройки
+						^options.menu{
+# Если настройки нет в списке
+							^if(!^main_options.contains[$options.name]){
+# Добавляем её в хэш с ненайденными настройками
+								$not_found.[$options.name][1]
+# А если есть
+							}{
+# Удаляем из хэша с полями
+								^main_options.delete[$options.name]
+							}
+						}
+# Если не все поля опознаны
+						^if($not_found>0){
+# Увеличиваем счётчик ошибки
+							^error.options.inc[]
+							^if($error.options==1){
+					<tr>
+						<td colspan="2" class="aC"><div class="cms_h1">Настройки</div></td>
+					</tr>
+							}
+# Для каждого лишнего поля
+							^not_found.foreach[key;val]{
+# Инициализируем флаг для определения того, отсутствует ли поле, или его нужно переименовать, а содержимое оставить
+								$rename(false)
+# Создаём копию хэша со списком настроек, которые нужно переименовать
+								$rename_options[^hash::create[$this.moduleOptions.rename]]
+# Если в хэше rename что-то есть
+								^if(^rename_options._count[]>0){
+# Если лишнее поле найдено в списке для переименования
+									^if(^rename_options.contains[$key]){
+# Получаем новое имя поля (в которое нужно переименовать старое)
+										$new_name[$rename_options.[$key]]
+# Удаляем из хэша поле с имененм $new_name
+										^main_options.delete[$new_name]
+# Переводим флаг в режим "переименование"
+										$rename(true)
+									}
+								}
+					<tr data-option="$key" data-block_id="$blocksList.id">
+						<td class="aC">
+						^if($rename){
+							<i class="fa fa-pencil-square-o fa-2x pointer blue" title="Переименовать настройку" onClick="^$(this).RenameOption()^;"></i>
+						}{
+							<i class="fa fa-times fa-2x pointer blue" title="Удалить настройку" onClick="^$(this).DeleteOption()^;"></i>
+						}
+						</td>
+						<td>
+						^if($rename){
+							<div class="cms_h2">Настройка <strong>$new_name</strong> блока <strong>$blocksList.name</strong> не найдена, так как сейчас называется <strong>$key</strong>.</div>
+						}{
+							<div class="cms_h2">Настройка <strong>$key</strong> блока <strong>$blocksList.name</strong> лишняя.</div>
+						}
+						</td>
+					</tr>
+							}
+						}
+# Если есть поля, которые нужно добавить
+						^if($main_options>0){
+							^main_options.foreach[key;val]{
+								^if(def $key){
+# Увеличиваем счётчик ошибки
+									^error.options.inc[]
+									^if($error.options==1){
+					<tr>
+						<td colspan="2" class="aC"><div class="cms_h1">Настройки</div></td>
+					</tr>
+									}
+					<tr data-option="$key" data-block_id="$blocksList.id">
+						<td class="aC">
+							<i class="fa fa-plus fa-2x pointer blue" title="Добавить поле" onClick="^$(this).InsertOption()^;"></i>
+						</td>
+						<td>
+							<div class="cms_h2">Настройка <strong>$key</strong> блока <strong>$blocksList.name</strong> не найдена.</div>
+						</td>
+					</tr>
+								}
+							}
+						}
+					}{
+# Записываем значения по умолчанию
+						$res[^textext:SetDefaultBlockOptions[$blocksList.id;$.moduleName[$this.className]]]
+					}
+				}
+			}
+		}{
+			^error.notFound.inc[]
+				<tr>
+					<td class="aC">
+						<i class="fa fa-exclamation-triangle fa-2x blue" title="Переменная ^$moduleOptions класса ${form:module_name}_cms.p не найдена!"></i>
+					</td>
+					<td>
+						<div class="cms_h2">Переменная <strong>^$moduleOptions</strong> класса <strong>${form:module_name}_cms.p</strong> не найдена!</div>
+					</td>
+				</tr>
+		}
+# ------------------------------------------------------------------------------
+# Подсчитываем найденные ошибки
+		^error.foreach[key;value]{
+			$errors(^eval($errors+$value))
+		}
+# Если ошибок нет, - выводим радостное сообщение
+		^if($errors==0){<tr><td><div class="cms_h1">Ошибок в работе модуля не обнаружено!</div></td></tr>}
+	}{
+		<tr><td colspan="2"><div class="cms_h1">Необходимо обновить следующие классы:</div></td></tr>
+		^younger_versions.foreach[className;classVersion]{
+		<tr>
+			<td class="aC">
+				<i class="fa fa-exclamation-triangle fa-2x blue" title="Обновить класс ${className}.p"></i>
+			</td>
+			<td>
+				<div class="cms_h2">Класс <strong>${className}.p</strong> с версии <strong>$classVersion</strong> до версии <strong>$require.[$className]</strong>.</div>
+			</td>
+		</tr>
+		}
+	}
+	</table>
+}{
+# Если основной класс модуля найден
+	^if(!def $classNotFound){
+		$response:refresh[$.value(0)$.url[../]]
+	}{
+# Выводим заголовок страницы
+	^cms.ShowPageHeader[$cms.classModuleDescription - Проверка работоспособности модуля;$cms.currentModule.path;^cms.GetClassInfo[]]
+	<p id="addSlideBtn" class="cms_h2">
+		<a href="../"><i class="fa fa-reply fa-3x inline blue mr10"></i>К модулям</a>
+	</p>
+	<div class="cms_h1">Класс <strong>${form:module_name}_cms.p</strong> не найден!</div>
+	}
+}

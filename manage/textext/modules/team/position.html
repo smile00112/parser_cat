@@ -1,0 +1,8 @@
+################################################################################
+@cms_body[]
+^if(def $form:idblock && def $form:id){
+	$res[^team.ChangeEmployeePosition[$form:idblock;$form:id;$form:up]]
+}
+# Переходим к списку блоков страницы
+$response:refresh[$.value(0)$.url[/manage/^textext:GetModulePathByName[$team.className]/?id=$form:idblock&idpage=$form:idpage]]
+################################################################################

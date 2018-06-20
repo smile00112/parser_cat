@@ -1,0 +1,74 @@
+.header{
+	top: 0;
+	left: 0;
+	z-index: 1;
+	width: 100%;
+	padding: 10px 0;
+	position: fixed;
+	text-align: center;
+	background-color: rgb(224, 237, 248);
+}
+.header.small{
+	font-size: 24px;
+}
+.elements{
+	font-family: "Cuprum",Tahoma;
+	font-size: 16px;
+}
+.elements .elements-table{
+	margin-top: 55px;
+	display: table;
+	width: 100%;
+	height: 300px;
+}
+.elements .element-string{
+	padding: 0;
+	margin: 0;
+	position: relative;
+}
+.elements .element-string li{
+	display: table-cell;
+	padding: 10px 0;
+	width: 100%;
+	vertical-align: middle;
+	border-bottom: 1px dashed #999999;
+}
+.elements .element-string li+li{
+	width: auto;
+	min-width: 20px;
+}
+.elements .element-string .fa-chevron-up{
+	float: left;
+	cursor: pointer;
+	top: 3px;
+	position: relative;
+	-o-transition: all 0.5s ease;
+	-moz-transition: all 0.5s ease;
+	-webkit-transition: all 0.5s ease;
+	transition: all 0.5s ease;
+	-webkit-transform-origin: 50% 50%;
+	-ms-transform-origin: 50% 50%;
+	transform-origin: 50% 50%;
+}
+.elements .element-string.close .fa-chevron-up{
+	-moz-transform: rotate(180deg);
+	-ms-transform: rotate(180deg);
+	-webkit-transform: rotate(180deg);
+	-o-transform: rotate(180deg);
+	transform: rotate(180deg);
+}
+.elements .element-string.close ul{
+	display: none;
+}
+.elements .element-name{
+	margin-left: 20px;
+	display: block;
+}
+.elements .element-name-wrapper{
+	display: block;
+}
+.callout{
+	top: -40px;
+	bottom: auto;
+	right: -11px;
+}

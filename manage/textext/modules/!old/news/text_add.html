@@ -1,0 +1,6 @@
+##########################################################################################
+@cms_body[]
+
+	^void:sql{update news_text set full_text='$form:elm_full_text' where id_page='$form:idpage'}
+	$response:location[index.html?idpage=$form:idpage]
+

@@ -1,0 +1,37 @@
+################################################################################
+@cms_body[]
+^if(def $form:id){
+# Выводим заголовок страницы
+	^cms.ShowPageHeader[Команда - Редактирование описания изображения;$cms.currentModule.path;^team.GetClassInfo[]]
+	<p class="cms_h2">
+		<a href="gallery.html?id=$form:employee_id&idblock=$form:idblock&idpage=$form:idpage"><i class="fa fa-reply fa-3x inline blue mr10"></i>К галерее</a>
+	</p>
+	$image[^team.GetEmployeeImage[$form:id]]
+	<form method="post" enctype="multipart/form-data" action="save_image_property.html">
+		<input type="hidden" name="id" value="$image.id">
+		<input type="hidden" name="employee_id" value="$form:employee_id">
+		<input type="hidden" name="idblock" value="$form:idblock">
+		<input type="hidden" name="idpage" value="$form:idpage">
+		<input type="hidden" name="edit_descript" value="yes">
+		<table border="0" cellspacing="1" cellpadding="5" bgcolor="#999999">
+			<tr class="tH">
+				<td>Изображение</td>
+				<td>Описание</td>
+			</tr>
+			<tr class="tN">
+				<td><img src="${team.imagesGalleryPath.small}/${image.name}"></td>
+				<td valign="top">
+					<table border="0">
+						<tr>
+							<td><textarea id="elm1" name="description" rows="3" style="width: 300px^;">$image.description</textarea></td>
+						</tr>
+						<tr>
+							<td align="center"><input type="submit" name="save" value="Сохранить" /></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+	</form>
+}
+################################################################################

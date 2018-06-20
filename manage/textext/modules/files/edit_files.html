@@ -1,0 +1,110 @@
+################################################################################
+@cms_body[]
+# Инициализируем переменные
+# ------------------------------------------------------------------------------
+# Фраза при возвращении "Назад к списку ..."
+$back_phrase[файлов]
+# ------------------------------------------------------------------------------
+# Если передаётся id и описание файла, то пробуем его перезаписать
+^if(def $form:file_id && def $form:comment){
+ $dt[^date::create[${form:year}-${form:month}-${form:day} ${form:hour}:${form:minute}]]
+ $res[^this.Update[$form:file_id;$form:comment;comment]]
+ $res[^this.Update[$form:file_id;^dt.sql-string[];date]]
+# Переходим к списку файлов
+ $response:refresh[$.value(0)$.url[/manage/textext/modules/$this.className/?id=$form:id&idpage=$form:idpage&idpage_name=$form:idpage_name]]
+}{
+# Иначе выводим форму для редактирования (если есть id файла :)
+ ^if(def $form:id){
+# Получаем запись о файле в таблице
+  $edit_file[^this.GetFileById[$form:id]]
+	^cms.ShowPageHeader[Файлы / Изменить описание файла;$cms.currentModule.path;^this.GetClassInfo[]]
+  <br>
+  <strong><a href="/manage/textext/modules/$this.className/?id=$edit_file.block_id&idpage=$edit_file.page_id&idpage_name=$form:idpage_name">Назад к списку $back_phrase</a></strong>
+  <br><br>
+  <form method="post" action="edit_${this.className}.html">
+   <input type="hidden" name="file_id" value="$form:id">
+   <input type="hidden" name="id" value="$edit_file.block_id">
+   <input type="hidden" name="idpage" value="$edit_file.page_id">
+   <input type="hidden" name="idpage_name" value="$form:idpage_name">
+   <table border="0" cellspacing="1" cellpadding="4" bgcolor="#999999">
+    <tr>
+     <td class="tH">Дата:</td>
+		 <td class="tN">^ShowInputDate[$edit_file.date]</td>
+    </tr>
+		<tr class="tH">
+     <td colspan="2">Комментарий</td>
+    </tr>
+		<tr class="tN">
+     <td colspan="2"><textarea name="comment" rows="3" style="width: 300px^;">$edit_file.comment</textarea></td>
+    </tr>
+    <tr class="tN">
+     <td colspan="2"><input type="submit" value="Изменить"></td>
+    </tr>
+   </table
+  </form>
+ }{
+# Переходим к списку файлов
+  $response:refresh[$.value(0)$.url[/manage/$cms_page_id/modules/$this.className/?id=$form:id&idpage=$form:idpage&idpage_name=$form:idpage_name]]
+ }
+}
+################################################################################
+@ShowInputDate[date;show_time]
+# Получаем текущую дату
+$date_now[^date::now[]]
+# Получаем дату файла
+$file_date[^date::create[$date]]
+# Инициализируем массив с названиями месяцев
+$month[
+ $.1[января]
+ $.2[февраля]
+ $.3[марта]
+ $.4[апреля]
+ $.5[мая]
+ $.6[июня]
+ $.7[июля]
+ $.8[августа]
+ $.9[сентября]
+ $.10[октября]
+ $.11[ноября]
+ $.12[декабря]
+]
+^if(!def $show_time){$show_time(1)}
+<table border="0" width="100%" cellspacing="0" cellpadding="5">
+	<tr>
+		<td>
+			<select name="day">
+			^for[days](1;31){
+				<option value="^days.format[%02.2u]" ^if($file_date.day eq $days){selected}>$days</option>
+			}
+			</select>
+			<select name="month">
+			^for[months](1;12){
+				<option value="^months.format[%02.2u]" ^if($file_date.month eq $months){selected}>$month.[$months]</option>
+			}
+			</select>
+			<select name="year">
+			^for[years](^eval($date_now.year-1);^eval($date_now.year+1)){
+				<option value="^years.format[%04.4u]" ^if($file_date.year eq ^years.format[%04.4u]){selected}>$years</option>
+			}
+			</select>
+		^if($show_time==1){
+			&nbsp^;
+			<select name="hour">
+			^for[hours](0;23){
+				<option value="^hours.format[%02.2u]" ^if($file_date.hour eq $hours){selected}>$hours</option>
+			}
+			</select>
+			<strong>:</strong>
+			<select name="minute">
+			^for[minutes](0;59){
+				<option value="^minutes.format[%02.2u]" ^if($file_date.minute eq $minutes){selected}>$minutes</option>
+			}
+			</select>
+		}{
+			<input type="hidden" name="hour" value="$file_date.hour">
+			<input type="hidden" name="minute" value="$file_date.minute">
+		}
+		</td>
+	</tr>
+</table>
+################################################################################

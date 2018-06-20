@@ -1,0 +1,11 @@
+################################################################################
+@cms_body[]
+^if(def $form:id){
+	^if(def $form:edit_descript){
+		$res(^team.SaveGalleryImageProperty[$form:id;description;$form:description])
+	}{
+		$res(^team.SaveGalleryImageProperty[$form:id;sortir;$form:sortir])
+	}
+}
+$response:location[gallery.html?id=$form:employee_id&idblock=$form:idblock&idpage=$form:idpage]
+################################################################################

@@ -1,0 +1,97 @@
+################################################################################
+@cms_body[]
+<script src="./scripts/actions.js" type="text/javascript"></script>
+# Выводим шапку
+^cms.ShowPageHeader[Настройка виджетов;$cms.currentModule.path;^this.GetClassInfo[]]
+# Выводим ссылки
+<p class="cms_h2">
+	<a href="#addForm" id="addSlideBtn" class="addForm"><img src="${cms.imagesFolder}/actions/add.png" class="inline mr10" width="40">Добавить виджет</a>
+</p>
+^try{
+# Получаем список всех виджетов
+	$widgets[^this.GetWidgets[]]
+}{
+	$exception.handled(true)
+	<h1>Не хватает таблицы <strong>widgets</strong></h1>
+}
+^try{
+# И всех типов виджетов
+	$types[^this.GetWidgetTypes[]]
+}{
+	$exception.handled(true)
+	<h1>Не хватает таблицы <strong>widget_types</strong></h1>
+}
+^if(!def $widgets){
+ <p>Не установлен ниодин виджет!</p>
+}{
+ <table class="table_dsb">
+  <tr>
+   <td>id</td>
+   <td>Имя виджета</td>
+   <td>Название виджета</td>
+   <td>Тип виджета</td>
+	 <td>1 параметр</td>
+	 <td>2 параметр</td>
+	 <td>3 параметр</td>
+	 <td>4 параметр</td>
+	 <td>Действие</td>
+  </tr>
+  ^widgets.menu{
+  <tr data-id="$widgets.id">
+   <td>$widgets.id</td>
+   <td><input type="text" class="cms_input w100p" name="name" value="$widgets.name" onChange="^$(this).Edit()^;"></td>
+   <td><input type="text" class="cms_input w100p" name="caption" value="$widgets.caption" onChange="^$(this).Edit()^;"></td>
+   <td>^ShowSelect[$types;$widgets.type_id]</td>
+	 <td><input type="text" class="cms_input" name="value_1" value="$widgets.value_1" onChange="^$(this).Edit()^;"></td>
+	 <td><input type="text" class="cms_input" name="value_2" value="$widgets.value_2" onChange="^$(this).Edit()^;"></td>
+	 <td><input type="text" class="cms_input" name="value_3" value="$widgets.value_3" onChange="^$(this).Edit()^;"></td>
+	 <td><input type="text" class="cms_input" name="value_4" value="$widgets.value_4" onChange="^$(this).Edit()^;"></td>
+	 <td class="aC"><img src="${cms.imagesFolder}/actions/delete.png" class="pointer" width="40" title="Удалить виджет" onClick="^$(this).Delete()^;"></td>
+  </tr>
+  }
+ </table>
+}
+<form id="addForm" method="post" enctype="multipart/form-data" style="display:none^; background-color: #e0edf8^;" action="add.html">
+	<table class="table_dsb" width="300">
+		<tr>
+			<td class="aC" colspan="2"><div class="cms_h1">Добавить виджет:</div></td>
+		</tr>
+		<tr>
+			<td>Название:</td>
+			<td><input type="text" name="caption" class="w100p"></td>
+		</tr>
+		<tr>
+			<td>Тип:</td>
+			<td>^ShowSelect[$types]</td>
+		</tr>
+		<tr>
+			<td>1 параметр:</td>
+			<td><input type="text" name="value_1" class="w100p"></td>
+		</tr>
+		<tr>
+			<td>2 параметр:</td>
+			<td><input type="text" name="value_2" class="w100p"></td>
+		</tr>
+		<tr>
+			<td>3 параметр:</td>
+			<td><input type="text" name="value_3" class="w100p"></td>
+		</tr>
+		<tr>
+			<td>4 параметр:</td>
+			<td><input type="text" name="value_4" class="w100p"></td>
+		</tr>
+		<tr>
+			<td class="aC" colspan="2"><input type="submit" value="Добавить"></td>
+		</tr>
+	</table>
+</form>
+################################################################################
+@ShowSelect[types;value]
+^if(def $types){
+<select name="type_id"^if(def $value){ onchange="^$(this).Edit()^;"}{ class="w100p"}>
+ ^types.menu{
+ <option ^if($value==$types.id){selected} value="$types.id">$types.caption</option>
+ }
+</select>
+}
+################################################################################

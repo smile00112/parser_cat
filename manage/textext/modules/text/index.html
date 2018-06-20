@@ -1,0 +1,22 @@
+################################################################################
+@cms_body[]
+^if(def $form:id && def $form:idpage){
+# Выводим заголовок страницы
+	^cms.ShowPageHeader[Редактирование текстового блока "^site:GetPageNameById[$form:idpage]";$cms.currentModule.path;^text.GetClassInfo[]]
+	<br>
+	<a href="/manage/textext/?idpage=$form:idpage&idpage_name=$form:idpage_name"><strong>Назад к списку блоков</strong></a>
+	<br><br>
+	$block[^text.GetBlock[$form:id]]
+	^cms.InsertTiny[]
+	<form method="post" enctype="multipart/form-data" action="save_block.html">
+		^if(^block.count[]==0){<input type="hidden" name="ins" value="true">}
+		<input type="hidden" name="id" value="$form:id">
+		<input type="hidden" name="idpage" value="$form:idpage">
+		<input type="hidden" name="idpage_name" value="$form:idpage_name">
+		<textarea id="elm" name="elm1" rows="20" cols="80" style="width: 100%">$block.content</textarea>
+		<br />
+		<input type="submit" name="save" value="Сохранить" />
+		<input type="reset" name="reset" value="Отменить все изменения" />
+	</form>
+}
+################################################################################

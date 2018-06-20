@@ -1,0 +1,28 @@
+################################################################################
+@cms_body[]
+^if(def $form:block_id){
+	$artikuls[^table::sql{SELECT id, artikul FROM catalog WHERE block_id=$form:block_id}]
+	$list[^file:list[/images/cat_bsrc/;^$]]
+	$counter(0)
+	^list.menu{
+		^counter.inc[]
+		$currentArtikul[^file:justname[$list.name]]
+		^if(^artikuls.locate($artikuls.artikul eq $currentArtikul) ){
+			^if(!-f '${catalog:imagesFolder.big}/$list.name'){
+				$params[
+					$.element_id($artikuls.id)
+					$.file[^file::load[binary;/images/cat_bsrc/$list.name]]
+					$.main(1)
+					$.visible(1)
+				]
+				$res[^catalog_cms:InsertImage[$params]]
+				Добавлен - $list.name<br>
+			}
+		}
+# 		^if($counter==6000){^break[]}
+	}
+	<h1>Готово</h1>
+}{
+	<h1>Не передан block_id</h1>
+}
+################################################################################

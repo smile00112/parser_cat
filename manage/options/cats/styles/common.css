@@ -1,0 +1,53 @@
+.main-block{
+	font-size: 18px;
+	font-family: "Cuprum",Tahoma;
+}
+p{
+	margin: .5em 0;
+}
+/* Таблица */
+.element-string.header{
+	background: #fed571;
+	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2ZlZDU3MSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNmZmJmMjMiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+	background: -moz-linear-gradient(top,  #fed571 0%, #ffbf23 100%);
+	background: -webkit-linear-gradient(top,  #fed571 0%,#ffbf23 100%);
+	background: linear-gradient(to bottom,  #fed571 0%,#ffbf23 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fed571', endColorstr='#ffbf23',GradientType=0 );
+}
+.element-string.header div{
+	border: none;
+	color: #000000;
+	font-weight: bold;
+	line-height: 18px;
+	text-align: center;
+}
+.element-string > div{
+	padding: 5px;
+	display: inline-block;
+	position: relative;
+	box-sizing: border-box;
+	line-height: 30px;
+	vertical-align: middle;
+	border-bottom: 1px dashed #999999;
+}
+/* checkbox */
+input.cms_checkbox{
+	display: none;
+}
+input.cms_checkbox + .checkbox_custom{
+	color: #7a2000;
+	cursor: pointer;
+	vertical-align: middle;
+}
+input.cms_checkbox + .checkbox_custom::before{
+	opacity: 0.5;
+	content: '\f096';
+	font-size: 30px;
+	transition: color .25s;
+	font-family: FontAwesome;
+}
+input.cms_checkbox:checked + .checkbox_custom::before{
+	opacity: 1;
+	content: '\f046';
+	margin-left: 4px;
+}

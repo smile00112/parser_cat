@@ -1,0 +1,35 @@
+################################################################################
+@cms_body[]
+^if($cms.cmsUserLevel==$cms.maxUserLevel){
+#-------------------------------------------------------------------------------
+<link href="./styles/options.css" rel="stylesheet" type="text/css">
+<script src="./scripts/options.js" type="text/javascript"></script>
+#-------------------------------------------------------------------------------
+# Выводим заголовок страницы
+	^cms.ShowPageHeader[Настройки регистрации;$cms.currentModule.path;^this.GetClassInfo[]]
+	<div class="navigation cms_h2">
+		<a class="navigation-point back" href="./" title="Вернуться к управлению регистрационными данными">К управлению</a>
+	</div>
+	$options[^this.GetOptions[]]
+	<div class="main-block options" data-url='actions.html'>
+		<div class="element-string header">
+			<div class="caption">Параметр</div><!--
+			--><div class="value">Значение</div>
+		</div>
+		^options.menu{
+		<div class="element-string" data-id="$options.id">
+			<div class="caption">${options.caption}:</div><!--
+			--><div class="value">
+					<div class="callout center"></div>
+					^switch[$options.type]{
+						^case[0]{<input type="text" name="$options.name" value="$options.value" class="cms_input saveOption">}
+						^case[1]{<input id="option_${options.id}" type="checkbox" name="$options.name" class="cms_checkbox saveOption"^if($options.value){ checked}><label for="option_${options.id}" class="checkbox_custom"></label>}
+					}
+			</div>
+		</div>
+		}
+	</div>
+}{
+	$response:refresh[$.value(0)$.url[${cms:cmsFolder}/]]
+}
+################################################################################

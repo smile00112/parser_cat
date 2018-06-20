@@ -1,0 +1,21 @@
+################################################################################
+@main[]
+^connect[$site:connectString]{
+	^switch[$form:action]{
+		^case[save_field]{
+			^if(def $form:id && def $form:field){
+				^try{
+					$res[^this.SaveElementProperty[$form:id;$form:field;$form:value]]
+# Вносим изменения в .htaccess
+					^make_rewrite[]
+					$result(1)
+				}{
+					$exception.handled(true)
+					$result(0)
+				}
+			}{$result(-1)}
+		}
+		^case[DEFAULT]{$result(-1)}
+	}
+}
+################################################################################

@@ -1,0 +1,10 @@
+################################################################################
+@main[]
+^connect[$site:connectString]{
+ ^if(def $form:id && def $form:name && def $form:elm1){
+  $res[^catalog.Update[$form:id;$form:name;$form:head;;;;;$form:elm1;$form:artikul]]
+  ^make_rewrite[]
+ }
+}
+$response:refresh[$.value(0)$.url[index.html?parent=$form:parent&idpage=$form:idpage&id=$form:idblock#$form:id]]
+################################################################################

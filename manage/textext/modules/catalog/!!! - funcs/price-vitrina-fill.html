@@ -1,0 +1,14 @@
+################################################################################
+# Использовался для переноса данных с сайта vjazalia32.ru
+################################################################################
+@cms_body[]
+$counter(0)
+$catalog[^table::sql{SELECT * FROM catalog}]
+$elements[^table::sql{SELECT * FROM shop_vitrina}]
+^elements.menu{
+	^if($elements.price>0 && ^catalog.locate($catalog.id eq $elements.parent)){
+		^void:sql{UPDATE catalog SET price=$elements.price WHERE id=$elements.parent}
+	}
+}
+<h1>Готово</h1>
+################################################################################

@@ -1,0 +1,25 @@
+@ShowLastVideosTemplate[videosPageId;count;link]
+$videos[^video:GetBlockVideos[^textext:GetBlockIdByPageId[$videosPageId];$count]]
+^if(def $videos){
+	$pageName[^site:GetPageNameById[$videosPageId]]
+	$pageUrl[^site:GetPageUrlById[$videosPageId]]
+	<section class="lastVideos">
+		<header>
+			<h1><a href="/$pageUrl/">$pageName</a></h1>
+		</header>
+		^videos.menu{
+			$prew[^videos.src.trim[start;//www.youtube.com/embed/]]
+			$prew[^prew.trim[end;?feature=player_embedded]]
+			<article>
+				<div class="video">
+					<a class="fancybox-video" data-type="iframe" href="http:${videos.src}?autoplay=1" title="youtube">
+						<img src="http://img.youtube.com/vi/$prew/0.jpg" alt="">
+					</a>
+				</div>
+				<header>
+					<h2>^untaint{$videos.name}</h2>
+				</header>
+			</article>
+		}
+	</section>
+}

@@ -1,0 +1,46 @@
+################################################################################
+@cms_body[]
+^if(def $form:id && def $form:edit){
+	$res[^void:sql{UPDATE catalog SET url="$form:url", title="$form:title", keywords="$form:keywords", description="$form:description" WHERE id=$form:id}]
+	$message[Сохранено]
+	^make_rewrite[]
+}
+# Выводим заголовок страницы
+$element[^table::sql{SELECT name, type, url, title, keywords, description FROM catalog WHERE id=$form:id}]
+^cms.ShowPageHeader[SEO-атрибуты для ^if($element.type==0){раздела}{товара} "$element.name";$cms.currentModule.path;^catalog.GetClassInfo[]]
+# Выводим ссылки  
+<table border="0" cellspacing="0" cellpadding="10">
+	<tr>
+		<td><a href="index.html?parent=$form:parent&idpage=$form:idpage">К списку товаров</a></td>
+	</tr>
+</table>
+<br>
+<form method="post" action="seo.html">
+	<input type="hidden" name="id" value="$form:id">
+	<input type="hidden" name="parent" value="$form:parent">
+	<input type="hidden" name="idpage" value="$form:idpage">
+	<input type="hidden" name="edit" value="1">
+	<table cellpadding="5" cellspacing="1" bgcolor="#999999">
+		<tr>
+			<td class="tH" style="text-align: left^;">Адрес (url):</td>
+			<td class="tN"><input type="text" name="url" value="$element.url" style="width: 300px;"></td>
+		</tr>
+		<tr>
+			<td class="tH" style="text-align: left^;">Заголовок (title):</td>
+			<td class="tN"><input type="text" name="title" value="$element.title" style="width: 300px;"></td>
+		</tr>
+		<tr>
+			<td class="tH" style="text-align: left^;">Ключевые слова (keywords):</td>
+			<td class="tN"><input type="text" name="keywords" value="$element.keywords" style="width: 300px;"></td>
+		</tr>
+		<tr>
+			<td class="tH" style="text-align: left^;">Описание (description):</td>
+			<td class="tN"><input type="text" name="description" value="$element.description" style="width: 300px;"></td>
+		</tr>
+		<tr class="tN">
+			<td colspan="2"><input type="submit" value="Сохранить"></td>
+		</tr>
+	</table>
+</form>
+^if(def $message){<h1 id="ok" style="color: green^;">$message</h1>}
+################################################################################

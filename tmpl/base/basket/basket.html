@@ -1,0 +1,76 @@
+@ShowBasketTemplate[session_id]
+$basket[^catalog:GetBasket[$session_id]]
+$checkBasket[^hash::create[$basket]]
+^checkBasket.delete[lastURL]
+<section class="basket-block">
+	^if(^checkBasket.count[]>0){
+	<header>
+		<h1>Ваш заказ</h1>
+	</header>
+		$elements[^catalog:GetElementsInBasket[$basket]]
+		<table class="basket-elements">
+			<tr>
+				<th>Наименование</th>
+#				<th>Доп. информация</th>
+				<th>Цена</th>
+				<th>Кол-во</th>
+				<th>Действия</th>
+			</tr>
+			^elements.menu{
+				$product_summ(^eval($elements.price*$basket.[$elements.id]))
+				$basket_summ($basket_summ+$product_summ)
+				^if( ^catalog:GetFirstParent[$elements.id] == 905 ){$step(0.25)}{$step(1)}
+				<tr>
+					<td class="basket-name">$elements.name</td>
+#					<td class="two">^untaint{$elements.content}</td>
+					<td class="basket-price">$elements.price</td>
+					<td class="basket-count">
+						<div class="count"^if($step<1){ data-step='$step'}>
+							<div class="input-number-less button">-</div><!--
+							--><input type="text" class="number count-val" name="count" data-url="$catalog:basketAddFile" data-id="$elements.id" value="$basket.[$elements.id]" onChange="^$(this).CheckNumberStep()^;"><!--
+							--><div class="input-number-more button">+</div>
+						</div>
+					</td>
+					<td class="basket-actions"><a class="remove" href="$catalog:basketAddFile?id=$elements.id&count=0" title="Удалить элемент"></a></td>
+				</tr>
+			}
+		</table>
+		<div class="basket-summary">Общая стоимость заказа: <span>^basket_summ.format[%.0f]</span> баллов.</div>
+		<form class="order-form js" action="${catalog:orderFile}/send_order.html" method="post" data-func="ShowOrderAnswer">
+			<input type="hidden" name="promo_code" value="^catalog:GeneratePromoCode[]">
+			<div class="basket-order-block"^if($form:order ne 'true'){ style="display:none"}>
+				^site.ShowPage[5]
+				<table class="basket-order">
+					<tr>
+						<td class="field-name">Ваше имя:</td>
+						<td><input name="order_name" type="text" class="required" value="$site.user.first_name $site.user.last_name"></td>
+					</tr>
+					<tr>
+						<td class="field-name">Ваш телефон:</td>
+						<td><input name="order_phone" type="text" class="required" value="$site.user.phone"></td>
+					</tr>
+					<tr>
+						<td class="field-name">Ваш email:</td>
+						<td><input name="order_email" type="email" value="$site.user.email"></td>
+					</tr>
+				</table>
+				<div class="agreement-checkbox">
+					<input type="checkbox" name="processing"><div>Я СОГЛАСЕН на обработку и хранение моих персональных данных, указанных мною в Форме обратной связи в соответствии с условиями <a href="#agreement" class="message-window">согласия на обработку персональных данных</a>.</div>
+				</div>
+				<div class="agreement-checkbox">
+					<input type="checkbox" name="agreement"><div>Я подтверждаю своё согласие на передачу информации в электронной Форме (обращения) (в том числе персональных данных) по открытым каналам связи сети Интернет.</div>
+				</div>
+			</div>
+			<div class="controls">
+				<a class="button return" href="$basket.lastURL">Продолжить покупку</a>
+				<a class="button checkout">Оформить заказ</a>
+			</div>
+		</form>
+	}{
+		<h1>Корзина пуста</h1>
+	}
+</section>
+<div class="order_answer_wrapper">
+	<div class="order_answer"></div>
+	<a href="/" class="button">На главную</a>
+</div>

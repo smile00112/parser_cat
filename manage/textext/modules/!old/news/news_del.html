@@ -1,0 +1,61 @@
+@cms_body[]
+	^if(def $form:id && def $form:idpage){
+		^delnews1[]
+		
+		$response:location[index.html?idpage=$form:idpage]
+	}{
+		^insert_error_fields[]
+	
+	}
+
+
+
+
+
+<!-- УДАЛЕНИЕ НОВОСТИ -->
+@delnews1[]
+
+	^void:sql{delete from news where id='$form:id'}
+	
+	
+	
+	
+	
+	$thisFiles[^table::sql{select * from news_files where news_id='$form:id'}]
+	^if(def $thisFiles){
+		^thisFiles.menu{
+			$big[/nfiles/news/b_${thisFiles.path}]
+			^deletefile[$big]
+		
+		}
+	}	
+	^void:sql{delete from news_files where news_id='$form:id'}
+	
+		
+
+	
+	
+	
+	$thisGallery[^table::sql{select * from news_gallery where news_id='$form:id'}]
+	^if(def $thisGallery){
+		^thisGallery.menu{
+			$small[/images/news/b_${thisGallery.path}]
+			$big[/images/news/s_${thisGallery.path}]
+			^deletefile[$small]
+			^deletefile[$big]
+		
+		}
+	}
+	^void:sql{delete from news_gallery where news_id='$form:id'}
+	
+	
+
+
+
+
+
+
+
+
+
+

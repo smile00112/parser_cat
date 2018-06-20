@@ -1,0 +1,29 @@
+################################################################################
+@main[]
+^connect[$site:connectString]{
+ ^switch[$form:action]{
+	^case[delete]{
+	 ^if(def $form:id){
+    ^try{
+		 $result(^this.DeleteContact[$form:id])
+    }{
+     $exception.handled(true)
+     $result(0)
+    }
+   }{$result(-1)}
+	}
+	^case[edit]{
+	 ^if(def $form:id && def $form:field && def $form:value){
+    ^try{
+		 $res[^this.EditContact[$form:id;$form:field;$form:value]]
+		 $result(1)
+    }{
+     $exception.handled(true)
+     $result(0)
+    }
+   }{$result(-1)}
+	}
+	^case[DEFAULT]{$result(-1)}
+ }
+}
+################################################################################

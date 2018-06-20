@@ -1,0 +1,47 @@
+################################################################################
+@cms_body[]
+#-------------------------------------------------------------------------------
+<script type="text/javascript" src="./scripts/actions.js"></script>
+<link rel="stylesheet" type="text/css" href="./styles/style.css" />
+<script type="text/javascript" src="${cms:templateFolder}/libraries/dragula/dragula.min.js"></script>
+<link rel="stylesheet" type="text/css" href="${cms:templateFolder}/libraries/dragula/dragula.min.css" />
+#-------------------------------------------------------------------------------
+# Если параметры передаются
+^if(def $form:id && def $form:idpage){
+# Выводим заголовок страницы
+	^cms.ShowPageHeader[Видео для элемента "^textext:GetFixedText[^this.GetElementNameById[$form:id];40;...]";$cms.currentModule.path;^this.GetClassInfo[]]
+	<div class="navigation cms_h2">
+		<a class="navigation-point back" href="../?id=$idblock&idpage=$form:idpage&parent=$form:parent^if(def $form:page){&page=$form:page}&moveto=$form:id" title="Вернуться в каталог">К каталогу</a>
+		^if($cms.cmsUserLevel>0){
+		<div class="navigation-point add" id="addSlideBtn"  title="Добавить видео" data-width="400" data-href="add_video.html?id=$form:id" data-title="Добавить видео" data-reload="true" onClick="^$(this).OpenFancybox()^;">Добавить видео</div>
+		}
+	</div>
+	$videos[^video.GetVideo[$.blockIDs($form:id)$.blockName[$this.className]]]
+	^if(!def $videos){
+		<h1 class="cms_h1">Видео не добавлено</h1>
+	}{
+		<div class="videos"><!--
+		^videos.menu{
+			$link[^video:GenerateLink[$videos.hoster;^video.hosters.[$videos.hoster].video.replace[-IDENTIFIER-;$videos.src];$.source[cms]]]
+			--><div class="block_video shadow" data-id="$videos.id" data-position="$videos.sortir">
+				<div class="block_video_wrapper">
+					<div class="video" data-width="75%" data-href="$link.link" data-title="$videos.name">
+						<div class="image" style="background-image: url(${video.folders.images.small}/${videos.image})"></div>
+					</div>
+					<input name="name" value="$videos.name" class="cms_input w100p aC save">
+					<div class="string">
+						<span class="message"></span>
+						<div class="actions">
+							<span class="visible ^if($videos.visible == 1){true}{false} blue" title="^if($videos.visible == 1){Скрыть}{Отобразить}"></span><!--
+							--><span class="delete red" title="Удалить"></span>
+						</div>
+					</div>
+				</div>
+			</div><!--
+		}
+		--></div>
+	}
+}{
+	$response:refresh[$.value(0)$.url[../]]
+}
+################################################################################

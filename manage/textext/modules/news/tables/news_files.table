@@ -1,0 +1,8 @@
+field	sql_field	rename
+id	`id` int(11) NOT NULL AUTO_INCREMENT,
+news_id	`news_id` int(11) NOT NULL DEFAULT '0',
+name	`name` varchar(255) NOT NULL DEFAULT '',	path
+descript	`descript` varchar(255) NOT NULL DEFAULT '',
+sortir	`sortir` int(10) NOT NULL DEFAULT '0',
+visible	`visible` tinyint(1) unsigned NOT NULL DEFAULT '0',
+	PRIMARY KEY (`id`)

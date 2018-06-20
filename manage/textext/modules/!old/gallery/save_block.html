@@ -1,0 +1,11 @@
+################################################################################
+@cms_body[]
+^if(def $form:id){
+ ^if(def $form:edit_descript){
+  ^void:sql{update te_gallery set descript='$form:description' where id='$form:id'}
+ }{
+  ^void:sql{update te_gallery set sortir='$form:sortir' where id='$form:id'}
+ }
+}
+$response:location[index.html?id=$form:id_te&idpage=$form:idpage&idpage_name=$form:idpage_name]
+################################################################################

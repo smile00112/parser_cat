@@ -1,0 +1,12 @@
+################################################################################
+@cms_body[]
+^if(-f "/favicon.ico"){^file:delete[/favicon.ico]}
+^if(def $form:favicon){
+	$ext[^file:justext[$form:favicon.name]]
+	^if($ext eq 'ico'){
+		$res[^form:favicon.save[binary;/favicon.ico]]
+	}{$error[Загружен неверный тип файла!!!]}
+}
+# Переходим к списку настроек
+$response:refresh[$.value(0)$.url[${cms.cmsFolder}/${cms.currentModule.path}/^if(def $error){?error=^error.base64[]}]]
+################################################################################

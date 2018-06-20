@@ -1,0 +1,41 @@
+################################################################################
+@cms_body[]
+^if(def $form:id && def $form:news_id){
+ $curr_news[^table::sql{select * from news where id='$form:news_id'}]
+ 
+ ^cms.ShowPageHeader[Фотогалерея новости "$curr_news.head";$cms.currentModule.path;^news.GetClassInfo[]]
+ ^edit_block[]
+}{
+ ^insert_error_fields[]
+}
+################################################################################
+@edit_block[]
+$curr_photo[^table::sql{SELECT * FROM news_gallery WHERE id='$form:id' ORDER BY sortir}]
+<a href="gallery.html?id=$form:id&news_id=$form:news_id&idpage=$form:idpage">Фотогалерея</a>
+<br><br>
+<form method="post" enctype="multipart/form-data" action="save_block_gallery.html">
+ <input type="hidden" name="id" value="$curr_photo.id">
+ <input type="hidden" name="news_id" value="$form:news_id">
+ <input type="hidden" name="idpage" value="$form:idpage">
+ <input type="hidden" name="gallery_edit" value="yes">
+ <table border="0" cellspacing="1" cellpadding="5" bgcolor="#999999">	
+  <tr class="tH">
+   <td>Изображение</td>
+   <td>Описание</td>
+  </tr>
+  <tr class="tN">	
+   <td><img src="/images/news/s_$curr_photo.path"></td>
+   <td valign="top">
+	  <table border="0">
+     <tr>
+      <td><textarea id="elm1" name="description" rows="3" style="width: 300px^;">$curr_photo.descript</textarea></td> 
+     </tr>
+     <tr>
+      <td align="center"><input type="submit" name="save" value="Сохранить" /></td> 
+     </tr>
+    </table>   
+   </td>
+  </tr>
+ </table>
+</form> 
+################################################################################

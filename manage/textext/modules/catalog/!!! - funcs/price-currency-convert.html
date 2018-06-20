@@ -1,0 +1,36 @@
+################################################################################
+# Если в БД цены различных валют хранятся в разных полях (price, usd, eur), то
+# конвертируем их в цену и валюту (price, currency_id).
+# При этом нужно обнулить currency_id у всех элементов.
+################################################################################
+@cms_body[]
+^if(def $form:block_id){
+	$counter(0)
+	$elements[^table::sql{SELECT id, price, usd, eur FROM catalog WHERE block_id=$form:block_id AND type=1 AND currency_id=0}]
+	^elements.menu{
+		^counter.inc[]
+		$currencyID(0)
+		^if($elements.price>0){
+			$price($elements.price)
+			$currencyID(1)
+		}{
+			^if($elements.usd>0){
+				$price($elements.usd)
+				$currencyID(2)
+			}{
+				^if($elements.eur>0){
+					$price($elements.eur)
+					$currencyID(3)
+				}
+			}
+		}
+		^if($currencyID>0){
+			^void:sql{UPDATE catalog SET price=$price, currency_id=$currencyID WHERE id=$elements.id}
+		}
+# 		^if($counter==50){^break[]}
+	}
+	<h1>Готово</h1>
+}{
+	<h1>Не передан block_id</h1>
+}
+################################################################################

@@ -1,0 +1,360 @@
+################################################################################
+@head[]
+	^$(".addForm").fancybox({
+		padding:			5,
+		maxWidth:			800,
+		maxHeight:		600,
+		fitToView:		false,
+		autoSize:			true,
+		closeClick:		false,
+		openEffect:		'none',
+		closeEffect:	'none'
+	})^;
+################################################################################
+@cms_body[]
+<link type="text/css" rel="stylesheet" href="styles/style.css">
+<script src="scripts/script.js" type="text/javascript"></script>
+# Выводим шапку
+^cms.ShowPageHeader[Каталог для раздела "^site:GetPageNameById[$form:idpage]";$cms.currentModule.path;^catalog.GetClassInfo[]]
+# --------------------------------- Настройки ----------------------------------
+$show_file(0)
+$show_price(1)
+$show_goods_quantity(0)
+$show_specprice(0)
+$show_favorites(1)
+$show_square(0)
+# ------------------------------------------------------------------------------
+# Получаем общее количество товара
+$counttovar(^catalog.GetCountElements[$form:idpage])
+# Количество товара в этой категории
+$countrazdel(^catalog.GetCountElements[$form:idpage;$form:parent])
+# ------------------------------------------------------------------------------
+<section class="catalog_production_cms">
+ <div>
+#  Вывод информации
+  <p class="info">
+   Всего товаров: $counttovar<br/>
+   В этом разделе: $countrazdel<br/>
+  </p>
+  <table border="0" cellspacing="0" cellpadding="0">
+   <tr>
+    <td><p><a href="/manage/textext/?idpage=$form:idpage">К списку блоков</a></p></td>
+    <td style="padding-left:20px^;"><p><a href="options.html?id=$blockId&idpage=$form:idpage">К настройкам</a></p></td>
+   </tr>
+  </table>
+#  Вывод навигационного меню
+  ^if(def $form:parent){$cparent($form:parent)}{$cparent(0)}
+  <p><a href="?parent=0&idpage=$form:idpage&idblock=$blockId">Главная</a> ^header_page[$cparent]</p>
+  <p>
+   Редактировать общий текстовый блок:
+   <a href="ch_top_text.html?idpage=$form:idpage&parent=$cparent&destinationtext=top_text">верхний</a>,
+   <a href="ch_top_text.html?idpage=$form:idpage&parent=$cparent&destinationtext=bottom_text">нижний</a>
+  </p>
+  $level[^catalog.GetLevel[$cparent]]
+  $flag_what_add[all]
+  $tbl_sgid[^catalog.GetElements[$form:idpage;$cparent;2;;;sortir, price]]
+  <br class="clear">
+ </div>
+# Содержимое
+ <ul>
+  ^tbl_sgid.menu{
+  <a name="$tbl_sgid.id"></a>
+   <li>
+    <div>
+     <span class="id">ID=$tbl_sgid.id</span>
+			<a href="seo.html?id=$tbl_sgid.id&idpage=$form:idpage&parent=$form:parent">SEO</a>
+     ^if($tbl_sgid.visible==1){
+      <a class="hide" href="visible.html?id=$tbl_sgid.id&parent=$form:parent&idpage=$form:idpage&idblock=$blockId" title="Скрыть на сайте"></a>
+     }{
+      <a class="show" href="visible.html?id=$tbl_sgid.id&parent=$form:parent&idpage=$form:idpage&idblock=$blockId" title="Показывать на сайте"></a>
+     }
+     ^if($tbl_sgid.type==0){
+      $flag_what_add[folder]
+      <a class="enter" id="zap${tbl_sgid.id}" href="?parent=${tbl_sgid.id}&idpage=$form:idpage&idblock=$blockId" title="Перейти к товарам раздела"></a>
+     }{
+      $flag_what_add[element]
+      <a class="change" id="zap${tbl_sgid.id}" href="form_edit_description.html?parent=$cparent&id=$tbl_sgid.id&idpage=$form:idpage&idblock=$blockId" title="Редактировать подробное описание"></a>
+     }
+     <form method="post" action="edit_info.html">
+      <input type="hidden" name="id" value="$tbl_sgid.id"/>
+      <input type="hidden" name="parent" value="$form:parent"/>
+      <input type="hidden" name="idpage" value="$form:idpage"/>
+      <input type="hidden" name="idblock" value="$blockId"/>
+      <input class="name" type="text" name="name" value="$tbl_sgid.name" title="Название"/>
+      ^if($tbl_sgid.type==1 && $show_price == 1){
+       <input class="large" type="text" name="price" value="$tbl_sgid.price" title="Цена"/>
+      }
+			^try{
+				^if($tbl_sgid.type==1 && $show_square == 1){
+			<input class="large" type="text" name="square" value="$tbl_sgid.square" title="Площадь"/>
+				}
+			}{
+				$exception.handled(1)
+				^if($user_level>9){<h1>В таблице нет поля "square"</h1>}
+			}
+			<input class="large" type="text" name="artikul" value="$tbl_sgid.artikul" title="Артикул"/>
+      <input class="small" maxlength="4" type="text" name="parent_c" value="$tbl_sgid.parent" title="Родитель"/>
+      <input class="small" maxlength="4" type="text" name="sortir" value="$tbl_sgid.sortir" title="Порядок"/>
+			^try{
+				^if($show_favorites == 1){
+			<input type="checkbox" name="favorites"^if($tbl_sgid.favorites==1){ checked} title="Избранное"/>
+				}
+			}{
+				$exception.handled(1)
+				^if($user_level>9){<h1>В таблице нет поля "favorites"</h1>}
+			}
+      <input type="submit" value="Сохранить"/>
+     </form>
+     <span class="delete" title="Удалить позицию" onclick="if (confirm('Вы хотите удалить данную позицию?')){window.location.href='delete.html?parent=$form:parent&id=$tbl_sgid.id&idpage=$form:idpage&idblock=$blockId'}"></span>
+    </div>
+    <div class="content_catalog">
+     ^if($tbl_sgid.type==1){
+#-------------------------------Количество товара-------------------------------
+      ^if($show_goods_quantity eq 1){
+       <form method="post" enctype="multipart/form-data" action="edit_quantity.html">
+        <input type="hidden" name="id" value="$tbl_sgid.id">
+        <input type="hidden" name="parent" value="$form:parent">
+        <input type="hidden" name="idpage" value="$form:idpage">
+        <input type="hidden" name="idblock" value="$blockId">
+        <p>
+         Количество:&nbsp^;
+         <input name="quantity" type="text" value="$tbl_sgid.quantity" style="width: 50px^;">
+         <input type="submit" value="Сохранить">
+        </p>
+       </form>
+      }
+#----------------------------- Спецпредложение -----------------------------
+      ^if($show_specprice eq 1){
+       <br><br><br>
+       Спецпредложение:
+       ^if($tbl_sgid.specprice==1){
+        <b>Да</b> &#151^; <a href="specprice_off.html?id=$tbl_sgid.id&parent=$form:parent&idpage=$form:idpage&idblock=$blockId">Изменить</a>
+       }{
+        <b>Нет</b> &#151^; <a href="specprice_on.html?id=$tbl_sgid.id&parent=$form:parent&idpage=$form:idpage&idblock=$blockId">Изменить</a>
+       }
+      }
+     }{
+#  Прайс лист --------------------------------------------------
+      ^if($show_file eq 1){$parent(^int:sql{SELECT parent FROM catalog WHERE id='$tbl_sgid.id'}[$.default(0)])}
+      ^if($parent eq 0){
+       $page_info[^table::sql{SELECT * FROM menus WHERE id='$form:idpage'}]
+       $path[/catalog/$tbl_sgid.id/]
+       $list[^file:list[$path]]
+       ^if(-f "${path}$list.name"){
+        <h3>Файл <font color="blue">$list.name</font> загружен</h3>
+       }{
+        <h3><font color="red">Файл не загружен</font></h3>
+       }
+       <b>Загрузить прайс:</b>
+       <form method="post" enctype="multipart/form-data" action="save_file.html">
+        <input type="hidden" name="idpage" value="$form:idpage">
+        <input type="hidden" name="idblock" value="$blockId">
+        <input type="hidden" name="path" value="$path">
+        <input type="hidden" name="filename" value="$list.name">
+        <input type="file" name="file">
+        <input type="submit" value="Закачать">
+       </form>
+      }
+     }
+# ----------------- фотография и загрузка новой
+     <div class="load_img">
+      $extention[^site:GetImageExtention[$catalog.smallImagesFolder/;$tbl_sgid.id]]
+      ^if($extention eq 'no'){
+       $no_photo(0)
+       <img src="$catalog.defaultImage" alt="Изображение ещё не загружено">
+      }{
+       $no_photo(1)
+       <a class="fancybox" title="Увеличить" href="${catalog.bigImagesFolder}/${tbl_sgid.id}.${extention}">
+        <img src="${catalog.smallImagesFolder}/${tbl_sgid.id}.${extention}" alt="Основное фото позиции" title="Основное фото позиции">
+       </a>
+      }
+      ^insert_form_photo[Загрузить фото товара;$no_photo]
+      <p class="load_photo_name"></p>
+     </div>
+#      <div class="description_category">
+#       ^use[edit_sgid.html]
+#       ^show_editor[$form:parent;$tbl_sgid.id;$form:idpage;$tbl_sgid.type]
+#      </div>
+     ^if($tbl_sgid.type==1){
+      <div class="gallery_catalog">
+       ^gallery_catalog_items[$tbl_sgid.id]
+      </div>
+#      <div class="catalog_vitrina">
+#       ^catalog_vitrina[$tbl_sgid.id]
+#      </div>
+      <div class="load_img"><a href="./gallery/?parent=$form:parent&idpage=$form:idpage&catalog_id=$tbl_sgid.id">Доп. галерея</a></div>
+#      <div class="load_img"><a href="./price/?parent=$form:parent&idpage=$form:idpage&catalog_id=$tbl_sgid.id">Цена</a></div>
+     }
+     <br class="clear">
+    </div>
+   </li>
+  }
+ </ul>
+ ^if($level>=0 && $level<=3){^add[]}
+ <div id="cms_pop_windows">
+  <span>X</span>
+  <div></div>
+ </div>
+</section>
+################################################################################
+@add[]
+<div class="add_block">
+ ^switch[$flag_what_add]{
+   ^case[all]{<h2>Создать новый раздел или элемент</h2>}
+   ^case[folder]{<h2>Создать новый раздел</h2>}
+   ^case[element]{<h2>Создать новый элемент</h2>}
+ }
+ <form method="post" action="insert.html">
+  <input type="hidden" name="parent" value="$form:parent"/>
+  <input type="hidden" name="idpage" value="$form:idpage"/>
+  <input type="hidden" name="idblock" value="$blockId">
+  <input class="name" name="name" placeholder="Наименование"/>
+  ^switch[$flag_what_add]{
+   ^case[all]{
+   <select name="type" title="Тип новой позиции">
+    <option value="1">Элемент</option>
+    <option value="0">Раздел</option>
+   </select>
+   }
+   ^case[folder]{<input type="hidden" name="type" value="0"/>}
+   ^case[element]{<input type="hidden" name="type" value="1"/>}
+  }
+  <input class="large" name="sortir" placeholder="Порядок"/>
+  <input type="submit" value="Добавить"/>
+ </form>
+</div>
+################################################################################
+@addrazdel[]
+<b>Добавить раздел</b>
+<table width="100%" border="0" cellspacing="1" cellpadding="5" bgcolor="#999999"> 
+ <tr bgcolor="#ffffcc">
+  <td>Название</td>
+  <td>Родитель</td>
+  <td align="center"></td>
+ </tr>
+ <form method="post" action="add_sgid.html" style="MARGIN-TOP: 0em^; margin-bottom: 0em^;">
+  <tr bgcolor="#ffffcc">
+   <td>
+    <input name="name" value="" style="width: 280px^; font-size:14px^; border-width: 1px^; color: #000033^; background-color: #f9f9f9^;">
+   </td>
+   <td>
+    <select name="parent">
+     <option value=""></option>
+    </select>
+    <input name="sortir" value="" style="width: 40px^; font-size:14px^; border-width: 1px^; color: #000033^; background-color: #f9f9f9^;">
+   </td>
+   <td align="center"><input type="submit" value="Добавить" style="width: 70px^; font-size:12px^; border-width: 1px^; color: #000033^; background-color: #f9f9f9^;"></td>
+  </tr>
+ </form>
+</table>
+################################################################################
+@header_page[idpar][idcname;cname]
+^if($idpar!=0){
+ $tbl_header[^catalog.GetElementById[$idpar]]
+ ^tbl_header.menu{
+  $cname[$tbl_header.name]
+  $idcname[$tbl_header.id]
+  ^header_page[$tbl_header.parent] / <a href="?parent=$idcname&idpage=$form:idpage&idblock=$blockId">$cname</a>
+ }
+}
+################################################################################
+@insert_form_photo[label;no_photo]
+^if($no_photo==1){<span class="delete" title="Удалить изображение" onclick="if (confirm('Вы хотите удалить изображение?')){window.location.href='insert_photo.html?id=${tbl_sgid.id}&typephoto=$typephoto&parent=$form:parent&idpage=$form:idpage&idblock=$blockId'}"></span>}
+<form method="post" enctype="multipart/form-data" action="insert_photo.html">
+ <input type="hidden" name="id" value="${tbl_sgid.id}">
+ <input type="hidden" name="parent" value="$form:parent">
+ <input type="hidden" name="idpage" value="$form:idpage">
+ <input type="hidden" name="idblock" value="$blockId">
+ <input type="hidden" name="level" value="$level">
+ <span class="type_file">
+  <input type="file" name="photo">
+  <span class="button">Выбрать</span>
+ </span>
+ <input type="submit" value="Загрузить">
+</form>
+################################################################################
+#============================ Галерея фотографий ===============================
+@gallery_catalog_items[id_item]
+# Получаем список фоток галереи
+$curr_photo[^catalog.GetGallery[$id_item]]
+^if(def $curr_photo){
+ ^curr_photo.menu{
+ <figure>
+  <span>
+   <a class="delete" title="Удалить изображение" href="javascript: if (confirm('Вы хотите удалить данное изображение?')){window.location.href='delete_photo_gallery.html?parent=$form:parent&idpage=$form:idpage&idblock=$blockId&id=$id_item&photo_id=$curr_photo.id&photo_path=$curr_photo.path'}"></a>
+   <a class="fancybox" title="Увеличить" href="${catalog.bigImagesFolder}/$id_item/$curr_photo.path">
+    <img src="${catalog.minImagesFolder}/$id_item/$curr_photo.path">
+   </a>
+  </span>
+  <figcaption>
+
+  </figcaption>
+ </figure>
+ }
+}{<p>Нет загруженных изображений</p>}
+# Выводим форму для добавления изображения
+<form method="post" enctype="multipart/form-data" action="insert_photo_gallery.html">
+ <input type="hidden" name="parent" value="$form:parent"/>
+ <input type="hidden" name="idpage" value="$form:idpage"/>
+ <input type="hidden" name="idblock" value="$blockId">
+ <input type="hidden" name="id" value="$id_item"/>
+ <div class="load_img">
+  <span class="type_file">
+   <input type="file" name="photo"/>
+   <span class="button">Выбрать</span>
+  </span>
+  <input type="submit" value="Добавить"/>
+  <p class="load_photo_name"></p>
+ </div>
+</form>
+##############################################################
+#======================== Витрина ============================
+@catalog_vitrina[id_item]
+<a href="settings.html?parent=$form:parent&idpage=$form:idpage&idblock=$blockId&idtovar=$id_item">Настройки витрины</a>
+<a href="groups.html?parent=$form:parent&idpage=$form:idpage&idblock=$blockId&idtovar=$id_item">Группы товаров</a><br/>
+# Отображаем список цен товара
+$tbl_group[^table::sql{SELECT id, group_name, sortir FROM shop_group ORDER BY sortir}]
+^if($tbl_group){
+ ^tbl_group.menu{
+  $tbl_vitrina[^table::sql{SELECT * FROM shop_vitrina WHERE parent='$id_item' AND id_group='$tbl_group.id' ORDER BY sortir}]
+  ^if($tbl_vitrina){
+   <p>$tbl_group.group_name</p>
+   <ul>
+   ^tbl_vitrina.menu{
+    <li>
+     <form method="post" action="ch_vitrina.html"/>
+      <input type="hidden" name="id_vitrina" value="$tbl_vitrina.id"/>
+      <input type="hidden" name="parent" value="$form:parent"/>
+      <input type="hidden" name="idpage" value="$form:idpage"/>
+      <input type="hidden" name="idblock" value="$blockId">
+      <input type="hidden" name="idtovar" value="$id_item"/>
+      <input class="name" name="name" value="$tbl_vitrina.name" title="Наименование"/>
+      <input class="large" maxlength="9" name="price" value="$tbl_vitrina.price" title="Цена"/>
+      <input name="valuta" value="$tbl_vitrina.valuta" title="Ед. изм."/>
+      <input class="small" maxlength="4" name="sortir" value="$tbl_vitrina.sortir" title="Порядок"/>
+      <input type="submit" value="Сохранить"/>
+      <span class="delete" onclick="if (confirm('Вы хотите удалить данную позицию?')){window.location.href='del_vitrina.html?parent=$form:parent&idpage=$form:idpage&idblock=$blockId&idtovar=$id_item&id_vitrina=$tbl_vitrina.id'}" title="Удалить"></span>
+     </form>
+    </li>
+   }
+   </ul>
+  }{<p>Цена не указана</p>}
+ }
+ <form method="post" action="add_vitrina.html">
+  <input type="hidden" name="parent" value="$form:parent"/>
+  <input type="hidden" name="idpage" value="$form:idpage"/>
+  <input type="hidden" name="idblock" value="$blockId">
+  <input type="hidden" name="idtovar" value="$id_item"/>
+  <select name="id_group" title="Группа">
+  ^tbl_group.menu{
+   <option value="$tbl_group.id">$tbl_group.group_name</option>
+  }
+  </select>
+  <input class="name" name="name" type="text" placeholder="Наименование"/>
+  <input class="large" maxlength="9" name="price" type="text" placeholder="Цена"/>
+  <input name="valuta" type="text" value="шт" placeholder="Ед. изм." title="Ед. изм."/>
+  <input class="large" maxlength="4" name="sortir" type="text" placeholder="Порядок"/>
+  <input type="submit" value="Добавить"/>
+ </form>
+}{<p>Сначала следует добавить группу товара</p>}
+################################################################################

@@ -1,0 +1,150 @@
+################################################################################
+@cms_body[]
+<script	src="./scripts/actions.js" type="text/javascript"></script>
+# Хэш, содержащий список модулей и их версий, которые требуются для работы модуля проверки
+$require[
+	$.cms(2.2)
+]
+# Выводим шапку
+#^cms.ShowPageHeader[Информация о сайте <font color="red">$cms.domain</font>;$cms.currentModule.path;^this.GetClassInfo[]]
+<br />
+# -------------------------- Проверка версий классов ---------------------------
+# Инициализируем хэш со классами, которые нужно обновить
+$younger_versions[^hash::create[]]
+# Пробегаем хэш со списком необходимых для работы классов
+^require.foreach[className;version]{
+	^try{
+		^use[${className}.p;$.replace(true)]
+		$currentClassVersion(^process{^$${className}:classVersion})
+	}{
+		$exception.handled(true)
+	}
+# Если версия класса ниже чем необходимая для работы
+	^if(!def $currentClassVersion || $currentClassVersion<$version){
+# Добавляем имя класса в список для обновления
+		$younger_versions.[$className][$currentClassVersion]
+	}
+}
+# Если все версии классов не ниже необходимых
+^if(!def $younger_versions){
+	$savedCMSVersion(^this.GetSavedCMSVersion[$cms.domain])
+	^if($savedCMSVersion<=0 || $savedCMSVersion<$cms.classVersion){
+	<table class="table_dsb">
+		<tr data-site="$cms.domain" data-cms-version="$cms.classVersion">
+		^if($savedCMSVersion<=0){
+			<td>
+				<i class="fa fa-plus fa-2x pointer blue" title="Добавить информацию" onClick="^$(this).UpdateCMSVersion()^;"></i>
+			</td>
+			<td>
+				<div class="cms_h2">Информация о сайте (и версии CMS) не найдена.</div>
+			</td>
+		}{
+			<td>
+				<i class="fa fa-plus fa-2x pointer blue" title="Обновить информацию" onClick="^$(this).UpdateCMSVersion()^;"></i>
+			</td>
+			<td>
+				<div class="cms_h2">Информация о версии CMS устарела.</div>
+			</td>
+		}
+		</tr>
+	</table>
+	<br>
+	}
+	<table border="0" cellspacing="1" cellpadding="5">
+		<tr class="tH">
+			<td>Модули</td>
+			<td>Целостность и ошибки заполнения</td>
+		</tr>
+		<tr>
+			<td valign="top">
+				$modules[^this.GetModules[]]
+				<table border="0" cellspacing="1" cellpadding="5" bgcolor="#999999">
+					<tr class="tH">
+						<td rowspan="2">Модуль</td>
+						<td colspan="2">Версия</td>
+					</tr>
+					<tr class="tH">
+						<td>Текущая</td>
+						<td>Максимальная</td>
+					</tr>
+				^if(def $this.modules){
+					^modules.menu{
+						<tr class="tN">
+							<td align="left">$modules.namemenu</td>
+							^if(^this.modules.locate[name;$modules.nameblock]){
+							<td>
+								^try{
+									^use[$cms.cmsFolder/$modules.pathblock/module_info.p]
+									$info[^module_information[]]
+								<strong>
+									^if($info.module_name eq $modules.nameblock){
+										^if($info.version<$this.modules.version){
+											<font color="red">$info.version</font>
+										}{
+											^if($info.version>$this.modules.version){
+												<div class="red pointer" data-module="$info.module_name" data-version="$info.version" onClick="^$(this).UpdateModuleVersion()^;" title="Внести версию в базу">$info.version</div>
+											}{
+												$info.version
+											}
+										}
+									}{
+										<font color="red">Нет</font>
+									}
+								</strong>
+								}{
+									$exception.handled(true)
+								}
+							</td>
+							<td>
+								<strong id="max-${this.modules.name}">
+									^if($this.modules.version>0){
+										^if($info.version<$this.modules.version){
+											<font color="green">$this.modules.version</font>
+										}{
+											$this.modules.version
+										}
+									}{
+										<font color="red">Нет</font>
+									}
+								</strong>
+							</td>
+							}{
+							<td colspan="4">
+								<strong>Неизвестный модуль $modules.nameblock</strong>
+							</td>
+							}
+						</tr>
+					}
+				}{
+						<tr class="tN">
+							<td colspan="3">Ошибка загрузки данных о модулях по адресу: <a href="$this.modulesURL" target="_blank">$this.modulesURL</a>.</td>
+						</tr>
+				}
+				</table>
+			</td>
+			<td valign="top">
+# Проверка целостности системы
+				^IntegrityCheck[]
+# Aнализ пустых SEO атрибутов для страниц
+				^SeoAttributesCheck[]
+# Aнализ пустых путей страниц
+				^UrlCheck[]
+			</td>
+		</tr>
+	</table>
+}{
+<table class="table_dsb">
+	<tr><td colspan="2"><div class="cms_h1">Необходимо обновить следующие классы:</div></td></tr>
+	^younger_versions.foreach[className;classVersion]{
+	<tr>
+		<td class="aC">
+			<i class="fa fa-exclamation-triangle fa-2x blue" title="Обновить класс ${className}.p"></i>
+		</td>
+		<td>
+			<div class="cms_h2">Класс <strong>${className}.p</strong> с версии <strong>$classVersion</strong> до версии <strong>$require.[$className]</strong>.</div>
+		</td>
+	</tr>
+	}
+</table>
+}
+################################################################################

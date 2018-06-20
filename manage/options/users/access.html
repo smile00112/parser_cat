@@ -1,0 +1,87 @@
+################################################################################
+@main[]
+<html>
+ <head>
+  ^cms.ShowTemplate[${cms.templateFolder}/header_light.html]
+  <script type="text/javascript">
+   ^$.fn.AccessChange = function(){
+    var block_id = ^$(this).attr('id')^;
+    ^$.post('access_change.html', { block_id: block_id, login: '$form:login' })^;
+   }^;
+
+   ^$.fn.Toggle = function(){
+    var parent = ^$(this).attr('id')^;
+    ^$('.' + parent).toggle()^;
+    var prefix = ^$('#' + parent + '_prefix').text()^;
+    if(prefix === '+'){^$('#' + parent + '_prefix').text('-')^;} else {^$('#' + parent + '_prefix').text('+')^;}
+   }^;
+  </script>
+ </head>
+ <body class="FloatWindow">
+# Если есть логин
+^if(def $form:login){
+ ^connect[$site:connectString]{
+# Выводим заголовок страницы
+ <h1 class="cms_h1 aC">Редактирование прав пользователя <font color="#cc0000">"$form:login"</font></h1>
+ <p class="aC"><a class="cms_h2" href="update_user.html?login=$form:login">Сбросить на значения по умолчанию</a></p>
+# Получаем список модулей и блоков CMS, доступных пользователю
+ $access[^this.GetUserAccess[$form:login]]
+ <table border="0" width="100%" style="border: 1px dashed #999999^;">
+  <tr>
+   <td align="center" valign="top" width="50%">
+# Получаем информацию о блоках CMS
+   $modules[^this.GetCMSBlocks[0]]
+# Инициализируем массив для поиска
+   $s_modules[^table::create[$modules]]
+# Сортируем её по
+   ^modules.sort($modules.id)
+# Выводим таблицу со списком модулей CMS
+    <span class="cms_h1">Модули CMS</span>
+    <table border="0" class="table_dsb">
+     <tr class="tHn">
+      <td>Название</td>
+      <td>Доступ</td>
+     </tr>
+     ^modules.menu{
+     ^if(^s_modules.locate[parent;$modules.id]){$flag(1)}{$flag(0)}
+     <tr^if($modules.parent>0){ class="$modules.parent"}>
+      <td class="^if($modules.parent>0){pl25}{tB}"^if(!$flag){ style="padding-left: 22px^;"}><span id="$modules.id" onClick="^$(this).Toggle()^;"^if($flag){ style="cursor: pointer^;"}>^if($flag){<span id="${modules.id}_prefix" class="red" style="width: 10px^;">-</span> }$modules.namemenu</span></td>
+      <td class="aC">
+       <input id="$modules.id" type="checkbox" name="access" onChange="^$(this).AccessChange()" ^if(^access.locate[block_id;$modules.id]){checked}>
+      </td>
+     </tr>
+     }
+    </table>
+    <br>
+   </td>
+   <td align="center" valign="top">
+# Получаем информацию о блоках CMS
+   $blocks[^this.GetCMSBlocks[1]]
+# Инициализируем массив для поиска
+   $s_blocks[^table::create[$blocks]]
+# Сортируем её по
+   ^blocks.sort($blocks.id)
+# Выводим таблицу со списком блоков CMS
+    <span class="cms_h1">Блоки CMS</span>
+    <table border="0" class="table_dsb">
+     <tr class="tHn">
+      <td>Название</td>
+      <td>Доступ</td>
+     </tr>
+     ^blocks.menu{
+     <tr>
+      <td>$blocks.namemenu</td>
+      <td class="aC">
+       <input id="$modules.id" type="checkbox" name="access" onChange="^$(this).AccessChange()" ^if(^access.locate[block_id;$blocks.id]){checked}>
+      </td>
+     </tr>
+     }
+    </table>
+    <br>
+   </td>
+  </tr>
+ </table>
+ }
+}{<h1 class="cms_h1 aC">Доступ запрещён!</h1>}
+</body>
+################################################################################

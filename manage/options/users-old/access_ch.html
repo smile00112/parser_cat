@@ -1,0 +1,17 @@
+################################################################################
+@cms_body[]
+^if($cms.cmsUserLevel>0){
+	$tmp[^void:sql{DELETE FROM admins_access WHERE login='$form:login'}]
+	$v_access[$form:tables.access]
+	^if($v_access){
+		^v_access.menu{
+			$tmp[^void:sql{INSERT INTO admins_access (login, cmc_block) VALUES ('$form:login', $v_access.field)}]
+		}
+	}
+}
+# Переходим к редактированию прав пользователя
+$response:refresh[
+	$.value(0)
+	$.url[${cms.cmsFolder}/${cms.currentModulePath}/]
+]
+################################################################################

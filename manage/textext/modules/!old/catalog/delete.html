@@ -1,0 +1,56 @@
+################################################################################
+@main[]
+^connect[$site:connectString]{
+ ^if($form:confirmdelete eq yes){
+  ^DeleteAllParents[$form:id]
+ }{
+  ^if(def $form:id){
+   ^if(^catalog.GetCountParents[$form:id]>0){
+    <p align="center">
+     <b>Существуют подчиненные записи!</b><br><br>
+     <a href="delete.html?parent=$form:parent&id=$form:id&idpage=$form:idpage&idblock=$form:idblock&confirmdelete=yes">Удалить подчиненные записи</a>
+    </p>
+   }{
+    ^Delete[$form:id]
+    ^make_rewrite[]
+    $response:refresh[$.value(0)$.url[index.html?parent=$form:parent&idpage=$form:idpage&id=$form:idblock]]
+   }
+  }
+ }
+}
+################################################################################
+@DeleteAllParents[id]
+$cat_tree1[^catalog.GetElements[;$id;2]]
+^if(def $cat_tree1){
+  ^cat_tree1.menu{
+   ^Delete[$cat_tree1.id]
+   $cat_tree2[^catalog.GetElements[;$cat_tree1.id;2]]
+   ^if($cat_tree2){
+     ^cat_tree2.menu{
+      ^Delete[$cat_tree2.id]
+      $cat_tree3[^catalog.GetElements[;$cat_tree2.id;2]]
+      ^if($cat_tree3){
+        ^cat_tree3.menu{
+         ^Delete[$cat_tree3.id]
+        }
+      }
+     }
+   }
+  }
+}
+<p align="center">
+ <b>Все подчиненные записи удалены!</b><br><br>
+ <a href="delete.html?parent=$form:parent&id=$form:id&idpage=$form:idpage&idblock=$form:idblock">Удалить раздел</a><br>
+</p>
+################################################################################
+@Delete[id]
+$res[^catalog.Delete[$id]]
+$res[^catalog.DeleteVitrinaByParent[$id]]
+$res[^catalog.DeleteGalleryByParent[$id]]
+$extention[^site:GetImageExtention[${catalog.smallImagesFolder}/;$id]]
+^if($extention ne 'no'){                                                    ``
+ $res[^file:delete[${catalog.smallImagesFolder}/${id}.${extention}]]
+ $res[^file:delete[${catalog.bigImagesFolder}/${id}.${extention}]]
+ $res[^file:delete[${catalog.srcImagesFolder}/${id}.${extention}]]
+}
+################################################################################

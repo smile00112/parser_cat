@@ -1,0 +1,44 @@
+################################################################################
+@main[]
+^if(def $form:site && def $form:newsId){
+$rep[^table::create{from	to
+www.	}]
+ $remote_site[^form:site.replace[$rep]]
+ ^connect[$site:connectString]{$news_id(^int:sql{SELECT news_id FROM news_sync WHERE remote_news_id=$form:newsId AND remote_site='$remote_site'}[$.default(0)])}
+ $result(^UpdateNews[$form:site;$news_id;$form:newsId;$remote_site])
+}{$result(0)}
+################################################################################
+@UpdateNews[site;news_id;remote_news_id;remote_site]
+^try{
+ $fields[^table::load[http://${site}${newsGetFile}?newsId=$remote_news_id]]
+}{
+ $exception.handled(1)
+ $fields[^table::load[http://www.${site}${newsGetFile}?newsId=$remote_news_id]]
+}
+$counter(0)
+^fields.menu{
+ ^counter.inc[]
+ ^if($news_id==0){
+  $addFields[^if($counter>1){$addFields, }${fields.field}]
+  $addValues[^if($counter>1){$addValues, }'${fields.value}']
+ }{
+  $query[^if($counter>1){$query, }${fields.field}='${fields.value}']
+ }
+}
+^if($news_id==0){
+ $addFields[$addFields, id_page]
+ $addValues[$addValues, $newsPageId]
+}
+^connect[$site:connectString]{
+ ^if($news_id==0){
+  $res[^void:sql{INSERT INTO news ($addFields) VALUES ($addValues)}]
+  $newNewsId(^int:sql{SELECT MAX(id) FROM news})
+  $res[^void:sql{INSERT INTO news_sync (news_id, remote_news_id, remote_site) VALUES ($newNewsId, $remote_news_id, '$remote_site')}]
+  ^make_rewrite[]
+  $result($newNewsId)
+ }{
+  $res[^void:sql{UPDATE news SET $query WHERE id=$news_id}]
+  $result(-1)
+ }
+}
+################################################################################

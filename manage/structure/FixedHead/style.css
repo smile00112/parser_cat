@@ -1,0 +1,42 @@
+#fixHead {
+	position: fixed;
+	top: 0;
+	left: 0;
+	display: none;
+	z-index: 99;
+	width: 100%;
+}
+#fixHead>div {
+	margin-left: 150px;
+	display: block;
+	text-align: center;
+}
+#fixHead>div>div {
+	display: inline-block;
+	width: 98%;	
+}
+#fixHead>div>div>div {
+	padding: 0 6px;
+	box-shadow: 0 0 10px #9D9D9D;
+	-webkit-box-shadow: 0 0 10px #9D9D9D;
+	border-bottom: 1px solid #B8B8B8;
+	background-color: #E6E6E6;
+}
+#fixHead>div>div>div>div {
+	display: table;
+	width: 100%;
+	
+}
+#fixHead .form-right>span {
+	display: table-cell;
+	color: #5C5C5C;
+    font-family: Lucida Console;
+    font-size: 11px;
+    text-align: center;
+	vertical-align: middle;
+	border-left: 1px solid #B8B8B8;
+	height: 100%;
+	padding: 0;
+}
+
+

@@ -1,0 +1,136 @@
+######GET CATATOG PAGE########
+^if(
+	def $form:catalogPageId &&
+	def $form:catalogBlockId &&
+	def $form:catalogCategoryId &&
+	def $form:catalogPageNum
+){
+
+	$catalogPageId[$form:catalogPageId]
+	$catalogBlockId[$form:catalogBlockId]
+	$catalogCategoryId[$form:catalogCategoryId]
+	$catalogPageNum[$form:catalogPageNum]
+
+	^use[site.p]
+	^connect[$site:connectString]{
+		$site[^site::create[]]
+
+		$catalogPageUrl[/^site:GetPageUrlById[$catalogPageId;skipMain]/]
+
+		$catalogElementsCount[^int:sql{
+			SELECT COUNT(id)
+			FROM $catalog:catalogTable.name
+			WHERE
+				parent=$catalogCategoryId and visible=1
+		}]
+		$catalogPagesCount[^math:ceiling(^eval($catalogElementsCount/$catalog:elementsPerPage))]
+
+		^if( $catalogPageNum > 1 ){
+			$catalogPagePrevNum($catalogPageNum-1)
+		}{
+			$catalogPagePrevNum(0)
+		}
+		^if( $catalogPagesCount > 1 && $catalogPageNum < $catalogPagesCount ){
+			$catalogPageNextNum($catalogPageNum+1)
+		}{
+			$catalogPageNextNum(0)
+		}
+
+		$params[
+			$.parent($catalogCategoryId)
+			$.block_id($catalogBlockId)
+			$.visible(1)
+			$.offsetCount(^eval($catalogPageNum*$catalog:elementsPerPage-$catalog:elementsPerPage))
+		]
+		$catalogElements[^catalog:GetElements[$params]]
+		^catalogElements.menu{
+			$catalogElements.name
+		}
+
+		$catalogElementsString[id	link	name	imgSmall	imgBig^#0A]
+		^catalogElements.menu{
+			$id[$catalogElements.id]
+			$link[${catalogPageUrl}^catalog:GetElementUrlById[$catalogElements.id]/]
+			$name[$catalogElements.name]
+			$img[]
+			$imgSmall[]
+			$imgBig[]
+			$img[^catalog:GetMainImage[$catalogElements.id]]
+			^if($img){
+				$imgSmall[$catalog:imagesFolder.small/$img.name]
+				$imgBig[$catalog:imagesFolder.big/$img.name]
+			}
+
+			$catalogElementsString[${catalogElementsString}$id	$link	$name	$imgSmall	$imgBig^#0A]
+		}
+		$catalogElementsTable[^table::create{$catalogElementsString}]
+
+		$json[
+			$.catalogPageId[$catalogPageId]
+			$.catalogCategoryId[$catalogCategoryId]
+			$.catalogPageNum[$catalogPageNum]
+			$.catalogElementsCount[$catalogElementsCount]
+			$.catalogPagesCount[$catalogPagesCount]
+			^if($catalogPagePrevNum){$.catalogPagePrevNum[$catalogPagePrevNum]}
+			^if($catalogPageNextNum){$.catalogPageNextNum[$catalogPageNextNum]}
+			$.catalogElements[$catalogElementsTable]
+		]
+
+		^try{
+			$result[^json:string[$json]]
+		}{
+			$exception.handled(true)
+			$result[^json:string[Ошибка вывода json строки]]
+		}
+	}
+}
+
+
+
+######GET CATATOG ELEMENT########
+^if(
+	def $form:catalogElementId &&
+	def $form:catalogPageId
+){
+
+	$catalogElementId[$form:catalogElementId]
+	$catalogPageId[$form:catalogPageId]
+
+	^use[site.p]
+	^connect[$site:connectString]{
+		$site[^site::create[]]
+
+		$catalogPageUrl[/^site:GetPageUrlById[$catalogPageId;skipMain]/]
+		$catalogElement[^catalog:GetElementById[$catalogElementId]]
+
+		$catalogElementName[$catalogElement.name]
+		$catalogElementContent[$catalogElement.content]
+
+		$catalogElementParent[$catalogElement.parent]
+		$catalogElementParentUrl[${catalogPageUrl}^catalog:GetElementUrlById[$catalogElementParent]/]
+
+		$img[^catalog:GetMainImage[$catalogElementId]]
+		^if($img){
+			$catalogElementImgSmall[$catalog:imagesFolder.small/$img.name]
+			$catalogElementImgBig[$catalog:imagesFolder.big/$img.name]
+		}
+
+		$json[
+			$.catalogPageUrl[$catalogPageUrl]
+			$.catalogElementParent[$catalogElementParent]
+			$.catalogElementParentUrl[$catalogElementParentUrl]
+			$.catalogElementId[$catalogElementId]
+			$.catalogElementName[$catalogElementName]
+			$.catalogElementImgSmall[$catalogElementImgSmall]
+			$.catalogElementImgBig[$catalogElementImgBig]
+			$.catalogElementContent[$catalogElementContent]
+		]
+
+		^try{
+			$result[^json:string[$json]]
+		}{
+			$exception.handled(true)
+			$result[^json:string[Ошибка вывода json строки]]
+		}
+	}
+}

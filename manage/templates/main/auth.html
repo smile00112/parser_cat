@@ -1,0 +1,35 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+	<head>^self.ShowTemplate[${cms:templateFolder}/header_light.html]</head>
+	<body>
+		<div class="cms_login">
+			<div class="cms_login_container">
+				<a href="http://www.websun-com.ru" target="_blank" title="Студия WebSun">
+					<div class="header">
+						<span class="websun">
+							<img src="${cms:templateFolder}/images/websun/shadow.png">
+							<img src="${cms:templateFolder}/images/websun/sun.png" class="sun">
+							<img src="${cms:templateFolder}/images/websun/network.png">
+						</span><span class="ru_logo"></span>
+					</div>
+				</a>
+				<h1>Вы перешли в раздел управления сайтом <span>${env:SERVER_NAME}</span></h1>
+				<div class="form_wrapper">
+					<form method="POST" action="${cms:cmsFolder}/login.html">
+						<h3 class="form_title">Для входа в раздел администрирования введите <span>логин и пароль:</span></h3>
+						<div class="login_container">
+							<label for="n_login">Логин</label>
+							<input type="text" name="n_login">
+							<label for="n_password">Пароль</label>
+							<input type="password" name="n_password">
+							<div class="buttons">
+								<button type="submit">Войти</button>
+							</div>
+						</div>
+					</form>
+				</div>
+				<a href="http://${env:SERVER_NAME}" target="_blank" class="btn">Перейти на сайт ${env:SERVER_NAME}</a>
+			</div>
+		</div>
+	</body>
+</html>

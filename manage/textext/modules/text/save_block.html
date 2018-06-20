@@ -1,0 +1,15 @@
+################################################################################
+@main[]
+^connect[$site:connectString]{
+ ^if(def $form:id && def $form:idpage && def $form:elm1){
+  ^if(def $form:ins){
+   ^void:sql{insert into te_text (id, content) values ('$form:id','$form:elm1')}
+  }{
+   ^void:sql{update te_text set content='$form:elm1' where id='$form:id'}
+  }
+  $response:refresh[$.value(0)$.url[/manage/textext/?idpage=$form:idpage&idpage_name=$form:idpage_name]]
+ }{
+  ^insert_error_fields[]
+ }
+}
+################################################################################

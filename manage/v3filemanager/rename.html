@@ -1,0 +1,180 @@
+@cms_left[]
+<table class="table100">
+<tr>
+<td valign=top bgcolor="$allbgcolor">
+
+@cms_body[]
+<head>
+<link href="/i/univ.css" rel="stylesheet" type="text/css">	
+<script type="text/javascript" src="/manage/v3filemanager/js/script.js"></script>
+<script type="text/javascript" src="/manage/v3filemanager/tiny/tiny_mce_popup.js"></script>
+</head>
+<body>
+^if(def $form:url){
+$uri_get[$form:url]
+}
+$name_name[$form:name]
+$ext_f[^file:justext[$name_name]]
+$name[^file:justname[$name_name]]
+
+#Замена русских букв на английйские
+$translit_cfg[^table::load[/manage/v3filemanager/config/translit.cfg]]
+$space[ ]
+$d[-]
+$translit[^table::create{from	to
+$space	$d}]
+^translit_cfg.menu{
+	^translit.append{$translit_cfg.from	$translit_cfg.to}
+}
+
+<font style="font-size:12px;">								
+<div style='position:absolute;height:150;width:350;' id='formDirectory'>
+<form method="POST">
+<div style="padding-top:5px;">
+	<center>
+		Допустимы символы: a-z, 0-9, - и _<br><br>
+		Новое имя папки:<div style="padding-top:5px;overflow:hidden;"><input type="text" name="directoryName" id="directoryName_id" value="$name" size="50" maxlength="500"/></div>
+		<hr width="340px;" color="grey">
+		<div style="padding:4px;">
+			
+			<input type="submit" class="add" value="Изменить" name="posted"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<input type="button" class="add" value="Отмена" onClick='javascript:tinyMCEPopup.close();' />
+		</div>
+	</center>
+</div>
+</form>
+</font>
+<script>
+folder_input_text('directoryName');	
+^$('#directoryName_id').click(function(eventObject){
+	^$("#directoryName_id").attr('value','');	  	
+});
+</script>
+$directoryName[$form:directoryName]
+^if(def $directoryName){
+	$directoryName[^directoryName.lower[]]
+	$directoryName[^directoryName.trim[]]
+	
+#	Проверка на запрещенные символы в имени файла
+	$directoryName[^directoryName.replace[$translit]]
+	^name_replace[$directoryName]
+	$directoryName[$name_rep]
+	
+	^if(def $directoryName){
+		$exist[^file:list[$uri_get]]
+		^exist.menu{
+			^if(-f "${uri_get}/$name_name"){
+			$drname[${directoryName}.$ext_f]
+				^if($exist.name eq $drname){
+					$exist_directory(1)	
+				}
+			}{
+				^if($exist.name eq $directoryName){
+					$exist_directory(1)	
+				}
+			}
+		}
+		
+		^if(def $exist_directory){
+			<script>alert('$directoryName уже существует')</script>
+		}{
+			^if(-f "${uri_get}/$name_name"){
+				^file_rename[]
+#				^file:move[${uri_get}${name}.$ext_f;${uri_get}${directoryName}.$ext_f]
+			}{
+				$way[${uri_get}${name_name}]			
+				$table_way[^table::create{cnt	name	way}]
+				$summ(0)
+				^table_way.append{$summ	$name_name	$way}
+				$exit(1)
+				^folder_rename[]
+			}
+			<script>var win = window.dialogArguments || opener || parent || top^;win.location.reload()^;</script>
+		}
+		
+	}{
+		<script>alert('Допустимы символы: a-z, 0-9, - и _')</script>
+	}
+}
+</div>
+</body>
+
+
+
+#########################
+@file_rename[]
+^ext[$directoryName]
+^ext2[$name]
+
+$pv[^file:list[$uri_get]]
+$exist_pv(0)
+^pv.menu{
+	^if($preview_name_old eq $pv.name){
+		$exist_pv(1)
+	}
+}
+^if($exist_pv!=1){
+	^file:move[${uri_get}${name}.$ext_f;${uri_get}${directoryName}.$ext_f]
+}{
+	^file:move[${uri_get}${name}.$ext_f;${uri_get}${directoryName}.$ext_f]
+	^file:move[${uri_get}${preview_name_old};${uri_get}${preview_name}]
+}	
+
+###############################
+@folder_rename[]
+$exception[t.t]
+$t(0)
+^while($exit!=-1){
+	$tables[^table_way.select($table_way.cnt==$summ)]
+	^if($tables){
+		^summ.inc[]
+		^tables.menu{
+#			$tables.way -----<br>
+			$back_way[$tables.way]				
+			$list[^file:list[$tables.way]]
+			^if($list){
+			}{
+				$t(-1)
+			}
+			^list.menu{
+				^ext[$list.name]
+				^if($name_file eq $exception){
+					$t(1)
+				}{
+					$t(-1)
+				}
+#				Если есть разрешение то удаляем сразу если нет то заходим внутрь
+
+				
+				^if(-f "${tables.way}/${name_file}"){
+					$way_t[^table::create{from	to
+${uri_get}$name_name/	
+}]
+#				${uri_get}$name_name/ - ${tables.way}<br><br>
+					$rep_way[${tables.way}/]
+					$rep_way[^rep_way.replace[$way_t]]
+
+					^file:move[${tables.way}/${name_file};${uri_get}$directoryName/${rep_way}${name_file}]
+#					${tables.way}/${name_file} - ${uri_get}$directoryName/${rep_way}${name_file}<br>
+						
+				}{
+					$way[${tables.way}/${name_file}]
+					^table_way.append{$summ	$name_file	$way}
+					}	
+			}<br>
+		}
+	}{	
+		$exit(-1)
+	}
+}
+
+@ext2[name]
+$name_file[$name]
+$ext[^file:justext[$name_file]]
+$preview[-preview]
+$name_f[^file:justname[$name_file]]
+$preview_name_old[${name_f}${preview}.$ext_f]
+#$ext-рарсширение
+#$name_f-имя файла
+#$name_file-имя файла с расширением
+#$preview_name-имя превью

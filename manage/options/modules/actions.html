@@ -1,0 +1,19 @@
+################################################################################
+@main[]
+$answer[^hash::create[]]
+^connect[$site:connectString]{
+	^switch[$form:action]{
+		^case[save_field]{
+			$answer[^this.SaveModuleProperty[$form:id;$form:field;$form:value]]
+		}
+		^case[delete]{
+			$answer[^this.DeleteModule[$form:id]]
+		}
+		^case[DEFAULT]{
+			$answer.error(true)
+			$answer.text[Неизвестное действие]
+		}
+	}
+}
+$result[^json:string[$answer;$.indent(true)]]
+################################################################################

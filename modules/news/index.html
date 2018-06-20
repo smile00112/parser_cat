@@ -1,0 +1,144 @@
+^if(def $form:newsPageId){
+	^use[site.p]
+
+	^connect[$site:connectString]{
+		$site[^site::create[]]
+
+		$newsPageId[$form:newsPageId]
+
+		^if(def $form:newsPageNum){
+			$newsPageNum[$form:newsPageNum]
+		}{
+			$newsPageNum[1]
+		}
+
+
+		$pageUrl[^site:GetPageUrlById[$newsPageId]]
+		$pageName[^site:GetPageNameById[$newsPageId]]
+
+		$allNewsCount[^news:GetCountAllPageNews[$newsPageId]]
+		$pagesCount[^math:ceiling(^eval($allNewsCount/$news:newsPerPage))]
+
+		$prevPage(0)
+		$nextPage(0)
+
+
+		^if( $newsPageNum > 1){
+			$prevPage[^eval($newsPageNum-1)]
+			^if( $prevPage > $pagesCount ){
+				$prevPage($pagesCount)
+			}
+		}
+
+
+		^if( $newsPageNum < $pagesCount){
+			$nextPage[^eval($newsPageNum + 1)]
+		}
+
+
+		$articles[^news:GetNews[$newsPageId;;^eval(($newsPageNum-1)*$news:newsPerPage)]]
+		$json[
+			$.pageId[$newsPageId]
+			$.pageName[$pageName]
+			$.pageNum[$newsPageNum]
+			$.test[$form:controllerType]
+			^if($prevPage > 0 && $form:controllerType ne 'nextPage' ){$.previousPage[$prevPage]}
+			^if($nextPage > 0 && $form:controllerType ne 'prevPage'){$.nextPage[$nextPage]}
+			$.articlesCount[$allNewsCount]
+			$.pagesCount[$pagesCount]
+		]
+
+		$articles_string[date	preview	head	body	id	news_url	pageName^#0A]
+
+		^articles.menu{
+			$dt_news[^dtf:create[$articles.date_news;^date::now[]]]
+			$news_url[/$pageUrl/^news:GetNewsUrl[$articles]/]
+			$preview[^news:GetGallery[$articles.id;yes]]
+			^if( $preview ){ $preview[$news:imagesFolder.root/s_$preview.path] }{ $preview[] }
+
+			$articles_string[${articles_string}^dt_news.day.format[%02d] $dtf:rr-locale.month.[$dt_news.month] ${dt_news.year}	$preview	$articles.head	$articles.body	$articles.id	$news_url	$pageName^#0A]
+		}
+
+		$json.articles[^table::create{$articles_string}]
+# Выводим json строку
+		^try{
+			$result[^json:string[
+				$json
+#				;
+#				$.indent(true)
+			]]
+		}{
+			$exception.handled(true)
+			$result[^json:string[Ошибка вывода json строки]]
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
+
+^if(def $form:articleId){
+	^use[site.p]
+
+	^connect[$site:connectString]{
+		$site[^site::create[]]
+
+		$articleId[$form:articleId]
+		$article[^news:GetNewsById[$articleId]]
+
+		$pageUrl[^site:GetPageUrlById[$article.id_page]]
+		$pageName[^site:GetPageNameById[$article.id_page]]
+
+		$json[
+			$.pageId[$article.id_page]
+			$.pageName[$pageName]
+			$.pageUrl[$pageUrl]
+
+			$.id[$article.id]
+			$.head[$article.head]
+
+			$.date[$article.date_news]
+			$.text[$article.full_text]
+		]
+
+
+
+
+^rem{
+		$articles_string[date	preview	head	body	id	news_url	pageName^#0A]
+
+		^articles.menu{
+			$dt_news[^dtf:create[$articles.date_news;^date::now[]]]
+			$news_url[/$pageUrl/^news:GetNewsUrl[$articles]/]
+			$preview[^news:GetGallery[$articles.id;yes]]
+			^if( $preview ){ $preview[$news:imagesFolder.small/$preview.path] }{ $preview[] }
+
+			$articles_string[${articles_string}^dt_news.day.format[%02d].^dt_news.month.format[%02d].${dt_news.year}	$preview	$articles.head	$articles.body	$articles.id	$news_url	$pageName^#0A]
+		}
+
+
+		$json.articles[^table::create{$articles_string}]
+}
+
+
+
+
+# Выводим json строку
+		^try{
+			$result[^json:string[
+				$json
+#				;
+#				$.indent(true)
+			]]
+		}{
+			$exception.handled(true)
+			$result[^json:string[Ошибка вывода json строки]]
+		}
+	}
+}

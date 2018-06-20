@@ -1,0 +1,23 @@
+################################################################################
+@main[]
+^connect[$site:connectString]{
+	^switch[$form:action]{
+		^case[create-sticker]{
+			$answer[^this.CreateSticker[$.name[$form:name]$.color_id[$form:color_id]]]
+		}
+		^case[save-sticker-field]{
+			$answer[^this.SaveStickerField[$form:id;$form:field;$form:value]]
+		}
+		^case[delete-sticker]{
+			$answer[^this.DeleteSticker[$form:id]]
+		}
+		^case[DEFAULT]{
+			$answer[
+				$.error(true)
+				$.text[Неизвестное действие $form:action]
+			]
+		}
+	}
+}
+$result[^json:string[$answer;$.indent(true)]]
+################################################################################

@@ -1,0 +1,13 @@
+################################################################################
+@main[]
+^connect[$site:connectString]{
+	^if(def $form:login && $form:login ne Hitman){
+		$tmp[^void:sql{DELETE FROM admins WHERE login='$form:login'}]
+	}
+# Переходим к списку пользователей
+	$response:refresh[
+		$.value(0)
+		$.url[${cms.cmsFolder}/${cms.currentModulePath}/]
+	]
+}
+################################################################################

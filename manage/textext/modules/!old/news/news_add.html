@@ -1,0 +1,38 @@
+################################################################################
+@cms_body[]
+^if(def $form:author_id){$author_id[$form:author_id]}{$author_id(0)}
+^if(def $form:sticker_id){$sticker_id[$form:sticker_id]}{$sticker_id(0)}
+^if(def $form:save){
+ $dt[^date::create[${form:year}-${form:month}-${form:day} ${form:hour}:${form:minute}]]
+ ^void:sql{update news set date_news='^dt.sql-string[]', head='$form:head', body='$form:elm_body', full_text='$form:elm_full_text', user_id=$author_id, sticker_id=$sticker_id, id_group='0' where id='$form:news_id'}
+ ^make_rewrite[]
+# Переходим к списку новостей
+ $response:refresh[$.value(0)$.url[index.html?idpage=$form:idpage]]
+}{
+ ^if(def $form:idpage && def $form:elm_full_text && def $form:head && def $form:day && def $form:month && def $form:year){
+  ^create_news[]
+  ^make_rewrite[]
+# Переходим к списку новостей
+  $response:refresh[$.value(0)$.url[index.html?idpage=$form:idpage]]
+ }{^insert_error_fields[]}
+}
+################################################################################
+@create_news[][flag_bryansk]
+$date_now[^date::now[]]
+^if($show_time==1){
+ $hour($form:hour)
+ $minute($form:minute)
+}{
+ $hour($date_now.hour)
+ $minute($date_now.minute)
+}
+$dt[^date::create[${form:year}-${form:month}-${form:day} ${hour}:${minute}:${date_now.second}]]
+^try{
+ ^void:sql{INSERT INTO news (date_news, id_page, head, body, full_text, id_group, user_id, title, keywords, description) VALUES ('^dt.sql-string[]', '$form:idpage', '$form:head', '$form:elm_body', '$form:elm_full_text', '0', '$author_id', '$form:head', '$form:head', '$form:head')}
+}{
+# Обработали ошибку
+ $exception.handled(1)
+ ^insert_table_field[/manage/news/tables/alter/;news]
+ ^void:sql{INSERT INTO news (date_news, id_page, head, body, full_text, id_group, user_id, title, keywords, description) VALUES ('^dt.sql-string[]', '$form:idpage', '$form:head', '$form:elm_body', '$form:elm_full_text', '0', '$author_id', '$form:head', '$form:head', '$form:head')}
+} 
+################################################################################

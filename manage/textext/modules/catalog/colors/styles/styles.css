@@ -1,0 +1,37 @@
+.colors .header{
+	text-align: center;
+	font-weight: bold;
+}
+.colors td{
+	position: relative;
+}
+.colors input[name=name]{
+	width: 250px;
+}
+.colors input[name=sortir]{
+	width: 65px;
+	text-align: center;
+}
+.colors input[name=description]{
+	width: 250px;
+}
+.colors .actions span{
+	cursor: pointer;
+	font-size: 26px;
+	font-family: FontAwesome;
+}
+.colors .visible{
+	margin-right: 10px;
+}
+.colors .visible.true::before {
+	content: "\f06e";
+}
+.colors .visible.false::before {
+	content: "\f070";
+}
+.colors .delete::before {
+	content: "\f00d";
+}
+.colors .callout{
+	right: 10px;
+}

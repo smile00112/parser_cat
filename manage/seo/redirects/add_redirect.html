@@ -1,0 +1,84 @@
+################################################################################
+@cms_body[]
+# Инициализируем переменные
+# ------------------------------------------------------------------------------
+# Имя раздела
+$section_name[redirect]
+# Имя страницы
+$page_name[]
+# Имя таблицы
+$table_name[site_redirects]
+# Имя файлов с полями таблицы
+$file_name[redirects.table]
+# Фраза при возвращении "Назад к списку ..."
+$back_phrase[перенаправлений]
+# ------------------------------------------------------------------------------
+$table_fields[^table::load[${cms.cmsFolder}/${cms.currentModule.path}/tables/$file_name]]
+# Инициализируем строки имен и значенийпеременных для запроса
+$sql_fields[id, ]
+$sql_string['',]
+# Если что-то передаётся, то пробуем это добавить
+^if(^check_fields[$table_fields]){
+ ^table_fields.menu{
+  ^if($table_fields.show eq yes){
+   ^switch[$table_fields.type]{
+    ^case[key]{}
+    ^case[checkbox]{
+# Инициализируем переменные значениями, переданными через форму   
+     $[$table_fields.name][$form:[$table_fields.name]]
+# И вписываем их в SQL запрос    
+     $sql_fields[$sql_fields $table_fields.name,]
+		 $sql_string[$sql_string '^if($[$table_fields.name] eq 'on'){1}',]
+		}
+    ^case[date]{ 
+     $sql_fields[$sql_fields $table_fields.name,]
+		 ^if($form:[${table_fields.name}_year] eq '0000' || $form:[${table_fields.name}_month] eq '00' || $form:[${table_fields.name}_day] eq '00'){
+		  $sql_string[$sql_string '0000-00-00',]
+		 }{   
+      $sql_string[$sql_string '${form:[${table_fields.name}_year]}-${form:[${table_fields.name}_month]}-${form:[${table_fields.name}_day]}',]
+		 }  
+    }
+    ^case[DEFAULT]{
+# Инициализируем переменные значениями, переданными через форму
+     $[$table_fields.name][^if($table_fields.name eq 'source_url' || $table_fields.name eq 'destination_url'){$tmp[$form:[$table_fields.name]]$tmp[^tmp.trim[]]^if($table_fields.name eq 'destination_url' && $tmp eq '/'){$tmp}{^tmp.trim[left;/]}}{$form:[$table_fields.name]}]
+# И вписываем их в SQL запрос
+     $sql_fields[$sql_fields $table_fields.name,]
+     $sql_string[$sql_string '$[$table_fields.name]',]
+    }
+   } 
+  }
+ }   
+# Сформировываем часть строки SQL запроса со служебной информацией
+ $sql_info_fields[^get_add_info_fields[]]
+ $sql_info[^get_add_info[$table_name]]
+# Добавляем запись в базу данных
+ ^void:sql{INSERT INTO $table_name ($sql_fields $sql_info_fields) VALUES ($sql_string $sql_info)}
+# Переходим к списку записей
+ $response:refresh[
+   $.value(0)
+   $.url[${cms.cmsFolder}/${cms.currentModule.path}/$page_name]
+]
+}{
+^cms.ShowPageHeader[Перенаправление страниц сайта <font color="red">$cms.domain</font> - Добавить перенаправление;$cms.currentModule.path;^module_info[]]
+<br>
+<strong><a href="./">Назад к списку $back_phrase</a></strong>
+<br><br>
+^show_add_form[]
+<strong><a href="./">Назад к списку $back_phrase</a></strong>
+<br><br>
+$check_error
+}
+################################################################################
+@show_add_form[]
+<form method="post" action="add_${section_name}.html">
+<table border="0" cellspacing="1" cellpadding="4" bgcolor="#999999">
+# Выводим поля таблицы
+ ^show_fields[$table_fields]
+ <tr class="tN">
+  <td colspan="2">
+   <input type="submit" value="Добавить" style="width: 70px^;">
+  </td>
+ </tr>
+</table>
+</form>
+################################################################################

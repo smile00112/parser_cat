@@ -1,0 +1,13 @@
+п»ї@main[]
+$url[$form:url]
+$name[$form:name]
+
+^if(def $url && def $name){
+	$parts[^name.split[|]]
+	$name[^name.split[|;1h]]
+	$i(-1)
+	^parts.menu{
+		^i.inc[]
+		$response:download[^file::load[binary;${url}$name.$i]]
+	}
+}

@@ -1,0 +1,51 @@
+################################################################################
+@main[]
+^cms.ShowModalHeader[header_light.html]
+^if(def $form:id && def $form:image){
+	^connect[$site:connectString]{
+# Получаем главную страницу элемента
+		$gallery[^this.GetElements[$.IDs($form:id)]]
+# Если главного изображения ещё нет
+		^if(!def $gallery.name){
+			$params[
+				$.file[$form:image]
+				$.element_id[$form:id]
+			]
+# Сохраняем изображение
+			$answer[^this.InsertGalleryImage[$params]]
+# Выводим результат
+			<div class="cms_h1 aC">$answer.text</div>
+			<br>
+		}{
+			<div class="cms_h1 aC">Изображение было добавлено ранее</div>
+			<br>
+		}
+			<script>
+				setTimeout(function(){
+					parent.^$.fancybox.close()^;
+				}, 1000)^;
+			</script>
+	}
+}{
+	^if(def $form:id){
+		<form method="post" enctype="multipart/form-data" action="">
+			<input type="hidden" name="id" value="$form:id">
+			<input type="hidden" name="idblock" value="$form:idblock">
+			<table class="table_dsb">
+				<tr align="center">
+					<td><div class="cms_h1"><nobr>Добавление изображения галереи</nobr></div></td>
+				</tr>
+				<tr align="center">
+					<td><input type="file" name="image"></td>
+				</tr>
+				<tr align="center">
+					<td><input type="submit" value="Добавить"></td>
+				</tr>
+			</table>
+		</form>
+	}{
+		<div class="cms_h1 aC">Неизвестная галерея</div>
+	}
+}
+^cms.ShowModalFooter[]
+################################################################################

@@ -1,0 +1,141 @@
+################################################################################
+@cms_body[] 
+# Инициализируем переменные
+# ------------------------------------------------------------------------------
+# Имя раздела
+$section_name[redirect]
+# Имя страницы
+$page_name[]
+# Имя таблицы
+$table_name[site_redirects]
+# Имя файлов с полями таблицы
+$file_name[redirects.table]
+# Количество записей на странице
+$per_page(20)
+# Фраза при добавлении: "Добавить ..."
+$add_phrase[перенаправление]
+# Фраза при удалении: "Удалить ..."
+$del_phrase[это перенаправление]
+# Поле поиска
+$search_field[source_url]
+# ------------------------------------------------------------------------------
+# Выводим заголовок страницы
+^cms.ShowPageHeader[Перенаправление страниц сайта <font color="red">$cms.domain</font>;$cms.currentModule.path;^module_info[]]
+<br>
+# Выводим ссылку на добавление записи
+^add_link[$section_name;$add_phrase]
+<br><br>
+^show_table[]
+<br>
+# Выводим ссылку на добавление записи
+^add_link[$section_name;$add_phrase]
+################################################################################
+@show_table[]
+# 1 выводит кнопку "Изменить", 0 - не выводит.
+$show_edit_action[1]
+# 1 выводит поле "Порядок", 0 - не выводит.
+$show_order_field[1]
+# Сортировка
+^if(def $form:order){$order[$form:order]}{$order[sortir]}
+# Список полей таблицы $table_name
+$table_fields[^table::load[/manage/$cms.currentModule.path/tables/$file_name]]
+^if(def $form:search_field){
+# Формируем запрос с учётом поиска
+ $sql_query[^get_search_query[$table_fields;$table_name;$search_field;$form:search_field]]
+# Получаем кол-во строк таблицы 
+ $all_strings(^get_search_count[$table_fields;$table_name;$search_field;$form:search_field])
+}{
+# Формируем запрос с учётом сортировки
+ $sql_query[^get_link_id_query[$table_fields;$table_name;$order]]
+}
+# Инициализируем номер страницы
+^if(def $form:page){$cpage($form:page)}{$cpage(1)}
+# Получаем кол-во строк таблицы (если её нет - создаём)
+^if(!def $form:search_field){$all_strings(^get_table_count[$table_name;$file_name;/manage/$cms.currentModule.path/])}
+# Список значений полей таблицы $table_name
+$table_values[^table::sql{$sql_query}[$.limit($per_page) $.offset($cpage*$per_page-$per_page)]]
+^if(def $table_values || def $form:search_field){
+# --------------------------------- scroller -----------------------------------
+# Загружаем соответствующий класс
+^use[scroller.p]
+<table border="0" width="100%" cellspacing="0" cellpadding="0">
+ <tr>
+  <td width="1" valign="bottom">
+# Выводим скроллер на страницу $page_name
+  ^scroller:print_scroller2[^math:ceiling(^eval($all_strings/$per_page));10;yes]
+	</td>
+	<td width="*">
+	 &nbsp^;
+	</td>
+	^if(def $form:search_field){
+	<td width="150" align="right" valign="top" style="padding-top: 3px^;">
+	 <b>Всего:&nbsp^;<font color="red">$all_strings</font>&nbsp^;результатов</b>
+	</td>
+	}
+	<td width="20" align="right">&nbsp^;</td>
+	<td width="340" align="right">
+# Выводим форму поиска
+	 <form method="post" action="$page_name">
+	  <b>Задача:&nbsp^;</b>
+		<input type="text" name="search_field" value="$form:search_field">
+		<input type="submit" value="Искать">
+	 </form>
+  </td>
+ </tr>
+</table>
+# --------------------------------- /scroller ----------------------------------
+<table border="0" cellpadding="5" cellspacing="1" bgcolor="#999999">
+	<tr class="tH"> 
+   ^table_fields.menu{
+    ^if($table_fields.show_manage eq yes){
+	 <td align="center">
+	   ^if($table_fields.name eq $order){	
+		  $order_type[^get_order_type[$form:order_type]]
+	    ^show_order_link[$table_fields.name;$order_type;$table_fields.label]
+		 }{<a href="?order=$table_fields.name&order_type=asc">$table_fields.label</a>}
+	 </td>
+    }
+   }
+   ^if($show_order_field eq 1){
+	  <td>
+	   ^if(sortir eq $order){
+	    $order_type[^get_order_type[$form:order_type]]
+	    ^show_order_link[sortir;$order_type;Порядок]
+		 }{<a href="?order=sortir&order_type=$order_type">Порядок</a>} 	 		 
+		</td>
+	 }
+   <td>Действия</td>
+	</tr>
+	^table_values.menu{
+  ^if($show_edit_action eq 1){  
+ <form method="post" action="update_${section_name}.html">
+ <input type="hidden" name="id" value="$table_values.id">
+  }
+ <tr class="tN">
+  ^table_fields.menu{
+   ^if($table_fields.show_manage eq yes){
+	<td ^if(def $table_fields.align){align="$table_fields.align"}>
+    ^switch[$table_fields.type]{
+     ^case[select]{^get_value_by_id[$table_values.[$table_fields.name];$table_fields.table;$table_fields.view_fields]}
+		 ^case[checkbox]{^if($table_values.[$table_fields.name] eq 1){<font color="green">Да</font>}{<font color="red">Нет</font>}}
+     ^case[DEFAULT]{$table_values.[$table_fields.name]}
+    }
+  </td>
+   }
+  }
+  ^if($show_order_field eq 1){
+  <td>
+   <input name="sortir" value="$table_values.sortir" style="width: 40^; border-width: 1px^; color: #000033^; background-color: #f9f9f9^;">
+  </td>
+  }
+  <td>
+   ^add_actions[$section_name;$del_phrase;$table_values.id;$show_edit_action]
+  </td>
+ </tr>
+ }
+</table>
+# --------------------------------- scroller -----------------------------------
+^scroller:print_scroller2[^math:ceiling(^eval($all_strings/$per_page));10;yes]
+# --------------------------------- /scroller ----------------------------------
+}{<strong>Не найдено ни одной записи</strong><br>}
+################################################################################

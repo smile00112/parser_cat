@@ -1,0 +1,12 @@
+@ShowMenuTemplate[pages]
+<ul class="menu">
+^pages.menu{
+ <li>
+ ^if($self.currentPageId == $pages.id){
+  <span class="active">$pages.name</span>
+ }{
+  <a href="^if($self.mainPageId == $pages.id){/}{^if(def $pages.uri){/$pages.uri/}{/?p=$pages.id}}">$pages.name</a>
+ }
+ </li>
+}
+</ul>

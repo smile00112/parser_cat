@@ -1,0 +1,22 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+	<head>^ShowTemplate[${cms:templateFolder}/header_light.html]</head>
+	<body bgcolor="#E0EDF8">
+		<table border="0" cellspacing="0" cellpadding="6" width="98%" align="center">
+			<tr>
+				<td>
+					<img src="${cms:imagesFolder}/history.png" width="64" height="64" border="0" align="absmiddle">
+					<span class="cms_h1">История версий <font color="#cc0000">$cms:cmsName</font></span>
+				</td>
+				<td align="right">
+					<p><strong> <nobr>ver. <font color="#cc0000">$cms:classVersion</font>, от <font color="#cc0000">$cms:classBuildDate</nobr></font>.</strong></p>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					^process{^untaint{$cms:classHistory}}
+				</td>
+			</tr>
+		</table>
+	</body>
+</html>

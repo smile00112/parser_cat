@@ -1,0 +1,15 @@
+################################################################################
+@auto[]
+^if($cms.cmsUser){
+	^connect[$site:connectString]{
+		^use[users.p;$.replace(true)]
+			$this[^users::create[]]
+			^cms.SetCurrentModule[$this.className]
+		}
+}{
+	$response:refresh[
+		$.value(0)
+		$.url[${cms.cmsFolder}/]
+	]
+}
+################################################################################

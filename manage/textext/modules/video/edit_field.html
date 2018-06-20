@@ -1,0 +1,70 @@
+################################################################################
+@head[]
+^$.fn.Save = function(){
+	tinyMCE.triggerSave()^;
+	var value = ^$("#${form:field}").val()^;
+	^$.post("actions.html", { action: "save_field", id: $form:gallery_id, field: "$form:field", value: value }, function(data){
+		var answer = JSON.parse(data)^;
+		^$(".wait").hide()^;
+		window.onbeforeunload = null^;
+		if(!answer.error){
+			^$(".ok").fadeIn()^;
+			setTimeout(function(){^$('.ok').fadeOut()^;parent.^$.fancybox.close()^;},1000)^;
+		}
+	})^;
+}^;
+################################################################################
+@main[]
+^cms.ShowModalHeader[]
+^if(def $form:gallery_id){
+	^connect[$site:connectString]{$video[^this.GetVideo[$.IDs($form:gallery_id)]]}
+	^cms:InsertTiny[$form:field]
+	<style>
+		.save{
+			position: relative^;
+		}
+		.fa-floppy-o{
+			margin-right: 5px^;
+			background: #137dab^;
+			margin-right: 10px^;
+			color: #caecfc^;
+			padding: 5px 7px^;
+			border-radius: 9px^;
+			-webkit-border-radius: 9px^;
+			-moz-border-radius: 9px^;
+		}
+		.ok{
+			width: 100px^;
+			height: 30px^;
+			color: 549b1e^;
+			font-size: 36px^;
+			position: absolute^;
+			top: 0^;
+			display: none^;
+			margin-left: 5px^;
+		}
+	</style>
+	<table width="820" cellpadding="5" align="center">
+		<tr>
+			<td class="aC"><span class="cms_h1 aC">$form:fieldName для элемента: "^textext:GetFixedText[$video.name;40;...]"</span></td>
+		</tr>
+		<tr>
+			<td><textarea id="$form:field" rows="2" style="width: 100%^;">$video.[$form:field]</textarea></td>
+		</tr>
+		<tr>
+			<td>
+				<span class="cms_h1 pointer save" onClick="^$(this).Save()^;">
+					<i class="fa fa-floppy-o"></i>Сохранить
+					<i class="fa fa-check ok"></i>
+				</span>
+			</td>
+		</tr>
+	</table>
+}{
+	$response:refresh[
+		$.value(0)
+		$.url[${cms.cmsFolder}/${self.currentModulePath}]
+	]
+}
+^cms.ShowModalFooter[]
+################################################################################

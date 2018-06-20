@@ -1,0 +1,26 @@
+@ShowFilesTemplate[block_id;this]
+$files[^this.GetFilesByBlockId[$block_id]]
+^if(def $files){
+	<div class="files-block"><!--
+			^files.menu{
+				^switch[^files.ext.lower[]]{
+					^case[jpg;jpeg;gif;png]{$fileType[image]}
+					^case[pdf]{$fileType[pdf]}
+					^case[doc;docx]{$fileType[word]}
+					^case[xls;xlsx]{$fileType[excell]}
+					^case[zip;rar;7z]{$fileType[arch]}
+					^case[DEFAULT]{$fileType[]}
+				}
+			--><div class="file">
+					^switch[$fileType]{
+						^case[image;pdf]{
+						<a href="${this.filesPath}/${files.block_id}/${files.name}.${files.ext}" class="$fileType^if($fileType eq image){ zoom_picture}"^if($fileType eq pdf){ target="_blank"}>$files.comment (${files.name}.${files.ext})</a>
+						}
+						^case[DEFAULT]{
+						<a href="/files/download.html?path=${this.filesPath}/${files.block_id}/${files.name}.${files.ext}" class="$fileType">$files.comment (${files.name}.${files.ext})</a>
+						}
+					}
+				</div><!--
+			}
+	--></div>
+}

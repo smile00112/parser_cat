@@ -1,0 +1,118 @@
+################################################################################
+@cms_body[] 
+# Выводим заголовок страницы
+^cms.ShowPageHeader[Настройки витрины для раздела "^site:GetPageNameById[$form:idpage]";$cms.currentModule.path;^catalog.GetClassInfo[]]
+# Выводим ссылку
+<table border="0" cellspacing="0" cellpadding="10">
+ <tr>
+  <td><a href="vitrina.html?parent=$form:parent&idpage=$form:idpage&idtovar=$form:idtovar">К витрине товара</a> </td>
+  <td>&nbsp^;</td>
+  <td><a href="currencies/index.html?parent=$form:parent&idpage=$form:idpage&idtovar=$form:idtovar">Валюты</a></td>
+ </tr>
+</table>      
+# Получаем настройки из таблицы
+ $settings[^table::sql{select * from catalog_settings}]
+# Отображаем настройки
+<table cellpadding="5" cellspacing="1" bgcolor="#999999"> 
+ <tr class="tH">
+  <td>Название настройки</td>
+  <td>Значение</td>
+  <td colspan="2">Действие</td>
+ </tr>
+^settings.menu{
+ ^if($settings.type_field ne 4){
+ <form method="post" action="settings_save.html">  
+ <input type="hidden" name="id" value="$settings.id">
+ <input type="hidden" name="parent" value="$form:parent">
+ <input type="hidden" name="idpage" value="$form:idpage">
+ <input type="hidden" name="idblock" value="$form:id"/>
+ <input type="hidden" name="idtovar" value="$form:idtovar"> 
+ <tr class="tN">
+  <td>$settings.named</td>
+  <td>
+   ^switch[$settings.type_field]{
+    ^case[1]{<input type="text" name="value" value="$settings.value" style="width:250px">}
+    ^case[2]{
+     ^try{
+# Получаем список валют     
+      $tbl[^table::sql{SELECT * FROM catalog_currencies}]
+# Если таблица пуста     
+      ^if(^tbl.count[] eq 0){
+# Добавляем значения по умолчанию      
+			 ^save_default_currencies[catalog_currencies]
+# Получаем список валют     
+       $tbl[^table::sql{SELECT * FROM catalog_currencies}] 
+			}      
+     }{
+# Обработали ошибку
+      $exception.handled(1)
+# Загружаем поля таблицы $table   
+      $mysql_table[^table::load[tables/mysql/currencies.table]]
+# Создаём таблицу $table
+      ^create_sql_table[catalog_currencies;$mysql_table;]
+# Добавляем значения по умолчанию
+      ^save_default_currencies[catalog_currencies]
+# Получаем список валют      
+      $tbl[^table::sql{SELECT * FROM catalog_currencies}]
+		 } 
+     <select name="value" class="myselect" style="width: 255px^;" ^if($settings.name eq 'currency_exchange_id' && $show_exchange<1){disabled}>     
+     ^if(def $tbl){                                             
+      ^tbl.menu{ 
+#     Название записи таблицы в списке
+      <option value="$tbl.id" ^if($tbl.id == $settings.value){selected}>$tbl.named</option>
+      }
+     }{
+      <option value="0">Нет записей</option>
+     }
+     </select>  
+		}
+    ^case[3]{^if($settings.name eq 'show_exchange'){$show_exchange[$settings.value]}<input type="checkbox" name="value" ^if($settings.value==1){checked} value="1">}  
+   }
+  </td>
+  ^if($settings.name eq 'currency_exchange_id' && $show_exchange<1){<td>&nbsp^;</td>}{
+  <td><input type="submit" name="save" value="Сохранить"></td>
+  }
+ </tr> 
+ </form>
+ }{<tr class="tH"><td colspan="3">$settings.named</td></tr>}
+ }
+ ^if($user_level>9){
+ <tr class="tH">
+  <td colspan="4">Пересчёт цен во всей витрине</td>
+ </tr>
+ <form method="post" action="recount.html">  
+ <input type="hidden" name="id" value="$settings.id">
+ <input type="hidden" name="parent" value="$form:parent">
+ <input type="hidden" name="idpage" value="$form:idpage">
+ <input type="hidden" name="idblock" value="$form:id"/>
+ <input type="hidden" name="idtovar" value="$form:idtovar"> 
+ <tr class="tN">
+  <td>Из основной валюты в:</td>
+  <td>
+   <select name="currency_id" class="myselect" style="width: 255px^;" ^if($settings.name eq 'currency_exchange_id' && $show_exchange<1){disabled}>  
+# Получаем список валют      
+   $tbl[^table::sql{SELECT * FROM catalog_currencies}]	    
+   ^if(def $tbl){                                             
+    ^tbl.menu{ 
+#   Название записи таблицы в списке
+    <option value="$tbl.id">$tbl.named</option>
+    }
+   }{
+    <option value="0">Нет записей</option>
+   }
+   </select>  
+	</td>
+	<td rowspan="2"><input type="submit" name="recount" value="Пересчитать"></td>
+ </tr> 
+ <tr class="tN">
+  <td>Используя:</td>
+  <td>
+   ЦБ РФ:<input type="radio" name="k_id" value="1" checked>
+   Коэффициент:<input type="radio" name="k_id" value="2">
+   <input type="text" name="k" value="1" style="width: 50px^;">
+	</td>
+ </tr> 
+ </form>
+ }
+</table>
+################################################################################

@@ -1,0 +1,65 @@
+@ShowRegFormTemplate[action]
+$captcha[^captcha:GetCaptcha[]]
+<form class="registrationForm js" action="/modules/registration/actions.html"^if(!$site.user.isRegUser){ data-function="Reload"}>
+	<input type="hidden" name="action" value="register" />
+	<input type="hidden" name="answerId" value="$captcha.answerId" />
+	^if($site.user.isRegUser){<input type="hidden" name="user_id" value="$site.user.user_id">}
+	<div class="rows">
+		<div^if(!$site.user.isRegUser){ class="required"}>
+			<label for="login">Логин</label>
+			^if($site.user.isRegUser){$site.user.username}{<input id="login" required="" name="login" class="required empty_field" type="text">}
+		</div>
+		<div^if(!$site.user.isRegUser){ class="required"}>
+			<label for="password">Пароль</label>
+			<input id="password"^if(!$site.user.isRegUser){ required=""} name="password" class="^if(!$site.user.isRegUser){required }empty_field" type="password">
+		</div>
+		<div^if(!$site.user.isRegUser){ class="required"}>
+			<label for="password">Пароль (ещё раз)</label>
+			<input id="password"^if(!$site.user.isRegUser){ required=""} name="confirm" class="^if(!$site.user.isRegUser){required }empty_field" type="password">
+		</div>
+		<div class="required">
+			<label for="inp1">Фамилия</label>
+			<input id="inp1" required="" name="last_name" class="required empty_field" type="text"^if($site.user.isRegUser){ value="$site.user.last_name"}>
+		</div>
+		<div class="required">
+			<label for="inp2">Имя</label>
+			<input id="inp2" required="" name="first_name" class="required empty_field" type="text"^if($site.user.isRegUser){ value="$site.user.first_name"}>
+		</div>
+		<div class="required">
+			<label for="inp3">Отчество</label>
+			<input id="inp3" required="" name="patronymic" class="required empty_field" type="text"^if($site.user.isRegUser){ value="$site.user.patronymic"}>
+		</div>
+		<div class="required">
+			<label for="inp7">Электронная почта</label>
+			<input id="inp7" required="" name="email" class="required empty_field" type="text"^if($site.user.isRegUser){ value="$site.user.user_email"}>
+		</div>
+		<div class="required">
+			<label for="inp8">Телефон</label>
+			<input id="inp8" required="" name="phone" class="required empty_field" type="text"^if($site.user.isRegUser){ value="$site.user.phone"}>
+		</div>
+	</div>
+	<div class="agreement-checkbox">
+		<input name="processing" id="processing" class="required" type="checkbox"><div>Я СОГЛАСЕН на обработку и хранение моих персональных данных, указанных мною в Форме обратной связи в соответствии с условиями <a href="/soglasie-na-obrabotku-personalnyh-dannyh-polzovateley/" target="_blank">согласия на обработку персональных данных</a>.</div>
+	</div>
+	<div class="agreement-checkbox">
+		<input name="broadcast" id="broadcast" class="required" type="checkbox"><div>Я подтверждаю своё согласие на передачу информации в электронной Форме (обращения) (в том числе персональных данных) по открытым каналам связи сети Интернет.</div>
+	</div>
+^if($site.user.isRegUser){
+	<div>
+		<button type="submit" class="submit disabled">Отправить</button>
+	</div>
+}{
+	<div class="required capture">
+		<div>
+			<div class="col controlimage">
+				<label for="inp13">Введите контрольные цифры</label>
+				<span class="captureImg"><img class="content-form-captcha" src="$captcha.imagePath" /></span>
+			</div><div class="col">
+				<input id="inp13" name="answer" required="" class="required empty_field" type="text">
+			</div><div class="col">
+				<button type="submit" class="submit disabled">Отправить</button>
+			</div>
+		</div>
+	</div>
+}
+</form>

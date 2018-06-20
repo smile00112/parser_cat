@@ -1,0 +1,110 @@
+.header{
+	top: 0;
+	left: 0;
+	z-index: 1;
+	width: 100%;
+	padding: 10px 0;
+	position: fixed;
+	text-align: center;
+	background-color: rgb(224, 237, 248);
+}
+.header.small{
+	font-size: 24px;
+}
+.elements{
+	font-family: "Cuprum",Tahoma;
+	font-size: 16px;
+}
+.elements .elements-table{
+	margin-top: 40px;
+	display: table;
+	width: 100%;
+	height: 300px;
+}
+.elements .element-string{
+	padding: 0;
+	margin: 0;
+	position: relative;
+}
+.elements .element-string li{
+	display: table-cell;
+	padding: 10px 0;
+	width: 100%;
+	vertical-align: middle;
+	border-bottom: 1px dashed #999999;
+}
+.elements .element-string li+li{
+	width: auto;
+	min-width: 20px;
+}
+.elements .element-string .fa-chevron-up{
+	float: left;
+	cursor: pointer;
+	top: 3px;
+	position: relative;
+	-o-transition: all 0.5s ease;
+	-moz-transition: all 0.5s ease;
+	-webkit-transition: all 0.5s ease;
+	transition: all 0.5s ease;
+	-webkit-transform-origin: 50% 50%;
+	-ms-transform-origin: 50% 50%;
+	transform-origin: 50% 50%;
+}
+.elements .element-string.close .fa-chevron-up{
+	-moz-transform: rotate(180deg);
+	-ms-transform: rotate(180deg);
+	-webkit-transform: rotate(180deg);
+	-o-transform: rotate(180deg);
+	transform: rotate(180deg);
+}
+.elements .element-string.close ul{
+	display: none;
+}
+.elements .element-name{
+	margin-left: 20px;
+	display: block;
+}
+.elements .element-name-wrapper{
+	display: block;
+}
+/* Подсказки */
+.callout{
+	max-width: 420px;
+	background: #ffa812;
+	position: absolute;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	border-radius: 10px;
+	bottom: 45px;
+	right: -11px;
+	font-size: 13pt;
+	padding: 10px;
+	display: none;
+	z-index: 2;
+	white-space: pre-line;
+}
+.callout:before{
+	content:"";
+	position: absolute;
+	right: 8px;
+	bottom: -13px;
+	width: 0;
+	height: 0;
+	border-left: 13px solid transparent;
+	border-right: 13px solid transparent;
+	border-top: 13px solid #ffa812;
+}
+.callout.success{
+	background: #3d8805;
+	color: #ffffff
+}
+.callout.success:before{
+	border-top: 13px solid #3d8805;
+}
+.callout.error{
+	background: #ff0000;
+	color: #ffffff
+}
+.callout.error:before{
+	border-top: 13px solid #ff0000;
+}

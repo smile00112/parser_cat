@@ -1,0 +1,81 @@
+################################################################################
+@main[]
+^cms.ShowModalHeader[]
+^if(def $form:template && def $form:type && def $form:name && def $form:value){
+	$params[
+		$.template[$form:template]
+		$.type($form:type)
+		$.name[$form:name]
+		$.value[$form:value]
+		$.default_value[$form:default_value]
+		$.comment[$form:comment]
+	]
+	^connect[$site:connectString]{
+		$res(^this.CreateProperty[$params])
+	}
+	^if($res>0){
+		<div class="cms_h1 aC">Свойство добавлено</div>
+		<br>
+		<script>
+			setTimeout(function(){
+				parent.^$.fancybox.close()^;
+			}, 1000)^;
+		</script>
+	}{
+		<div class="cms_h1 aC">
+		^switch($res){
+			^case(0){Во время добавления свойства возникла ошибка.}
+			^case(-1){Переданы не все обязательные поля.}
+			^case[DEFAULT]{Во время добавления свойства возникла неизвестная ошибка.}
+		}
+		</div>
+		<br>
+	}
+}{
+	<form method="post" enctype="multipart/form-data" action="add_property.html">
+		<input type="hidden" name="template" value="$form:template">
+		<table class="table_dsb w100p">
+			<tr>
+				<td colspan="2"><div class="cms_h1 aC"><nobr>Добавление свойства</nobr></div></td>
+			</tr>
+			<tr>
+				<td class="aR" width="1">Тип:</td>
+				<td>
+					<select name="type" class="w100p">
+						^if(!def $form:type || $form:type==0){<option value="0" ^if(!def $form:type || $form:type==0){selected}>Изображение</option>}
+						^if(!def $form:type || $form:type==1){<option value="1" ^if($form:type==1){selected}>Цвет фона</option>}
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td class="aR">Название:</td>
+				<td>
+					<input type="text" name="name" class="w100p">
+				</td>
+			</tr>
+			<tr>
+				<td class="aR">Значение:</td>
+				<td>
+					<input type="text" name="value" class="w100p">
+				</td>
+			</tr>
+			<tr>
+				<td class="aR"><nobr>По умолчанию:<nobr></td>
+				<td>
+					<input type="text" name="default_value" class="w100p">
+				</td>
+			</tr>
+			<tr>
+				<td class="aR">Комментарий:</td>
+				<td>
+					<input type="text" name="comment" class="w100p">
+				</td>
+			</tr>
+			<tr>
+				<td class="aC" colspan="2"><input type="submit" value="Добавить"></td>
+			</tr>
+		</table>
+	</form>
+}
+^cms.ShowModalFooter[]
+################################################################################

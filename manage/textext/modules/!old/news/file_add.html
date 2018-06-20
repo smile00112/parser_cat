@@ -1,0 +1,19 @@
+@cms_body[]
+
+
+	^if(def $form:news_id && def $form:file && def $form:idpage){
+		
+		
+		$unique[^math:uuid[]]
+		$ext[^file:justext[$form:file.name]]
+		$filename[${unique}.${ext}]
+		$big[/nfiles/news/b_$filename]
+		
+		
+		^form:file.save[binary;$big]
+		
+		
+		^void:sql{insert into news_files (news_id, path, descript, file_ext) values ('$form:news_id', '$filename','$form:descript', '$ext')}
+	}	
+
+$response:location[files.html?idpage=$form:idpage&news_id=$form:news_id]

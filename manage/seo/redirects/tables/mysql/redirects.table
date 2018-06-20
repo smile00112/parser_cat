@@ -1,0 +1,6 @@
+field
+`id` int(1) unsigned NOT NULL auto_increment,
+`source_url` text NOT NULL,
+`destination_url` text NOT NULL,
+`subfolders` tinyint(1) NOT NULL,
+`comment` varchar(255) NOT NULL,

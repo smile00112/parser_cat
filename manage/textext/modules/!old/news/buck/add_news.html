@@ -1,0 +1,127 @@
+##########################################################################################
+@cms_body[]
+<img src="index.gif" border=0 align=absmiddle> <font size=4>Добавление новости</font>
+	
+	
+#$form:day - $form:month $form:year	
+	
+<br><br>
+
+$date_now[^date::now[]]
+$all_group[^table::sql{select * from news_group where id_page=$form:idpage order by sortir}]
+
+
+^if(def $form:elm_body &&  def $form:idpage && def $form:group && def $form:elm_full_text && def $form:head && def $form:day && def $form:month && def $form:year){
+	
+	
+	
+	^create_news[]
+	
+	
+}{
+	
+	^add_news_form[]
+}
+
+
+##########################################################################################
+@create_news[][flag_bryansk]
+	
+$dt[^date::create[${form:year}-${form:month}-${form:day} ${date_now.hour}:${date_now.minute}:${date_now.second}]]
+^void:sql{insert into news (date_news, id_page, head, body,  full_text, id_group) values ('^dt.sql-string[]', '$form:idpage', '$form:head', '$form:elm_body', '$form:elm_full_text', '$form:group')}
+^make_rewrite[]		
+		
+$response:location[index.html?idpage=$form:idpage&type_news=$form:type_news]
+##########################################################################################
+@add_news_form[]
+^insert_tiny[2]
+
+$month[
+	$.1[января]
+	$.2[февраля]
+	$.3[марта]
+	$.4[апреля]
+	$.5[мая]
+	$.6[июня]
+	$.7[июля]
+	$.8[августа]
+	$.9[сентября]
+	$.10[октября]
+	$.11[ноября]
+	$.12[декабря]
+]
+
+^if(def $form:day){
+	<font color="#ff0000"><b><br><br>Заполните все обязательные поля.</b></font>
+}
+
+<form method="post" action="add_news.html">
+#	<input type="hidden" name="hour" value="$date_now.hour">
+#	<input type="hidden" name="minute" value="$date_now.minute">
+#	<input type="hidden" name="second" value="$date_now.second">
+	<input type="hidden" name="idpage" value="$form:idpage">
+
+^if(def $form:type_news){$ctypenews[$form:type_news]}{$ctypenews[1]}
+^if($ctypenews==0){$ctypenews[1]}
+	
+
+
+
+	
+	
+
+
+	
+	^if(def $form:day){$cday($form:day)}{$cday($date_now.day)}
+	<br><br><b>Дата</b><br>
+	<select name="day">
+		^for[days](1;31){
+			<option value="^days.format[%02.2u]" ^if($date_now.day eq $days && !def $cday){selected} ^if($cday eq $days){selected}>
+				$days
+			</option>
+		}
+	</select>
+	<select name="month">
+		^for[months](1;12){
+			<option value="^months.format[%02.2u]" ^if($date_now.month eq $months && !def $form:month){selected} ^if($form:month eq ^months.format[%02.2u]){selected}>$month.[$months]</option>
+		}
+	</select>
+	<select name="year">
+		^for[years](^eval($date_now.year-1);^eval($date_now.year+1)){
+			<option value="^years.format[%04.4u]" ^if($date_now.year eq ^years.format[%04.4u]  && !def $form:year){selected} ^if($form:year eq ^years.format[%04.4u]){selected}>
+				$years
+			</option>
+		}
+	</select>
+	
+	<br><br><b>Тема</b>
+	<select name="group">
+	^all_group.menu{
+		<option ^if($all_group.id == $form:group){selected} value="$all_group.id"> $all_group.name</option>
+	}
+	</select>
+		
+	<br><br><b>Заголовок <span style="font-family: Verdana^; color: #FF0000">*</span></b><br>
+	<input name="head" value="$form:head" size=60>
+	<br><br><b>Анонс <span style="font-family: Verdana^; color: #FF0000">*</span></b>
+	<textarea id="elm1" name="elm_body" rows="20" cols="80" style="width: 100%">
+		$form:elm_body
+	</textarea>
+	<br />
+	<br><br><b>Текст <span style="font-family: Verdana^; color: #FF0000">*</span></b>
+	<textarea id="elm2" name="elm_full_text" rows="20" cols="80" style="width: 100%">
+		$form:elm_full_text
+	</textarea>
+	<br />
+	
+	
+	<br />
+	
+	<input type="submit" name="save" value="Сохранить" />
+	<input type="reset" name="reset" value="Отменить все изменения" />
+</form>
+
+
+
+
+

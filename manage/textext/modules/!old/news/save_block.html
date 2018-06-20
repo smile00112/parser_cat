@@ -1,0 +1,10 @@
+@cms_body[]
+^if(def $form:id){
+	^if(def $form:gallery_edit){
+		^void:sql{update news_gallery set descript='$form:descript' where id='$form:id'}
+	}{
+		^void:sql{update news_gallery set sortir='$form:sortir' where id='$form:id'}
+	}
+}
+
+$response:location[index.html?id=$curr_photo.id&news_id=$form:news_id&path=$form:path&descript=$form:descript]

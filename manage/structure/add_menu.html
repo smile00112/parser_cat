@@ -1,0 +1,44 @@
+################################################################################
+@main[]
+# Подключаемся к БД
+^connect[$site:connectString]{
+# Если есть имя и сортировка
+ ^if(def $form:name && def $form:sortir){
+# Удаляем слэши вначале и в конце пути 
+  $t_uri[^del_rewrite_slash[$form:uri]]
+# Указываем недопустимые символы в адресе  
+  $del_chars[, .^^^$^;^(^)^[^]^{^}^"^:]
+# Удаляем недопустимые символы из адреса
+  $t_uri[^str_delete_chars[$t_uri;$del_chars]]
+# Инициализируем флаг повтора адреса 
+  $povtor_uri(0)
+# Если длина адреса не равна 0 
+  ^if(^t_uri.length[]!=0){
+# Получаем количество совпадений такого адреса  
+	 $povtor_uri(^int:sql{select count(*) from menus where uri='$t_uri'})
+  }
+# Если совпадений нет  
+  ^if($povtor_uri==0){
+# Инициализируем переменную $str значением родителя  
+   $str[$form:parent] 
+# Получаем значение родителя     
+   $parent(^str.int(0))
+# Добавляем раздел  
+  ^void:sql{insert into menus (id_menu, name, uri, sortir, parent) values ('$form:id_menu', '$form:name', '$t_uri', '$form:sortir', '$parent')}
+# Получаем id добавленного раздела   
+  $last_id[^int:sql{select max(id) from menus}]
+# Переходим к этому разделу в структуре   
+  $response:location[${servername}/manage/structure/#zap$last_id]
+# Если совпадения есть  
+  }{
+# Выводим ошибку  
+  ^insert_error_fields[Такой адрес уже существует - введите другое значение в поле "внешняя ссылка".<br>]
+  $t_uri
+  }
+# Если нет имени и сортировки  
+ }{
+# Выводим ошибку
+  ^insert_error_fields[]
+ }
+}
+################################################################################

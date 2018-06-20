@@ -1,0 +1,37 @@
+.file_string{
+	font-family:		"Cuprum",Tahoma;
+	font-size:			16px;
+	border-bottom:	1px dashed #999999;
+	padding:				10 0px;
+}
+
+.file_string > div{
+	display:				inline-block;
+}
+
+.file_string .name{
+	width:					200px;
+}
+
+.file_string .description{
+	width:					200px;
+}
+
+.file_string .sort{
+	width:					100px;
+	text-align:			center;
+}
+
+.file_string .actions{
+	width:					140px;
+	text-align:			center;
+}
+
+.file_string .description > input[type="text"]{
+	width:					200px;
+}
+
+.file_string .sort > input[type="text"]{
+	text-align:			center;
+	width:					100px;
+}

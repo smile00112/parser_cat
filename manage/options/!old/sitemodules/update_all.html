@@ -1,0 +1,42 @@
+################################################################################
+@cms_body[]
+# Выводим заголовок страницы   
+^cms.ShowPageHeader[Обновление модулей сайта;$cms.currentModule.path;^module_info[]]
+<br>
+# Назад к списку модулей
+<a href="./">Назад к списку модулей</a>
+<br><br>
+<table width="100%" cellpadding="5" cellspacing="1">
+ <tr>
+  <td width="200" valign="top">^blocks[]</td>
+  <td valign="top">
+  ^if(def $form:id){^update_all[id]}
+  </td>
+ </tr>
+</table>
+################################################################################
+@blocks[]
+$curblocks[^table::sql{SELECT id, namemenu, pathblock FROM cmc_block GROUP BY pathblock}]
+<table width="100%" cellpadding="5" cellspacing="1" bgcolor="#999999">
+^curblocks.menu{
+ ^if(-f "${cms.cmsFolder}/${curblocks.pathblock}/update.p"){
+ <tr class="tNs">
+  <td>
+   <a href="update_all.html?id=$curblocks.id">$curblocks.namemenu</a><br>
+  </td>
+ </tr>
+ }
+}
+</table>
+################################################################################
+@update_all[id]
+$curblocks[^table::sql{SELECT id, namemenu, pathblock FROM cmc_block ^if(def $id){WHERE id='$form:id'}}]  
+^curblocks.menu{
+ ^if(-f "${cms.cmsFolder}/${curblocks.pathblock}/update.p"){
+  ^use[/${cms.cmsFolder}/${curblocks.pathblock}/update.p]
+  $mod[^update::init[${cms.cmsFolder}/${curblocks.pathblock}/]]
+  ^mod.update[]    
+  $curblocks.namemenu - OK <br>
+ }
+}
+################################################################################

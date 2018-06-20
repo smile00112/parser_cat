@@ -1,0 +1,31 @@
+################################################################################
+@main[]
+^if(def $form:image){$res(^responses.UpdateImage[$form:id;$form:image])}
+^if(def $form:del){$res(^responses.DelImage[$form:id])}
+$imageExt[^site:GetImageExtention[${responses.imagesPath.big}/;$form:id]]
+^if($imageExt ne 'no'){
+ $imagePath[${responses.imagesPath.big}/${form:id}.${imageExt}]
+}{
+ $imagePath[$responses.noImage]
+}
+^cms.ShowModalHeader[]
+<link href="style.css" rel="stylesheet" type="text/css">
+<center>
+<form method="post" enctype="multipart/form-data" action="image.html">
+ <input type="hidden" name="id" value="$form:id">
+ <table border="0" cellspacing="1" cellpadding="4" bgcolor="#999999">
+  <tr class="tN">
+   <td colspan="2" class="imgContainer"><a href="image.html?id=$form:id&del=yes" title="Удалить" class="del_ava">x</a><img src="$imagePath" width="$responses.imagesWidth.big"></td>
+  </tr>
+  <tr class="tN">
+   <td>Аватар:</td>
+   <td><input name="image" type="file"></td>
+  </tr>
+  <tr class="tN">
+   <td colspan="2"><input type="submit" value="Загрузить"></td>
+  </tr>
+ </table>
+</form>
+</center>
+^cms.ShowModalFooter[]
+################################################################################

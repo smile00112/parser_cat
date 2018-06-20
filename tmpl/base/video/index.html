@@ -1,0 +1,23 @@
+@ShowVideoTemplate[block_id]
+$videos[^video:GetBlockVideos[$block_id]]
+^if(def $videos){
+	<div class="videogalery">
+	 ^videos.menu{
+		$prew[^videos.src.trim[start;//www.youtube.com/embed/]]
+		$prew[^prew.trim[end;?feature=player_embedded]]
+		<div class="video">
+			<div data="$prew">
+				<img width="340" height="250" src="http://img.youtube.com/vi/$prew/0.jpg" alt="">
+			</div>		
+			<h5>^untaint{$videos.name}</h5>
+		</div>
+	 }
+	</div>
+	<script type="text/javascript">
+		^$('div[data]').click(function(){
+			var test = ^$(this).attr('data')^;
+			^$(this).addClass('playing')^;
+			^$(this).html('<iframe width="340" height="250" src="//www.youtube.com/embed/'+test+'?autoplay=1"  frameborder="0" allowfullscreen></iframe>')^;
+		})^;
+	</script>
+}

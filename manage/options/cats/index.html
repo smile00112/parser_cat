@@ -1,0 +1,98 @@
+################################################################################
+@cms_body[]
+#-------------------------------------------------------------------------------
+<link href="./styles/styles.css" rel="stylesheet" type="text/css">
+<script	src="./scripts/scripts.js" type="text/javascript"></script>
+<script type="text/javascript" src="${cms:templateFolder}/libraries/dragula/dragula.min.js"></script>
+<link rel="stylesheet" type="text/css" href="${cms:templateFolder}/libraries/dragula/dragula.min.css" />
+#-------------------------------------------------------------------------------
+# Выводим заголовок страницы
+^cms.ShowPageHeader[Управление регистрационными данными;$cms.currentModule.path;^this.GetClassInfo[]]
+$groups[
+	$.1[
+		$.name[full]
+		$.caption[Все поля]
+		$.active(true)
+	]
+	$.2[
+		$.name[full]
+		$.caption[Регистрация]
+	]
+	$.3[
+		$.name[simplified]
+		$.caption[Без регистрации]
+	]
+]
+$fields[^this.GetFields[]]
+^if($cms.cmsUserLevel==$cms.maxUserLevel){
+<div class="navigation cms_h2">
+# 	<a class="navigation-point add-field-link" href="#" title="Добавить поле">Добавить поле</a>
+	<a class="navigation-point options" href="./options.html" title="Перейти к настройкам регистрации">Настройки</a>
+</div>
+}
+<div class="main-block">
+	<div class="text-block">
+		<p>Здесь Вы можете настроить получение необходимых данных от пользователя.</p>
+		<p>Ниже представлена таблица со списком информационных полей данных о пользователе, доступных для хранения в Базе Данных.</p>
+	</div>
+	<div class="fields-table">
+# 	^var_dump[$fields]
+	^if(def $fields){
+		<div class="element-string header">
+			<div class="type">Тип</div><!--
+			--><div class="name">Имя</div><!--
+			--><div class="caption">Название</div><!--
+			--><div class="description">Подсказка</div><!--
+			--><div class="required">Поле обязательно</div><!--
+			--><div class="registration">При регистрации</div><!--
+			--><div class="registration">Без регистрации</div><!--
+			--><div class="actions">Действие</div>
+		</div>
+		<div class="fields" data-url="actions.html" data-sort-field="sort_id">
+		^fields.foreach[pos;value]{
+			<div class="element-string" data-id="$value.id" data-position="$value.sort_id">
+				<div class="type">
+					<div class="callout left"></div>
+					<select name="type" class="cms_select save"^if(!$value.visible){ disabled}>
+					^this.fieldTypes.foreach[name;caption]{
+					<option value="$name"^if($name eq $value.type){ selected}>$caption</option>
+					}
+					</select>
+				</div><div class="name">
+					<div class="callout left"></div>
+					<input type="text" name="name" value="$value.name" class="cms_input" data-prev="$value.name"^if(!$value.visible){ disabled}>
+				</div><div class="caption">
+					<div class="callout left"></div>
+					<input type="text" name="caption" value="$value.caption" class="cms_input save"^if(!$value.visible){ disabled}>
+				</div><div class="description">
+					<div class="callout left"></div>
+					<input type="text" name="description" value="$value.description" class="cms_input save"^if(!$value.visible){ disabled}>
+				</div><div class="required">
+					<div class="callout center"></div>
+					<input id="required_${pos}" type="checkbox" name="required" class="cms_checkbox save"^if($value.required){ checked}^if(!$value.visible){ disabled}><label for="required_${pos}" class="checkbox_custom"></label>
+				</div><div class="registration">
+					<div class="callout center"></div>
+					<input id="registration_${pos}" type="checkbox" name="registration" class="cms_checkbox save"^if($value.registration){ checked}^if(!$value.visible){ disabled}><label for="registration_${pos}" class="checkbox_custom"></label>
+				</div><div class="registration">
+					<div class="callout center"></div>
+					<input id="simplified_${pos}" type="checkbox" name="simplified" class="cms_checkbox save"^if($value.simplified){ checked}^if(!$value.visible){ disabled}><label for="simplified_${pos}" class="checkbox_custom"></label>
+				</div><div class="actions">
+					<span class="move-button">
+						<span class="callout left"></span>
+						<span class="move" title="Перетащите поле чтобы изменить последовательность"></span>
+					</span><span>
+						<span class="callout left"></span>
+						<input id="visible_${pos}" type="checkbox" name="visible" class="cms_checkbox save"^if($value.visible){ checked}><label for="visible_${pos}" class="checkbox_visible" title="^if($value.visible == 1){Скрыть}{Отобразить}"></label>
+					</span>
+				</div>
+			</div>
+		}
+		</div>
+	}{
+		<div class="element-string no-elements">
+			<div class="h2">Поля не найдены</div>
+		</div>
+	}
+	</div>
+</div>
+################################################################################

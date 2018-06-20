@@ -1,0 +1,10 @@
+################################################################################
+@auto[]
+^init[]
+$newsPageId(3)
+$apiFolder[/manage/api]
+$newsFolder[/news]
+$newsGetFile[${self.apiFolder}${self.newsFolder}/newsGet.html]
+$newsImagesGetFile[${self.apiFolder}${self.newsFolder}/newsImagesGet.html]
+$newsImagesFolder[/images/news]
+################################################################################

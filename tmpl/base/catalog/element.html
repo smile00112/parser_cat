@@ -1,0 +1,82 @@
+@ShowCatalogElementTemplate[element]
+$mainImage[^element.images.select($element.images.main==1)]
+$gallery[^element.images.select($element.images.main==0)]
+$currentColors[^caller.GetColorsRelations[$.elementIDs($element.catalog.id)]]
+$currentSizes[^caller.GetSizesRelations[$.elementIDs($element.catalog.id)]]
+<article class='catalog-element'>
+	^if($mainImage){
+	<div class="images">
+		<a href="$caller.imagesFolder.big/$mainImage.name" title='$element.catalog.name' class='main-image gallery-item' rel='gal_$element.catalog.id'>
+			<img src="$caller.imagesFolder.big/$mainImage.name" alt='$element.catalog.name' title='$element.catalog.name'>
+		</a>
+		^if(def $gallery){
+			<div class='gallery-carousel-wrapper'>
+				<div class='gallery-carousel'>
+					^gallery.menu{
+						<a href="$caller.imagesFolder.big/${gallery.name}" title='$gallery.descript' class='gallery-item' rel='gal_$element.catalog.id'>
+							<img src="$caller.imagesFolder.small/${gallery.name}" alt='$gallery.descript' title='$gallery.descript' />
+						</a>
+					}
+				</div>
+			</div>
+		}
+	</div>
+	}
+	<div class='element-content'>
+		<h1>$element.catalog.name</h1>
+		^if($element.catalog.price>0){
+			$priceHash[^caller.GetExchangePrice[$.element[$element.catalog]]]
+		<div class="field">
+			<span class="caption">Цена:</span>
+			<span class="value price">^eval(^math:ceiling($priceHash.price/10)*10)</span>
+			<span class="abbreviation">$priceHash.abbreviation</span>
+		</div>
+		}
+		<div class="field">
+			<span class="caption">Артикул:</span>
+			<span class="value">$element.catalog.artikul</span>
+		</div>
+		<div class="field">
+			<span class="caption">Цвет:</span>
+			<select name="color">
+				<option value="0" disabled selected>Не выбран</option>
+				^if(def $caller.colors){
+					^caller.colors.menu{
+						^if(^currentColors.locate($currentColors.color_id==$caller.colors.id)){<option value="$caller.colors.id">$caller.colors.name</option>}
+					}
+				}
+			</select>
+		</div>
+		<div class="field">
+			<span class="caption">Размер:</span>
+			<select name="size">
+				<option value="0" disabled selected>Не выбран</option>
+				^if(def $caller.sizes){
+					^caller.sizes.menu{
+						^if(^currentSizes.locate($currentSizes.size_id==$caller.sizes.id)){<option value="$caller.sizes.id">$caller.sizes.name</option>}
+					}
+				}
+			</select>
+		</div>
+		^untaint{$element.catalog.head}
+	</div>
+</article>
+^site.AddToQueue[
+	<link href="/lib/bxslider/jquery.bxslider.css" rel="stylesheet" />
+	<script src="/lib/bxslider/jquery.bxslider.min.js"></script>
+	<script>
+		^$(document).ready(function(){
+			^$('.gallery-carousel').bxSlider({
+				pager: false,
+				slideWidth: '100',
+				minSlides: 3,
+				maxSlides: 3,
+				moveSlides: 3,
+				controls: true,
+				slideMargin: 10,
+				infiniteLoop: false,
+				hideControlOnEnd: true
+			})^;
+		})^;
+	</script>
+]

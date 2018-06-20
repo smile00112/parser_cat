@@ -1,0 +1,98 @@
+################################################################################
+@cms_body[]
+<link href="./styles/styles.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="./scripts/scripts.js"></script>
+^cms.ShowPageHeader[Установленные модули "$cms.cmsName";$cms.currentModule.path;^this.GetClassInfo[]]
+$ext[^cms:GetImageExtention[${cms:cmsFolder}/options/]]
+<p class="cms_h2">
+	<a href="../" class="no-link"><img src="^if($ext ne 'no'){${cms:cmsFolder}/options/index.${ext}}{${cms:imagesFolder}/no.png}" class="pr10" width="64" height="64" border="0" align="absmiddle">К опциям сайта</a>
+	^if($cms.cmsUserLevel>0){
+	<span id="addSlideBtn" data-width="440" data-href="add_module.html" data-title="Добавить модуль" data-reload="true" class="pointer ml20" onClick="^$(this).OpenFancybox()^;">
+		<i class="fa fa-plus fa-3x inline brown mr10"></i>Добавить модуль
+	</span>
+	}
+</p>
+<div class="site-modules">
+	<div class='tabs'>
+	$allSiteModules[^this.GetModules[$.userLevel($cms.cmsUserLevel)]]
+	$siteModules[^hash::create[]]
+	^this.moduleTypes.foreach[key;value]{
+		$siteModules.[$key][^allSiteModules.select($allSiteModules.block==$value.id)]
+		<div class='tabname^if($value.tab_active){ active}' data-tabname='$key'>
+			<div class="cms_h1">$value.tab_caption</div>
+		</div>
+	}
+	^this.moduleTypes.foreach[type;tableValues]{
+		$withParents[^siteModules.[$type].select($siteModules.[$type].parent>0)]
+		<div class='tabcontent^if($tableValues.tab_active){ active}^if($withParents){ with-parents}' data-tabcontent='$type'>
+			<div class="element-table">
+				<div class="element-string header">
+					<div>
+					</div><div>
+						Название блока
+					</div><div>
+						Имя блока
+					</div><div>
+						Путь к блоку
+					</div><div class="sort">
+						Порядок
+					</div><div class="level">
+						Доступ
+					</div><div class="actions^if($withParents){ ext}">
+						Действие
+					</div>
+				</div>
+				^siteModules.[$type].menu{
+					$blockId($siteModules.[$type].id)
+					$moduleChilds[^siteModules.[$type].select($siteModules.[$type].parent eq $blockId)]
+					$data-childs[]
+					^moduleChilds.foreach[key;value]{
+						$data-childs[${data-childs}, $value.id]
+					}
+					$index_image_extention[^cms.GetImageExtention[${cms.cmsFolder}/${siteModules.[$type].pathblock}/]]
+				<div class="element-string^if($siteModules.[$type].parent>0){ child}" id="block_$blockId" data-id="$blockId" ^if(def $moduleChilds){data-childs="^data-childs.trim[, ]"}>
+					<div>
+						^if(def $moduleChilds){<i class="fa fa-chevron-up"></i>}
+						<img src="^if($index_image_extention ne 'no'){${cms.cmsFolder}/${siteModules.[$type].pathblock}/index.${index_image_extention}}{${cms.imagesFolder}/no.png}">
+					</div><div>
+						<input type="text" name="namemenu" value="$siteModules.[$type].namemenu" class="js-change">
+					</div><div>
+						<input type="text" name="nameblock" value="$siteModules.[$type].nameblock" class="js-change">
+					</div><div>
+						<input type="text" name="pathblock" value="$siteModules.[$type].pathblock" class="js-change">
+					</div><div class="sort">
+						<input type="text" name="sortir" value="$siteModules.[$type].sortir" data-prev="$siteModules.[$type].sortir" class="js-change">
+					</div><div class="level">
+						<select name="level" class="js-change">
+							^users:cmsUserLevels.foreach[key;value]{
+							<option value="$value.level" ^if($siteModules.[$type].level==$value.level){selected}>$value.label</option>
+							}
+						</select>
+					</div><div class="actions^if($withParents){ ext}">
+						^if($withParents){
+							$currentParent[^siteModules.[$type].select($siteModules.[$type].parent eq 0 && $siteModules.[$type].id ne $blockId)]
+						<i class="fa fa-link"></i>
+						<select name="parent" class="js-change slide">
+							<option value="0"^if($siteModules.[$type].parent == 0){ selected}>Нет</option>
+							^currentParent.foreach[key;parentBlocks]{
+							<option value="$parentBlocks.id"^if($siteModules.[$type].parent eq $parentBlocks.id){ selected}>$parentBlocks.namemenu</option>
+							}
+						</select>
+						}
+						<i class="fa fa-file-text"></i>
+						^if($cms.cmsUserLevel==$cms.maxUserLevel){
+						<a href="./check/?module_name=$siteModules.[$type].nameblock" title="Проверка модуля на наличие ошибок и их исправление"><i class="fa fa-check-square"></i></a>
+						}
+						<span class="fa-stack pointer red js-delete" title="Удалить">
+							<i class="fa fa-square-o fa-stack-1x"></i>
+							<i class="fa fa-times fa-stack-1x"></i>
+						</span>
+					</div>
+				</div>
+				}
+			</div>
+		</div>
+	}
+	</div>
+</div>
+################################################################################

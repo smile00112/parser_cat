@@ -1,0 +1,96 @@
+################################################################################
+@cms_body[]
+#-------------------------------------------------------------------------------
+<script src="./scripts/actions.js" type="text/javascript"></script>
+<link href="./styles/styles.css" rel="stylesheet" type="text/css">
+#----------------------------------- dragula -----------------------------------
+<script type="text/javascript" src="${cms:templateFolder}/libraries/dragula/dragula.min.js"></script>
+<link rel="stylesheet" type="text/css" href="${cms:templateFolder}/libraries/dragula/dragula.min.css" />
+#-------------------------------------------------------------------------------
+# Если параметры передаются
+^if(def $form:id && def $form:idpage){
+# Выводим заголовок страницы
+	^cms.ShowPageHeader[Стикеры каталога;$cms.currentModule.path;^this.GetClassInfo[]]
+	<div class="navigation cms_h2">
+		<a class="navigation-point back" href="../?id=$idblock&idpage=$form:idpage&parent=$form:parent^if(def $form:page){&page=$form:page}&moveto=$form:moveto">К каталогу</a>
+		^if($cms.cmsUserLevel>0){
+		<a id="addSlideBtn" class="navigation-point add fancybox" href="#add-sticker">Добавить стикер</a>
+		}
+	</div>
+	$colors[^this.GetStickerColors[]]
+	$colors[^colors.hash[id]]
+	^if($this.stickers.CLASS_NAME eq 'hash'){
+		^throw[
+			$.type[bad.command]
+			$.source[$command]
+			$.comment[^var_dump[$this.stickers.exception]]
+		]
+	}
+	^if(def $this.stickers){
+		<div data-id="$form:id" class="stickers">
+			<div class="sticker-string header">
+				^if($cms.cmsUserLevel==$cms.maxUserLevel){<div class="id">ID</div>}
+				<div class="color">Цвет</div>
+				<div class="name">Название</div>
+				<div class="description">Описание</div>
+				<div class="actions">Действия</div>
+			</div>
+			<div class="stickers-blocks">
+			^this.stickers.menu{
+				<div data-id="$this.stickers.id" class="sticker-string">
+					^if($cms.cmsUserLevel==$cms.maxUserLevel){<div class="id">$this.stickers.id</div>}
+					<div class="color"><div class="color-block" style="background:#${colors.[$this.stickers.color_id].color}^if(def $colors.[$this.stickers.color_id].text_color){^;color:${colors.[$this.stickers.color_id].text_color}}">$colors.[$this.stickers.color_id].name</div></div>
+					<div class="name">
+						<div class="callout"></div>
+						<input type="text" name="name" value="$this.stickers.name" class="cms_input">
+					</div>
+					<div class="description">
+						<div class="callout"></div>
+						<input type="text" name="description" value="$this.stickers.description" class="cms_input">
+					</div>
+					<div class="actions">
+						<span class="move brown" title="Перетащите стикер чтобы изменить последовательность"></span><!--
+						--><span class="delete red" title="Удалить"></span>
+					</div>
+					<div class="callout"></div>
+				</div>
+			}
+			</div>
+		</div>
+	}
+	<h1 class="cms_h1 no-stickers^if(!def $this.stickers){ show}">Стикеры не найдены</h1>
+	<div id="add-sticker">
+		<form method="post" enctype="multipart/form-data" action="actions.html">
+			<input type="hidden" name="action" value="create-sticker">
+			<table class="table_dsb w100p">
+				<tr align="center">
+					<td colspan="2"><div class="cms_h1"><nobr>Добавление стикера</nobr></div></td>
+				</tr>
+				<tr align="center">
+					<td>Название:</td>
+					<td>
+						<div class="callout error"></div>
+						<input type="text" name="name" class="cms_input w100p">
+					</td>
+				</tr>
+				<tr align="center">
+					<td>Цвет:</td>
+					<td>
+						<div class="callout error"></div>
+						<select name="color_id" class="cms_select w100p">
+							<option value="" selected disabled>Выбрать</option>
+							^colors.foreach[key;value]{
+							<option value="${value.id}" style="background:#${value.color}^if(def $value.text_color){^;color:#${value.text_color}}">$value.name</option>
+							}
+						</select>
+					</td>
+				</tr>
+				<tr align="center">
+					<td colspan="2"><input type="submit" value="Добавить"></td>
+				</tr>
+			</table>
+		</form>
+		<div class="cms_h1 message"></div>
+	</div>
+}
+################################################################################

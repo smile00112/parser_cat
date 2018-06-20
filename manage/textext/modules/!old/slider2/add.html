@@ -1,0 +1,28 @@
+################################################################################
+@cms_body[]
+# Если передаётся id блока и само изображение
+^if(def $form:idblock && def $form:files){
+# Перебираем все выбранные изображения
+ ^form:files.multifiles.foreach[sNum;fValue]{ 
+# Получаем расширение изображения
+  $ext[^file:justext[$fValue.name]]
+# Получаем максимальную сортировку
+  $sortir(^slider.GetMaxSort[])
+# Увеличиваем её на 1 
+  ^sortir.inc[]
+# Добавляем в таблицу инфу об изображении
+  $res[^slider.InsertImage[$form:idblock;$form:description;$ext;;$sortir]]
+# Получаем id для фотки 
+  $maxid(^slider.GetMaxId[])
+# Инициализируем путь к исходникам
+  $srcpath[$slider.srcPath/${maxid}.${ext}]
+# Сохраняем оригинал фотки 
+  $res[^fValue.save[binary;$srcpath]]
+# Сохраняем картинку 
+  $res[^cms:ImageResize[$srcpath;$slider.bigPath/${maxid}.${ext};$slider.imagesWidth.big;$slider.imagesHeight.big]]
+# Сохраняем превью 
+  $res[^cms:ImageResize[$srcpath;$slider.smallPath/${maxid}.${ext};$slider.imagesWidth.small;$slider.imagesHeight.small]]
+ }  
+}
+$response:refresh[$.value(0)$.url[/manage/textext/modules/${slider.className}/?id=$form:idblock&idpage=$form:idpage]]
+################################################################################

@@ -1,0 +1,32 @@
+################################################################################
+@main[]
+^cms.ShowModalHeader[header_light.html]
+^if(def $form:name){
+# Добавляем размер
+	^connect[$site:connectString]{
+		$answer[^this.InsertSize[$.name[$form:name]]]
+	}
+	<div class="cms_h1 aC">$answer.text</div>
+	<br>
+	<script>
+		setTimeout(function(){
+			parent.^$.fancybox.close()^;
+		}, 1000)^;
+	</script>
+}{
+	<form method="post" enctype="multipart/form-data" action="add.html">
+		<table class="table_dsb w100p">
+			<tr align="center">
+				<td><div class="cms_h1"><nobr>Добавление размера</nobr></div></td>
+			</tr>
+			<tr align="center">
+				<td><input type="text" name="name" class="cms_input w100p"></td>
+			</tr>
+			<tr align="center">
+				<td><input type="submit" value="Добавить"></td>
+			</tr>
+		</table>
+	</form>
+}
+^cms.ShowModalFooter[]
+################################################################################

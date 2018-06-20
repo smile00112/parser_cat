@@ -1,0 +1,6 @@
+################################################################################
+@cms_body[]
+^if(def $form:id){$res(^team.DelGalleryImage[$form:id])}
+# Переходим к списку сотрудников
+$response:refresh[$.value(0)$.url[/manage/^textext:GetModulePathByName[$team.className]/gallery.html?id=$form:employee_id&idblock=$form:idblock&idpage=$form:idpage]]
+################################################################################

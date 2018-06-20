@@ -1,0 +1,68 @@
+@cms_body[]
+<img src="index.gif" border=0 align=absmiddle> <font size=4>Новости сайта</font>
+<br>
+^top_menu[2]
+
+$all_gr[^table::sql{select * from news_group where id_page=$form:idpage order by sortir}]
+^if(!def $all_gr){
+	<b>Разделы новостей отсутствуют</b>
+}{
+	<table cellpadding="4">
+		<tr>
+			<td><b>Название темы</b></td>
+#			<td><b>Rewrite</b></td>
+			<td><b>Порядок</b></td>
+			<td></td>
+			<td></td>
+		</tr>
+		^all_gr.menu{
+			<form action="groups_save.html" method="post">
+			<input type="hidden" name="group_id" value="$all_gr.id">
+			<input type="hidden" name="idpage" value="$all_gr.id_page">
+			<input type="hidden" name="id" value="$all_gr.id">
+			<tr>
+				<td><input name="name" value="$all_gr.name" style="width: 200"></td>
+#				<td><input name="rewrite" value="$all_gr.rewrite" style="width: 200"></td>
+				<td><input name="sortir" value="$all_gr.sortir"></td>
+				<td><input type="submit" value="Сохранить" style="font-size: 11^; background-color: White"></td>
+				<td>
+					<span style="text-decoration: underline^; cursor: pointer^; color: #003399" 
+						onClick="if (confirm('Уверены, что хотите удалить тему?'))(window.location.href = 'groups_del.html?where=$where&id_group=$all_gr.id&idpage=$form:idpage')">
+							Удалить
+						</span>
+				</td>
+			</tr>
+			</form>
+		}
+	</table>
+}
+
+<br>
+<form action="groups_add.html" method="post">
+<input type="hidden" name="idpage" value="$form:idpage">
+	<table>
+		<tr>
+			<td colspan="2"><b>Добавить тему</b></td>
+		</tr>
+		<tr>
+			<td align="right">Название темы <span style="font-size: 12^; font-family: Tahoma^; color: #FF0000">*</span></td>
+			<td><input name="name" style="width: 300"></td>
+		</tr>
+		<tr>
+			<td align="right">Порядок <span style="font-size: 12^; font-family: Tahoma^; color: #FF0000">*</span></td>
+			<td><input name="sortir" style="width: 300"></td>
+		</tr>
+#		<tr>
+#			<td align="right">Rewrite<span style="font-size: 12^; font-family: Tahoma^; color: #FF0000">*</span></td>
+#			<td><input name="rewrite" style="width: 300"></td>
+#		</tr>
+		<tr>
+			<td></td>
+			<td><input type="submit" value="Добавить"></td>
+		</tr>
+	</table>
+</form>	
+	
+
+
+

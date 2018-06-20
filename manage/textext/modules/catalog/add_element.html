@@ -1,0 +1,56 @@
+################################################################################
+@main[]
+^cms.ShowModalHeader[]
+$now[^date::now[]]
+^if(def $form:name && def $form:type && def $form:parent){
+	$params[
+		$.block_id[$form:idblock]
+		$.name[$form:name]
+		$.type($form:type)
+		$.parent($form:parent)
+	]
+	^connect[$site:connectString]{
+# Добавляем новость
+		$res(^this.CreateElement[$params])
+# Вносим изменения в .htaccess
+		^make_rewrite[]
+	}
+		<div class="cms_h1 aC">Элемент добавлен</div>
+		<br>
+		<script>
+			setTimeout(function(){
+				parent.^$.fancybox.close()^;
+			}, 1000)^;
+		</script>
+}{
+	^connect[$site:connectString]{
+		$this[^catalog_cms::create[$form:idblock]]
+	}
+	<form method="post" enctype="multipart/form-data" action="add_element.html">
+		<input type="hidden" name="idblock" value="$form:idblock">
+		<input type="hidden" name="parent" value="^if(def $form:parent){$form:parent}{0}">
+		<table class="table_dsb w100p">
+			<tr align="center">
+				<td><div class="cms_h1"><nobr>Добавление элемента</nobr></div></td>
+			</tr>
+			<tr align="center">
+				<td>
+					<div class="inline">Тип:</div>
+					<div class="inline">
+						<select name="type" style="width: 70px^;height: 30px^;">
+							^if(!def $form:type || $form:type==0){<option value="0" ^if(!def $form:type || $form:type==0){selected}>Раздел</option>}
+							^if(!def $form:type || $form:type==1){<option value="1" ^if($form:type==1){selected}>Товар</option>}
+						</select>
+					</div>
+					<div class="inline pl15">Название:</div>
+					<input type="text" name="name" style="width: 170px^;height: 30px^;">
+				</td>
+			</tr>
+			<tr align="center">
+				<td><input type="submit" value="Добавить"></td>
+			</tr>
+		</table>
+	</form>
+}
+^cms.ShowModalFooter[]
+################################################################################

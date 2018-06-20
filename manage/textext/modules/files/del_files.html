@@ -1,0 +1,18 @@
+################################################################################
+@cms_body[]
+# Если передаётся id файла
+^if(def $form:id){
+# Получаем запись о файле в таблице
+ $del_file[^this.GetFileById[$form:id]]
+# Удаляем запись о файле в таблице
+ $res[^this.Delete[$form:id]]
+# Удаляем файл
+ $path[$this.filesPath/$del_file.block_id/${del_file.name}.${del_file.ext}]
+ ^if(-f $path){$res[^file:delete[$path]]}
+# Переходим к списку файлов
+ $response:refresh[$.value(0)$.url[/manage/textext/modules/$this.className/?id=$del_file.block_id&idpage=$del_file.page_id&idpage_name=$form:idpage_name]]
+# Иначе выводим ошибку 
+}{
+ ^insert_error_fields[]
+}
+################################################################################

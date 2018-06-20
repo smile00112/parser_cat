@@ -1,0 +1,50 @@
+################################################################################
+@main[]
+^connect[$site:connectString]{
+	^switch[$form:action]{
+		^case[save_field]{
+			^if(def $form:id && def $form:field && def $form:value){
+				^try{
+					$res[^this.SaveField[$form:id;$form:field;$form:value]]
+					$result(1)
+				}{
+					$exception.handled(true)
+					$result(0)
+				}
+			}{$result(-1)}
+		}
+		^case[update_visible]{
+			^if(def $form:id){
+				^try{
+					$result(^this.SetVisible[$form:id])
+				}{
+					$exception.handled(true)
+					$result(-1)
+				}
+			}{$result(-1)}
+		}
+		^case[delete]{
+			^if(def $form:id){
+				^try{
+					$result(^this.DeleteVideo[$form:id])
+				}{
+					$exception.handled(true)
+					$result(0)
+				}
+			}{$result(-1)}
+		}
+		^case[save_option]{
+			^if(def $form:id){
+				^try{
+					$res[^textext:UpdateOptionValue[$form:id;$form:value]]
+					$result(1)
+				}{
+					$exception.handled(true)
+					$result(0)
+				}
+			}{$result(-1)}
+		}
+		^case[DEFAULT]{$result(-1)}
+	}
+}
+################################################################################

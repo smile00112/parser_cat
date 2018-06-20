@@ -1,0 +1,68 @@
+################################################################################
+@main[]
+^if(def $form:id && def $form:name && def $form:label && def $form:type_id){
+	^connect[$site:connectString]{
+# Инициализируем переменную для метода сохранения
+		$values[
+			$.block_id($form:id)
+			$.name[$form:name]
+			$.label[$form:label]
+			$.type_id($form:type_id)
+			$.default_value[$form:default_value]
+			$.required(^if($form:required eq 'on'){1}{0})
+		]
+# Сохраняем данные
+		$res[^this.InsertField[$values]]
+	}
+	<div class="cms_h1 aC">Поле добавлено</div>
+	<br>
+	<script>
+		setTimeout(function(){
+			parent.^$.fancybox.close()^;
+		}, 1000)^;
+	</script>
+}{
+^cms.ShowModalHeader[]
+	<form action="add_field.html">
+		<input type="hidden" name="id" value="$form:id">
+		<table class="table_dsb w100p">
+			<tr>
+				<td colspan="2" class="aC cms_h2">Добавить поле</td>
+			</tr>
+			<tr>
+				<td width="1">Имя поля:</td>
+				<td><input type="text" name="name" class="w100p"></td>
+			</tr>
+			<tr>
+				<td><nobr>Описание поля:</nobr></td>
+				<td><input type="text" name="label" class="w100p"></td>
+			</tr>
+			<tr>
+				<td>Тип поля:</td>
+				<td>
+				^connect[$site:connectString]{
+					$types[^this.GetFieldTypes[]]
+				}
+					<select name="type_id" class="w100p">
+						^types.menu{
+						<option value="$types.id">$types.description</option>
+						}
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td><nobr>По умолчанию:</nobr></td>
+				<td><input type="text" name="default_value" class="w100p"></td>
+			</tr>
+			<tr>
+				<td><nobr>Обязательное:</nobr></td>
+				<td><input type="checkbox" name="required"></td>
+			</tr>
+			<tr>
+				<td colspan="2" class="aC"><input type="submit" value="Добавить"></td>
+			</tr>
+		</table>
+	</form>
+}
+^cms.ShowModalFooter[]
+################################################################################

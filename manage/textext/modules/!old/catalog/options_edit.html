@@ -1,0 +1,5 @@
+################################################################################
+@cms_body[]
+^if(def $form:id){$res[^textext:UpdateOptionValue[$form:id;$form:value]]}
+$response:refresh[$.value(0)$.url[options.html?id=$form:idte&idpage=$form:idpage]]
+################################################################################

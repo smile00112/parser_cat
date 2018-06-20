@@ -1,0 +1,17 @@
+#SetEnv HTTP_PARSER_ROOT_CONFIG /cgi-bin/parser3.conf
+#SetEnv HTTP_PARSER_SITE_CONFIG /parser3.conf
+
+Action parser3-handler /cgi-bin/parser3.exe 
+AddHandler parser3-handler html 
+
+# запрет на доступ к .p файлам, в основном, к auto.p 
+<Files ~ "\.p$"> 
+Order allow,deny 
+Deny from all 
+</Files> 
+
+
+#D:/openServer/domains/catss/
+
+
+SetEnv CGI_PARSER_CONFIG auto.p 

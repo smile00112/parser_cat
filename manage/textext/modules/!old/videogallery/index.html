@@ -1,0 +1,10 @@
+################################################################################
+@cms_body[]
+# Выводим заголовок страницы
+^cms.ShowPageHeader[Видео для блока "^site:GetPageNameById[$form:idpage]";$cms.currentModule.path;^videogallery.GetClassInfo[]]
+<br><a href="/manage/textext/?idpage=$form:idpage">Назад к блокам страницы</a><br><br>
+# Выводим загруженные видео 
+^videogallery.show_add_videos[]
+# Выводим форму для добавления видео
+^videogallery.form_add_video[]
+################################################################################

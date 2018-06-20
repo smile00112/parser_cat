@@ -1,0 +1,7 @@
+field	sql_field	rename
+id	`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+city_id	`city_id` int(10) unsigned NOT NULL,
+element_id	`element_id` int(10) unsigned NOT NULL,
+price	`price` double NOT NULL,
+currency_id	`currency_id` int(10) unsigned DEFAULT 1,
+	PRIMARY KEY (`id`)

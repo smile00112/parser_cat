@@ -1,0 +1,22 @@
+@ShowPollTemplate[poll]
+<section class="poll">
+^if(def $poll){
+	$answers[^caller.GetElements[$.parent($poll.id)]]
+	<form class="js" action="/modules/polls/actions.html" data-function="ReloadWidthMessage">
+		<input type="hidden" name="action" value="save_answer">
+		<input type="hidden" name="poll_id" value="$poll.id">
+		<div class="block_name h2">$poll.name</div>
+		^answers.menu{
+		<div class="answers-string">
+			<input type="radio" name="answer_id" value="$answers.id" class="required" required>
+			<div class="answer-text">$answers.name</div>
+		</div>
+		}
+		<div class="answers-string submit">
+			<input type="submit" value="Ответить">
+		</div>
+	</form>
+}{
+	<div class="block_name h2">Опросов больше нет</div>
+}
+</section>

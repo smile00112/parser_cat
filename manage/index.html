@@ -1,0 +1,14 @@
+################################################################################
+@main[]
+$show(true)
+^if(def $cms.cmsUser){
+	$response:refresh[
+		$.value(0)
+		$.url[${cms.cmsFolder}/structure/]
+	]
+}{
+	$cookie:adm_login[]
+	$cookie:adm_password[]
+	^ShowTemplate[${cms.templateFolder}/auth.html]
+}
+################################################################################

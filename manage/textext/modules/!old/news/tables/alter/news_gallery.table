@@ -1,0 +1,6 @@
+field	value
+id	`id` int(11) NOT NULL auto_increment
+news_id	`news_id` int(11) NOT NULL default 0
+path	`path` varchar(255) NOT NULL
+descript	`descript` mediumtext
+sortir	`sortir` int(10) unsigned default 0

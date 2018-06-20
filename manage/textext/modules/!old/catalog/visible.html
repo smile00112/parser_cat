@@ -1,0 +1,11 @@
+################################################################################
+@main[]
+^connect[$site:connectString]{
+ ^if(def $form:id && def $form:idpage){
+  $res[^catalog.ChangeVisible[$form:id]]
+  $response:refresh[$.value(0)$.url[index.html?parent=$form:parent&idpage=$form:idpage&id=$form:idblock#$form:id]]
+ }{
+  ^insert_error_fields[]
+ }
+}
+################################################################################

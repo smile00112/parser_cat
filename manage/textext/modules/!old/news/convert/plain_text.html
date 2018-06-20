@@ -1,0 +1,9 @@
+@cms_body[]
+$news[^table::sql{SELECT id, head FROM news}]
+^news.menu{
+	$text[$news.head]
+	$text[^text.replace[<p>;]]
+	$text[^text.replace[</p>;]]
+	$res[^void:sql{UPDATE news SET head='$text' WHERE id=$news.id}]
+}
+Изменено ^news.count[] записей.

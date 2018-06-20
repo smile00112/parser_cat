@@ -1,0 +1,14 @@
+################################################################################
+@cms_body[]
+^if(def $form:id && def $form:photo && def $form:idpage && def $form:parent){
+ $unique[^math:uuid[]]
+ $extention[^file:justext[$form:photo.name]]
+ $src[${catalog.srcImagesFolder}/$form:id/${unique}.${extention}]
+ $res[^form:photo.save[binary;$src]]
+ $res[^cms.ImageResize[$src;${catalog.bigImagesFolder}/$form:id/${unique}.${extention};$catalog.imagesWidth.big;9000]]
+ $res[^cms.ImageResize[$src;${catalog.smallImagesFolder}/$form:id/${unique}.${extention};$catalog.imagesWidth.small;9000]]
+ $res[^cms.ImageResize[$src;${catalog.minImagesFolder}/$form:id/${unique}.${extention};$catalog.imagesWidth.min;9000]]
+ $res[^catalog.InsertInGallery[$form:id;${unique}.${extention}]]
+}
+$response:refresh[$.value(0)$.url[index.html?parent=$form:parent&idpage=$form:idpage&id=$form:idblock#$form:id]]
+################################################################################

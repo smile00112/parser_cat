@@ -1,0 +1,49 @@
+################################################################################
+@main[]
+^connect[$site:connectString]{
+	^switch[$form:action]{
+		^case[update_visible]{
+			^if(def $form:id){
+				^try{
+					$result(^this.SetImageVisible[$form:id])
+				}{
+					$exception.handled(true)
+					$result(-1)
+				}
+			}{$result(-1)}
+		}
+		^case[delete]{
+			^if(def $form:id){
+				^try{
+					$result(^this.DeleteImage[$form:id])
+				}{
+					$exception.handled(true)
+					$result(0)
+				}
+			}{$result(-1)}
+		}
+		^case[save_field]{
+			^if(def $form:id && def $form:field){
+				^try{
+					$res[^this.SaveImageProperty[$form:id;$form:field;$form:value]]
+					$result(1)
+				}{
+					$exception.handled(true)
+					$result(0)
+				}
+			}{$result(-1)}
+		}
+		^case[set_main]{
+			^if(def $form:id){
+				^try{
+					$result(^this.SetMainImage[$form:id])
+				}{
+					$exception.handled(true)
+					$result(0)
+				}
+			}{$result(-1)}
+		}
+		^case[DEFAULT]{$result(-1)}
+	}
+}
+################################################################################

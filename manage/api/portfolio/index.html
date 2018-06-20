@@ -1,0 +1,19 @@
+################################################################################
+@main[]
+^use[/manage/classes/business.p]
+^if(def $form:site){
+ ^connect[$site:connectString]{$sites[^table::sql{SELECT sites.id, domains.domain, sites.comment FROM business_sites AS sites, business_domains AS domains WHERE sites.visible=1 AND handed=1 AND sites.domain_id=domains.id AND sites.id IN (SELECT site_id FROM business_site_developer_links WHERE site_developer_id=(SELECT id FROM business_site_developers WHERE site='$form:site')) ORDER BY domain}]}
+ ^if(def $sites){
+  domain	image	comment
+  ^sites.menu{$imageExt[^site:GetImageExtention[${business:sitesImagesPath.small}/;$sites.id]]
+   ^sites.domain.trim[]	^if(-f '${business:sitesImagesPath.small}/${sites.id}.${imageExt}'){http://${env:SERVER_NAME}${business:sitesImagesPath.small}/${sites.id}.${imageExt}}{no}^if(def $sites.comment){	^untaint{^sites.comment.replace[^#0A;]}}
+  }
+ }{
+  domain	comment
+  error	Нет ниодного сайта
+}
+}{
+ domain	comment
+ error	Не указан сайт
+}
+################################################################################

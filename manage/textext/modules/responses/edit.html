@@ -1,0 +1,69 @@
+################################################################################
+@cms_body[]
+# Если что-то передаётся, то пробуем это добавить
+^if(def $form:last_name){
+# ^if(def $form:last_name && def $form:first_name && def $form:opinion){
+# Добавляем сотрудника в базу данных
+ $res[^responses.Update[$form:id;$form:first_name;$form:last_name;$form:organisation;$form:post;$form:site;$form:opinion]]
+# Переходим к списку сотрудников
+ $response:refresh[$.value(0)$.url[/manage/${cms.currentModulePath}/?id=$form:idblock&idpage=$form:idpage]]
+}{
+# Получаем информацию о сотруднике
+ $response[^responses.GetResponse[$form:id]]
+# Вставляем скрипт TinyMCE
+^cms.InsertTiny[]
+# Выводим шапку
+^cms.ShowPageHeader[Отзывы - Редактировать отзыв;$cms.currentModule.path;^responses.GetClassInfo[]]
+<a href="index.html?id=$form:idblock&idpage=$form:idpage">Назад к списку отзывов</a><br><br>
+<form method="post" action="edit.html">
+<input type="hidden" name="id" value="$form:id">
+<input type="hidden" name="idblock" value="$form:idblock">
+<input type="hidden" name="idpage" value="$form:idpage">
+<table cellspacing="1" cellpadding="5" bgcolor="#999999">
+ <tr>
+  <td class="tH">Отзыв:</td>
+#   <td class="tH">Фамилия:</td>
+  <td class="tH">ФИО:</td>
+  <td class="tN">
+   <input type="text" name="last_name" value="$response.last_name" size="30" style="width:210px^;">
+  </td>
+ </tr>
+ <tr height="1">
+  <td rowspan="5" class="tN">
+   <textarea id="elm" name="opinion" rows="2" cols="80" style="width: 100%">$response.opinion</textarea>
+  </td>
+#   <td class="tH">Имя:</td>
+#   <td class="tN">
+#    <input type="text" name="first_name" value="$response.first_name" size="30" style="width:210px^;">
+#   </td>
+#  </tr>
+#  <tr height="1">
+#   <td class="tH">Организация:</td>
+#   <td class="tN">
+#    <input type="text" name="organisation" value="$response.organisation" size="30" style="width:210px^;">
+#   </td>
+#  </tr>
+#  <tr height="1">
+#   <td class="tH">Должность:</td>
+#   <td class="tN">
+#    <input type="text" name="post" value="$response.post" size="30" style="width:210px^;">
+#   </td>
+#  </tr>
+#  <tr height="1">
+#   <td class="tH">Сайт:</td>
+#   <td class="tN">
+#    <input type="text" name="site" value="$response.site" size="30" style="width:210px^;">
+#   </td>
+#  </tr>
+#  <tr>
+#   <td colspan="2" class="tN">&nbsp^;</td>
+#  </tr>
+ <tr>
+  <td colspan="3" class="tN">
+   <input type="submit" value="Сохранить">
+  </td>
+ </tr>
+</table>
+</form>
+}
+################################################################################

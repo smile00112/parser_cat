@@ -1,0 +1,35 @@
+################################################################################
+@cms_body[]
+#-------------------------------------------------------------------------------
+<script src="./scripts/translit.js" type="text/javascript"></script>
+<script src="./scripts/actions.js" type="text/javascript"></script>
+<link href="./styles/style.css" rel="stylesheet" type="text/css">
+#-------------------------------------------------------------------------------
+# Если параметры передаются
+^if(def $form:id && def $form:idpage){
+# Выводим заголовок страницы
+	^cms.ShowPageHeader[SEO атрибуты для новости "^textext:GetFixedText[^this.GetNewsNameById[$form:id];40;...];$cms.currentModule.path;^this.GetClassInfo[]]
+	<p class="cms_h2">
+		<a href="../?id=$idblock&idpage=$form:idpage&page=${form:newspage}"><i class="fa fa-reply fa-3x inline blue mr10"></i>К новости</a>
+	</p>
+	$news[^this.GetNewsById[$form:id]]
+	<div class="parameters" data-id="$form:id">
+		<div class="parameter_string first">
+			<div class="label">Адрес новости (url):</div>
+			<div class="field"><input type="text" name="url" value="$news.url" class="cms_input" onKeyUp="this.value=toTranslit(this.value).toLowerCase()" onChange="^$(this).Save()^;"></div>
+		</div>
+		<div class="parameter_string">
+			<div class="label">Заголовок новости (title):</div>
+			<div class="field"><input type="text" name="title" value="$news.title" class="cms_input" onChange="^$(this).Save()^;"></div>
+		</div>
+		<div class="parameter_string">
+			<div class="label">Ключевые слова новости (keywords):</div>
+			<div class="field"><input type="text" name="keywords" value="$news.keywords" class="cms_input" onChange="^$(this).Save()^;"></div>
+		</div>
+		<div class="parameter_string">
+			<div class="label">Описание новости (description):</div>
+			<div class="field"><input type="text" name="description" value="$news.description" class="cms_input" onChange="^$(this).Save()^;"></div>
+		</div>
+	</div>
+}
+################################################################################

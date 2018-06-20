@@ -1,0 +1,25 @@
+@main[]
+^connect[$site:connectString]{
+ 
+^if(def $form:idpage && def $form:uri){
+ 
+$curblocks[^table::sql{select id, idpage, idpage_name, name, pref_block, sortir from text_ext where (idpage='$form:idpage') 
+		^if(def $form:idpage_name){and (idpage_name='$form:idpage_name')}{and (idpage_name is null) or (idpage_name='')}
+		
+		order by sortir}]
+		
+
+	^curblocks.menu{
+	
+			^use[/manage/textext/modules/$curblocks.pref_block/block_delete.p]
+			$mod[^block_delete::init[$curblocks.id]]
+			^mod.deleteall[]
+
+	}
+
+	$response:location[^untaint{^string:base64[$form:uri]}]
+	
+}{
+^insert_error_fields[]}		
+		
+}

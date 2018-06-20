@@ -1,0 +1,28 @@
+################################################################################
+@main[]
+$answer[^hash::create[]]
+^connect[$site:connectString]{
+	^switch[$form:action]{
+		^case[save_file]{
+			^if(def $form:path){
+				^file:delete[$form:path;$.exception(false)]
+				^if(def $form:value){
+					^form:value.save[$form:path]
+					$answer.text[Файл сохранён]
+				}{
+					$answer.text[Файл удалён]
+				}
+				$answer.error(false)
+			}{
+				$answer.error(true)
+				$answer.text[Неизвестное имя файла]
+			}
+		}
+		^case[DEFAULT]{
+			$answer.error(true)
+			$answer.text[Неизвестное действие]
+		}
+	}
+}
+$result[^json:string[$answer;$.indent(true)]]
+################################################################################

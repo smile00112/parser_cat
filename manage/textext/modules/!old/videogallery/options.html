@@ -1,0 +1,45 @@
+################################################################################
+@cms_body[]
+^if(def $form:id && def $form:idpage){
+ ^edit_block_options[]
+}{
+ ^insert_error_fields[]
+}
+################################################################################
+@edit_block_options[]
+# Выводим заголовок страницы
+^module_info[]
+^page_head[Настройки блока "Видеогалерея";textext/modules/$cms_page_id;$module_info]
+<a href="$prefpath/manage/textext/?idpage=$form:idpage&idpage_name=$form:idpage_name">Блоки</a>
+<br><br>
+<a href="options_clear.html?id=$form:id&idpage=$form:idpage&idpage_name=$form:idpage_name">Очистить настройки</a>
+<br><br>
+^check_options[]
+$table_opt[^table::sql{select * from te_opt where id_te='$form:id' order by id}]
+<table cellpadding="5" cellspacing="1" bgcolor="#999999">	
+	<tr class="tH">
+		<td>Название настройки</td>
+		<td>Значение</td>
+		<td colspan="2">Действия</td>
+	</tr>
+^table_opt.menu{
+	<form method="post" enctype="multipart/form-data" action="options_save.html">	
+	<input type="hidden" name="id" value="$table_opt.id">
+	<input type="hidden" name="idte" value="$form:id">
+	<input type="hidden" name="idpage" value="$form:idpage">
+	<input type="hidden" name="idpage_name" value="$form:idpage_name">	
+	<tr class="tN">
+		<td>$table_opt.named</td>
+		<td>
+			^switch[$table_opt.type_field]{
+				^case[0]{<input type="text" name="value" value="$table_opt.value" style="width:250px">}
+				^case[1]{<input type="checkbox" name="value" ^if($table_opt.value==1){checked} value="1">}
+			}
+		</td>
+		<td><input type="submit" name="save" value="Сохранить"></td>
+		<td><input type="reset" name="reset" value="Отменить"></td>
+	</tr>
+	</form>
+	}
+</table>
+################################################################################

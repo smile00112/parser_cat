@@ -1,0 +1,9 @@
+﻿@cms_left[]
+<table class="table100">
+<tr>
+<td valign=top bgcolor="$allbgcolor">
+
+@cms_body[]
+^if(def $form:url){
+	$response:download[^file::load[binary;$form:url]]
+}

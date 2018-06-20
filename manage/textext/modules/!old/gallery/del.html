@@ -1,0 +1,15 @@
+################################################################################
+@cms_body[]
+^if(def $form:id && def $form:id_te && def $form:idpage ){ 
+ $images[^table::sql{select * from te_gallery where id='$form:id'}] 
+ ^images.menu{
+  ^file:delete[/images/gallery/big/${images.id}.${images.ext};$.exception(false)]
+  ^file:delete[/images/gallery/small/${images.id}.${images.ext};$.exception(false)]
+  ^file:delete[/images/gallery/src/${images.id}.${images.ext};$.exception(false)]
+ }
+ ^void:sql{delete from te_gallery where id='$form:id'}]
+ $response:location[index.html?id=$form:id_te&idpage=$form:idpage&idpage_name=$form:idpage_name]
+}{
+ ^insert_error_fields[]
+}
+################################################################################

@@ -1,0 +1,13 @@
+@main[]
+^connect[$site:connectString]{
+
+^if(def $form:id){
+^void:sql{update catalog_text set $form:destinationtext='$form:elm1' where id='$form:id'}
+}
+
+
+
+	$response:location[index.html?parent=$form:parent&idpage=$form:idpage]
+
+
+}

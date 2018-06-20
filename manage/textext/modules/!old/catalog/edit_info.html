@@ -1,0 +1,11 @@
+################################################################################
+@main[]
+^connect[$site:connectString]{
+ ^if(def $form:id){
+	^if($form:favorites eq "on"){$favorites(1)}{$favorites(0)}
+  $res[^catalog.Update[$form:id;$form:name;$form:head;$form:parent_c;$form:price;$form:sortir;$form:quantity;$form:content;$form:artikul;$favorites;$form:square]]
+  ^if(def $form:parent_c){^make_rewrite[]}
+  $response:refresh[$.value(0)$.url[index.html?parent=$form:parent&idpage=$form:idpage&id=$form:idblock#$form:id]]
+ }{error fields, no 'id'}
+}
+################################################################################

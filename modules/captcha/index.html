@@ -1,0 +1,11 @@
+@main[]
+^connect[$site:connectString]{
+	^if(def $form:c){
+		$answer[^captcha:GetAnswer[$form:c]]
+		^if(def $form:bgcolor){$bg[0x${form:bgcolor}]}{$bg[0x${captcha:defaultParams.bgcolor}]}
+		$square[^image::create($captcha:defaultParams.width;$captcha:defaultParams.height;$bg)]
+		^square.font[0123456789;./font.gif](0)
+		^square.text(0;0)[$answer]
+		$response:body[^square.gif[]]
+	}
+}

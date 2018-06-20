@@ -1,0 +1,11 @@
+################################################################################
+@cms_body[]
+^if(def $form:id){
+ ^if(def $form:gallery_edit){
+  ^void:sql{UPDATE catalog_gallery_second SET description='$form:description' WHERE id=$form:id}
+ }{
+  ^void:sql{UPDATE catalog_gallery_second SET sortir='$form:sortir' WHERE id=$form:id}
+ }
+}
+$response:location[index.html?idpage=$form:idpage&parent=$form:parent&catalog_id=$form:catalog_id]
+################################################################################

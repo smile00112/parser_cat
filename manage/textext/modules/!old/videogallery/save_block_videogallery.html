@@ -1,0 +1,13 @@
+################################################################################
+@cms_body[] 
+# Если параметры формы непустые
+^if(def $form:video_id){
+# Инициализируем класс videogallery
+ ^use[/classes/modules/videogallery.p]
+ $videogallery[^videogallery::init[$cms_page_id;$form:id;$form:idpage;$form:idpage_name]]
+ ^videogallery.save_block_videogallery[$form:video_id;$cms_page_id;$form:edit_name;$form:enable;$form:sortir]
+}{
+# Иначе выводим ошибку
+ ^insert_error_fields[]
+}
+################################################################################

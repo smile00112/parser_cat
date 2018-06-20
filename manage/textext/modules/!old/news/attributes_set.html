@@ -1,0 +1,110 @@
+################################################################################
+@cms_body[]
+# Если передаётся $idpage и $news_id
+^if(def $form:idpage && def $form:news_id){
+# Если передаётся $form:url
+^if(def $form:url){
+# Записываем в переменную $url значение $form:url
+$url[$form:url]
+# Отсекаем пробелы слева и справа
+$url[^url.trim[]]
+# Удаляем слэши вначале и в конце пути 
+$url[^del_rewrite_slash[$url]]
+# Отсекаем пробелы слева и справа
+$url[^url.trim[]]
+# Преобразуем в нижний регистр
+$url[^url.lower[]]
+# Определяем таблицу замен символов
+$rep[^table::create{from	to
+ 	-
+а	a
+б	b
+в	v
+г	g
+д	d
+е	e
+з	z
+и	i
+й	y
+к	k
+л	l
+м	m
+н	n
+о	o
+п	p
+р	r
+с	s
+т	t
+у	u
+ф	f
+х	h
+ц	tse
+ч	che
+ш	sh
+щ	sch
+ъ	
+ы	y
+ь	
+э	e
+ю	yu
+я	ya
+!	
+^@	
+^#	
+^$	
+%	
+^^	
+&	
+*	
+^(	
+^)	
++	
+=	
+^{	
+^}	
+^[	
+^]	
+|	
+\	/
+/	
+^:	
+^;	
+<	
+>
+>	
+?	
+"	
+'	
+“	
+”	
+’	
+‘	
+~	
+»	
+«	
+©	
+®	
+}]
+# Заменяем символы
+$url[^url.replace[$rep]]
+}
+# Записываем значения переменных в базу	
+ ^void:sql{UPDATE news set url='$url', title='$form:title', keywords='$form:keywords', description='$form:description' where id='$form:news_id'}
+# Формируем .htaccess 
+ ^make_rewrite[]
+}
+#Переходим к странице атрибутов
+$response:location[attributes.html?idpage=$form:idpage&news_id=$form:news_id]
+################################################################################
+@del_rewrite_slash[stext]
+$nachpos(0)
+$kon_pos(^stext.length[])
+^if(^stext.left(1) eq "/" || ^stext.left(1) eq "\"){
+ $nachpos(1)
+ $kon_pos($kon_pos-1)
+}
+^if(^stext.right(1) eq "/" || ^stext.right(1) eq "\"){
+ $kon_pos($kon_pos-1)
+}
+$result[^stext.mid($nachpos;$kon_pos)]
+################################################################################  

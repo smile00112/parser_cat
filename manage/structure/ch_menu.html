@@ -1,0 +1,59 @@
+################################################################################
+@main[]
+^connect[$site:connectString]{
+ ^if(def $form:id && def $form:name && def $form:sortir){
+# $form:id
+  $cparent[]
+  ^if($form:parent!=$form:id){
+   $cparent[parent='$form:parent',]
+   ^if($form:parent!=0){
+    $countparent[^int:sql{select count(*) from menus where id='$form:parent'}[$.default{0}]]
+    $countparent
+    ^if($countparent==0){$cparent[]}
+   }
+  }
+  $t_uri[^del_rewrite_slash[$form:uri]]
+  $del_chars[, ^^^$^;^(^)^[^]^{^}^"^:]
+  $t_uri[^str_delete_chars[$t_uri;$del_chars]]
+# проверка на повтор uri
+  $povtor_uri(0)
+  ^if(^t_uri.length[]!=0){
+   $povtor_uri(^int:sql{select count(*) from menus where id<>$form:id and uri='$t_uri'})
+  }
+  ^if($povtor_uri==0){
+   ^save[]
+   $response:location[${servername}/manage/structure/#zap$form:id]
+  }{
+   ^insert_error_fields[Такой адрес уже существует - введите другое значение в поле "внешняя ссылка".<br>]
+  }
+ }
+  ^insert_error_fields[]
+ }
+}
+################################################################################
+@save[]
+^void:sql{update menus set 
+ $cparent name='$form:name',
+ security='$form:security',
+ uri='$t_uri',
+ sortir='$form:sortir',
+ level='$form:level' where id='$form:id'}
+
+^if(!def $form:visible){
+
+ ^if($form:mainpage eq 1){
+  Нельзя главную страницу делать невидимой!
+ }{
+  ^void:sql{update menus set visible='' where id='$form:id'}
+ }
+
+}{
+ ^void:sql{update menus set visible='1' where id='$form:id'}
+}
+
+^if($form:mainpage eq 1){
+ ^void:sql{update menus set mainpage=''}
+ ^void:sql{update menus set mainpage='1', visible='1' where id='$form:id'}
+}
+^make_rewrite[]
+################################################################################

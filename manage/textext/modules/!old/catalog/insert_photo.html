@@ -1,0 +1,25 @@
+################################################################################
+@main[]
+^connect[$site:connectString]{
+ ^if(def $form:id){
+  ^if(def $form:photo){
+   $ext[^file:justext[$form:photo.name]]
+   $extention[^ext.lower[]]
+   $src[${catalog.srcImagesFolder}/${form:id}.${extention}]
+   $res[^form:photo.save[binary;$src]]
+   $res[^cms.ImageResize[$src;${catalog.bigImagesFolder}/${form:id}.${extention};$catalog.imagesWidth.big;9000]]
+   $res[^cms.ImageResize[$src;${catalog.smallImagesFolder}/${form:id}.${extention};$catalog.imagesWidth.small;9000]]
+  }{
+   $extention[^site:GetImageExtention[${catalog.smallImagesFolder}/;$form:id]]
+   ^if(!($extention eq 'no')){
+    $res[^file:delete[${catalog.smallImagesFolder}/${form:id}.${extention}]]
+    $res[^file:delete[${catalog.bigImagesFolder}/${form:id}.${extention}]]
+    $res[^file:delete[${catalog.srcImagesFolder}/${form:id}.${extention}]]
+   }
+  }
+  $response:refresh[$.value(0)$.url[index.html?parent=$form:parent&idpage=$form:idpage&id=$form:idblock#$form:id]]
+ }{
+  ^insert_error_fields[]
+ }
+}
+################################################################################

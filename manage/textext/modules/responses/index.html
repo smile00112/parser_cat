@@ -1,0 +1,72 @@
+################################################################################
+@cms_body[]
+<script type="text/javascript">
+	^$.fn.chClick = function(){
+	var id = ^$(this).attr('id')^;
+	^$.post('visible.html', { id: id }, function(data){
+		if(data>0)
+		{^$('#'+id).attr('src', '/manage/i/actions/visible.gif')^; ^$('#tr_'+id).attr('style', 'background-color: #e5efff')^;}
+		else
+		{^$('#'+id).attr('src', '/manage/i/actions/hidden.gif')^; ^$('#tr_'+id).attr('style', 'background-color: #eeeeee')^;}
+	})^;
+}^;
+</script>
+<script src="/manage/i/fancybox/modalbox.js" type="text/javascript"></script>
+# Выводим шапку
+^cms.ShowPageHeader[Отзывы;$cms.currentModule.path;^responses.GetClassInfo[]]
+<p class="cms_h2">
+	<a href="${cms.cmsFolder}/textext/?idpage=$form:idpage"><i class="fa fa-reply fa-3x inline blue mr10"></i>К блокам</a>
+	^if($cms.cmsUserLevel>0){
+	<a href="add.html?idblock=$form:id&idpage=$form:idpage" title="Добавить отзыв" class="ml20">
+		<i class="fa fa-plus fa-3x inline blue mr10"></i>Добавить отзыв
+	</a>
+	}
+</p>
+# Получаем список всех галерей
+$elements[^responses.GetResponses[$form:id;;;;;all]]
+^if(def $elements){
+<table border="0" cellspacing="1" cellpadding="5" bgcolor="#999999">
+	<tr class="tH">
+		<td>Фото</td>
+		<td>ФИО</td>
+# 		<td>Фамилия</td>
+# 		<td>Имя</td>
+# 		<td>Организация</td>
+# 		<td>Должность</td>
+# 		<td>Сайт</td>
+		<td>Высказывание</td>
+		<td>Действие</td>
+	</tr>
+	$rown(0)
+	^elements.menu{
+	^rown.inc(1)
+	<tr id="tr_$elements.id" class="tN" ^if($elements.visible==0){style="background-color: #eeeeee"}>
+		$imageExt[^site:GetImageExtention[${responses.imagesPath.small}/;$elements.id]]
+		^if(-f '${responses.imagesPath.small}/${elements.id}.${imageExt}'){
+			$imagePath[${responses.imagesPath.small}/${elements.id}.${imageExt}]
+		}{
+			$imagePath[$responses.noImage]
+		}
+		<td><span class="pointer" data-href="image.html?id=$elements.id" onclick="^$(this).OpenFancybox()^;"><img src="$imagePath" width="50" alt="$elements.first_name $elements.last_name" title="$elements.first_name $elements.last_name"></span></td>
+		<td>$elements.last_name</td>
+# 		<td>$elements.first_name</td>
+# 		<td>$elements.organisation</td>
+# 		<td>$elements.post</td>
+# 		<td><a href="http://$elements.site" title="$elements.organisation" target="_blank">$elements.site</a></td>
+		<td style="text-align: left">^untaint{$elements.opinion}</td>
+		<td align="center">
+			<table border="0" cellspacing="0" cellpadding="0">
+				<tr>
+					<td width="22">^if($rown>1){<a href="position.html?up=yes&id=$elements.id&idpage=$form:idpage&idblock=$form:id"><img src="/manage/i/actions/up.gif" border="0" alt="Поднять выше" title="Поднять выше"></a>}{&nbsp^;}</td>
+					<td width="22">^if($rown<^elements.count[]){<a href="position.html?id=$elements.id&idpage=$form:idpage&idblock=$form:id"><img src="/manage/i/actions/down.gif" border="0" alt="Опустить ниже" title="Опустить ниже"></a>}{&nbsp^;}</td>
+					<td width="22"><input type="image" src="/manage/i/actions/^if($elements.visible==1){visible}{hidden}.gif" style="cursor:pointer" title="Скрыть/показать" onclick="^$(this).chClick()" id="$elements.id">
+					<td width="22"><input type="image" src="/manage/i/actions/edit.gif" style="cursor:pointer" title="Редактировать" onclick="window.location.href='edit.html?id=$elements.id&idpage=$form:idpage&idblock=$form:id'">
+					<td width="22"><input type="image" src="/manage/i/actions/delete.gif" style="cursor:pointer" alt="Удалить" title="Удалить" onclick="if (confirm('Вы хотите удалить данную позицию?')){window.location.href='del.html?id=$elements.id&idpage=$form:idpage&idblock=$form:id'}" ></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	}
+</table>
+}{<h1 class="cms_h1">Отзывы не добавлены!</h1>}
+################################################################################

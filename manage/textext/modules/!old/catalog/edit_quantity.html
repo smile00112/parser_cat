@@ -1,0 +1,11 @@
+################################################################################
+@main[]
+^connect[$site:connectString]{
+ ^if(def $form:idpage && def $form:parent && def $form:id){	
+	^if($form:quantity>-1){$res[^catalog.Update[$form:id;;;;;;$form:quantity]]}
+  $response:refresh[$.value(0)$.url[index.html?parent=$form:parent&idpage=$form:idpage&id=$form:idblock#$form:id]]
+ }{
+  ^insert_error_fields[]
+ }
+}
+################################################################################

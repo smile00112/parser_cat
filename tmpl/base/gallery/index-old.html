@@ -1,0 +1,30 @@
+@ShowGalleryTemplate[gallery;id_te]
+$tablegallery[^gallery.GetImages[$id_te]]
+^if(def $gallery.description){<h2>$descript</h2>}
+$pageId[^site:GetPageParentById[$site:currentPageId]]
+<div class="gallery mansory">
+	^tablegallery.menu{
+		<div>
+			<a href="$gallery.imagesPath.big/${tablegallery.id}.${tablegallery.ext}" class="gallery-item" rel="gallery">
+				<img src="$gallery.imagesPath.small/${tablegallery.id}.${tablegallery.ext}" alt="$tablegallery.descript"/>
+				<p>$tablegallery.descript</p>
+			</a>
+		</div>
+	}
+</div>
+@q123[]
+<script type="text/javascript">
+	^$(".gallery-item").fancybox({
+		prevEffect	: 'none',
+		nextEffect	: 'none',
+		helpers	: {
+			title	: {
+				type: 'outside'
+			},
+			thumbs	: {
+				width	: 100,
+				height	: 100
+			}
+		}
+	})^;
+</script>

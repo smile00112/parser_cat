@@ -1,0 +1,38 @@
+################################################################################
+@cms_body[]
+
+^use[/classes/NConvert.p]
+$oImg[^NConvert::create[
+# Путь, где лежит nconvert
+	$.sScriptPath[/cgi-bin/]
+# Имя самого файла nconvert
+	$.sScriptName[nconvert]
+	^if(def $sFormat){$.sFormat[$sFormat]}
+]]
+
+$params1[
+	$.bKeepRatio[1]
+	$.sResizeType[decr]
+]
+
+^if(def $form:catalog_id && def $form:multifiles && def $form:idpage && def $form:parent){
+	^form:files.multifiles.foreach[sNum;fValue]{ 
+		$extentionphoto[^file:justext[$fValue.name]]
+		$unique[^math:uuid[]]
+		$filename[${unique}.${extentionphoto}]
+		$small[/images/catalog/second/small/${form:catalog_id}/$filename]
+		$big[/images/catalog/second/big/${form:catalog_id}/$filename]
+		$sbig[/images/catalog/second/src/${form:catalog_id}/$filename]
+		^fValue.save[binary;$sbig]
+		$rs1[^oImg.resize[$sbig;$big;800;99999;$params1]]
+		$rs2[^oImg.resize[$sbig;$small;300;99999;$params1]]
+		^file:delete[$sbig]
+		$max_sortir(^int:sql{SELECT COUNT(id) FROM catalog_gallery_second WHERE element_id=$form:catalog_id})
+		$max_sortir(^eval(($max_sortir+1)*10))
+		$res[^void:sql{INSERT INTO catalog_gallery_second (element_id, path, description, sortir) VALUES ('$form:catalog_id', '$filename', '$form:description', $max_sortir)}]
+	}
+}
+ 
+$response:location[index.html?idpage=$form:idpage&parent=$form:parent&catalog_id=$form:catalog_id]
+
+################################################################################

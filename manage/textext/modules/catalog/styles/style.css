@@ -1,0 +1,308 @@
+.elements_info{
+	float: right;
+	margin: 10px 0 0 10px;
+	padding: 10px;
+	border: 1px dashed #999999;
+	border-radius: 5px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	font-family: "Cuprum",Tahoma;
+	font-size: 16px;
+}
+.elements_info .elements_info_string{
+	margin-bottom: 3px;
+}
+.elements_info .elements_info_string:last-child{
+	margin-bottom: 0;
+}
+.elements_info .elements_info_title{
+	width: 125px;
+	display: inline-block;
+}
+.actions{
+	margin: 20px 0;
+	display: block;
+	min-width: 955px;
+}
+.action_button{
+	display: inline-block;
+	margin-right: 15px;
+	vertical-align: top;
+	padding-top: 5px;
+}
+.action_button.settings{
+	margin-right: 5px;
+}
+.hover_wrapper{
+	position: relative;
+	display: inline-block;
+	padding: 5px 10px;
+	box-sizing: border-box;
+	height: 70px;
+}
+.hover_wrapper:last-child{
+	margin-right: 0;
+}
+.hover_wrapper:hover{
+	border: 1px solid #ffa812;
+	border-bottom: 0;
+	box-shadow:0 5px 9px rgba(0, 0, 0, 0.4);
+	-webkit-box-shadow:0 5px 9px rgba(0, 0, 0, 0.4);
+	-moz-box-shadow:0 5px 9px rgba(0, 0, 0, 0.4);
+	border-radius: 5px 5px 0 0;
+	-webkit-border-radius: 5px 5px 0 0;
+	-moz-border-radius: 5px 5px 0 0;
+}
+.hover_actions{
+	position: absolute;
+	top: 69px;
+	right: -1px;
+	border: 1px solid #ffa812;
+	display: none;
+	background-color: #fdf4e3;
+	text-align: right;
+	padding: 5px;
+	z-index: 10;
+	border-radius: 0 0 5px 5px;
+	-webkit-border-radius: 0 0 5px 5px;
+	-moz-border-radius: 0 0 5px 5px;
+	box-shadow:0 5px 9px rgba(0, 0, 0, 0.4);
+	-webkit-box-shadow:0 5px 9px rgba(0, 0, 0, 0.4);
+	-moz-box-shadow:0 5px 9px rgba(0, 0, 0, 0.4);
+}
+.hover_actions.left{
+	right: auto;
+	left: -1px;
+	text-align: left;
+}
+.hover_actions.links{
+	padding: 10px;
+}
+.hover_wrapper:hover > .hover_actions{
+	display: block;
+}
+.hover_actions a{
+	display: inline-block;
+}
+.block_element{
+	border-bottom: 1px dashed #999999;
+	padding: 10px 0;
+	vertical-align: top;
+	display: inline-block;
+	min-width: 51%;
+}
+.block_element .block_image{
+	float: left;
+	min-width: 200px;
+	font-size: 20px;
+	text-align: center;
+}
+
+.block_element .block_image .image_main {
+	width: 100%;
+	display: table;
+	margin-bottom: 5px;
+	vertical-align: middle;
+	border: 1px dashed #999999;
+}
+
+.block_element .block_image .image_main .has_new{
+	background-color: #cc0000;
+	color: #ffffff;
+	font-size: 14px;
+	line-height: 14px;
+	padding: 5px;
+	position: absolute;
+	top: 50px;
+}
+
+.block_element .block_image .image_main .has_stock{
+	background-color: #ff6600;
+	color: #ffffff;
+	font-size: 14px;
+	line-height: 14px;
+	padding: 5px;
+	position: absolute;
+	top: 85px;
+}
+
+.block_element .block_image .image_main > div {
+	display: table-cell;
+	vertical-align: middle;
+}
+
+.block_element .block_fields{
+	font-size: 16px;
+	font-family: "Cuprum",Tahoma;
+}
+.block_element .main-wrapper{
+	display: inline-block;
+}
+.block_element .block_filters{
+	float: right;
+	margin-left: 15px;
+	border-left: 1px solid #999999;
+	padding-left: 15px;
+}
+.block_element .block_filters table{
+	margin-top: 5px;
+}
+.block_element .block_fields .block_string{
+	padding: 5px 0;
+	min-height: 30px;
+	line-height: 30px;
+	border-bottom: 1px dashed #999999;
+}
+
+.block_element .block_fields .block_string.multiple.first{
+	padding-top: 0px;
+}
+
+.block_string.multiple .field, .block_string.multiple .label{
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.block_string.multiple .label{
+	line-height: 30px;
+}
+
+.block_element .block_fields .label{
+	text-align: right;
+	padding: 0 15px;
+}
+
+.block_element .block_fields .main{
+	float: left;
+	width: 70px;
+	padding-left: 0px;
+	line-height: 30px;
+}
+
+.block_element .block_fields .field{
+	overflow: hidden;
+}
+.block_element .block_fields .field > span{
+	height: 100%;
+	min-width: 100%;
+	display: inline-block;
+}
+.block_element .block_fields .field > input[type="text"]{
+	width: 100%;
+}
+
+.block_element .block_fields .field input[name="parent"],
+.block_element .block_fields .field input[name="step"],
+.block_element .block_fields .field input[name="sortir"]{
+	width: 35px!important;
+	text-align: center;
+}
+.block_element .block_fields .field input[name="markup"]{
+	width: 50px!important;
+	text-align: center;
+}
+.block_element .block_fields .field input[name="artikul"]{
+	width: 77px!important;
+}
+.block_element .block_fields .field .sizes,
+.block_element .block_fields .field .colors,
+.block_element .block_fields .field .stickers{
+	width: 380px;
+}
+.block_element .sizes-edit,
+.block_element .colors-edit,
+.block_element .stickers-edit{
+	font-size: 30px;
+	margin-left: 10px;
+	vertical-align: middle;
+}
+.block_element .block_image .image_main .editThumb{
+	position: absolute;
+	left: 0;
+	top: 0;
+	font-size: 14px;
+}
+.table_dsb tr{
+	position: relative;
+}
+table.table_dsb td{
+	padding: 5px 10px;
+}
+table.table_dsb td:first-child{
+	padding-left: 0;
+}
+table.table_dsb td:last-child{
+	padding-right: 0;
+}
+.filter_checkbox{
+	height: 24px;
+}
+.callout{
+	right: -11px;
+}
+/* Сопутствующие товары */
+.related-goods{
+	font-family: "Cuprum",Tahoma;
+	font-size: 16px;
+}
+.related-goods .description{
+	width: 370px;
+	font-size: 14px;
+	font-style: italic;
+}
+.related-goods .products-table{
+	margin-top: 15px;
+	display: table;
+}
+.related-goods .product-string{
+	padding: 0;
+	margin: 0;
+	position: relative;
+}
+.related-goods .product-string li{
+	display: table-cell;
+	padding: 10px 0;
+	width: 350px;
+	vertical-align: middle;
+	border-bottom: 1px dashed #999999;
+}
+.related-goods .product-string li+li{
+	width: auto;
+	min-width: 20px;
+}
+.related-goods .product-string .fa-chevron-up{
+	float: left;
+	cursor: pointer;
+	top: 3px;
+	position: relative;
+	-o-transition: all 0.5s ease;
+	-moz-transition: all 0.5s ease;
+	-webkit-transition: all 0.5s ease;
+	transition: all 0.5s ease;
+	-webkit-transform-origin: 50% 50%;
+	-ms-transform-origin: 50% 50%;
+	transform-origin: 50% 50%;
+}
+.related-goods .product-string.close .fa-chevron-up{
+	-moz-transform: rotate(180deg);
+	-ms-transform: rotate(180deg);
+	-webkit-transform: rotate(180deg);
+	-o-transform: rotate(180deg);
+	transform: rotate(180deg);
+}
+.related-goods .product-string.close ul{
+	display: none;
+}
+.related-goods .product-name{
+	margin-left: 20px;
+	display: block;
+}
+.related-goods .product-name-wrapper{
+	display: block;
+}
+.remove_all_relateds{
+	cursor: pointer;
+}
+.remove_all_relateds .fa-times{
+	margin-top: -8px;
+}

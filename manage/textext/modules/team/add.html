@@ -1,0 +1,73 @@
+################################################################################
+@cms_body[]
+# Если что-то передаётся, то пробуем это добавить
+^if(def $form:last_name && def $form:first_name && def $form:post){
+# Добавляем сотрудника в базу данных
+ $res[^team.Insert[$form:first_name;$form:last_name;$form:post;$form:phrase;$form:education;$form:progress;$form:training]]
+# Переходим к списку сотрудников
+ $response:refresh[$.value(0)$.url[/manage/^textext:GetModulePathByName[$team.className]/?id=$form:idblock&idpage=$form:idpage]]
+}{
+# Вставляем скрипт TinyMCE
+^cms:InsertTiny[;3]
+# Выводим шапку
+^cms.ShowPageHeader[Команда - Добавить сотрудника;$cms.currentModule.path;^team.GetClassInfo[]]
+<p class="cms_h2">
+	<a href="index.html?id=$form:idblock&idpage=$form:idpage"><i class="fa fa-reply fa-3x inline blue mr10"></i>К сотрудникам</a>
+</p>
+<form method="post" action="add.html">
+<input type="hidden" name="idblock" value="$form:idblock">
+<input type="hidden" name="idpage" value="$form:idpage">
+<table cellspacing="1" cellpadding="5" bgcolor="#999999">
+ <tr>
+  <td width="1" class="tH">Фамилия:</td>
+  <td class="tN">
+   <input type="text" name="last_name" size="30" style="width:100%^;">
+  </td>
+  <td width="50%" class="tH">Фраза:</td>
+ </tr>
+ <tr>
+  <td class="tH">Имя:</td>
+  <td class="tN">
+   <input type="text" name="first_name" size="30" style="width:100%^;">
+  </td>
+  <td rowspan="2" class="tN"><textarea name="phrase" style="width:100%^;"></textarea></td>
+ </tr>
+ <tr>
+  <td class="tH">Должность:</td>
+  <td class="tN">
+   <input type="text" name="post" size="30" style="width:100%^;">
+  </td>
+ </tr>
+ <tr>
+  <td colspan="3" class="tH">Образование:</td>
+ </tr>
+ <tr>
+  <td colspan="3" class="tN">
+   <textarea id="elm" name="education" style="width:100%^;"></textarea>
+  </td>
+ </tr>
+ <tr>
+  <td colspan="3" class="tH">Достижения:</td>
+ </tr>
+ <tr>
+  <td colspan="3" class="tN">
+   <textarea id="elm_2" name="progress" style="width:100%^;"></textarea>
+  </td>
+ </tr>
+ <tr>
+  <td colspan="3" class="tH">Обучался:</td>
+ </tr>
+ <tr>
+  <td colspan="3" class="tN">
+   <textarea id="elm_3" name="training" style="width:100%^;"></textarea>
+  </td>
+ </tr>
+ <tr>
+  <td colspan="3" class="tN">
+   <input type="submit" value="Сохранить">
+  </td>
+ </tr>
+</table>
+</form>
+}
+################################################################################

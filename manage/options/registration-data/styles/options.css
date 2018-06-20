@@ -1,0 +1,16 @@
+.caption{
+	width: 240px;
+	padding-left: 0!important;
+}
+.value{
+	width: 170px;
+	text-align: center;
+	padding-right: 0!important;
+}
+input,
+select{
+	width: 100%;
+}
+.main-block{
+	display: inline-block;
+}

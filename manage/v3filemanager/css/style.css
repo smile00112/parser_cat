@@ -1,0 +1,222 @@
+﻿html,body {
+font-family: Verdana, Arial, Helvetica, sans-serif;
+height:100%;
+margin:0px;
+padding:0px;
+background:#A4BBD3;
+}
+
+.left_bg{
+width:12px;
+background:#A4BBD3;
+}
+.right_bg{
+width:12px;
+background:#A4BBD3;
+}
+
+.font_main{
+	font-size:11px;
+}
+/*-----------------------Верхняя часть-------------------------*/
+.table_top{
+	width:100%;
+	border-collapse:collapse;
+}
+.way{
+	margin-left:5px;
+	margin-right:45px;
+	overflow:hidden;
+	white-space: nowrap; /*Запрещаем перенос строк */
+	text-overflow:ellipsis; /*добавляется многоточие*/
+	background:#E4EAF1;
+}
+/*Ссылка в пути*/
+.way a{
+	text-decoration:none; /*Убираем подчеркивание*/
+	color:black;
+	font-size:16px;
+}
+/*Ссылка при наведении в пути*/
+.way a:hover{
+	text-decoration:underline;
+	color:black;
+	font-size:16px;
+}
+.img_back{
+	width:30px;
+}
+.img_back:hover{
+	background-color: #E4EAF1;
+}
+/*-----------------------Панель управления-------------------------*/
+.table_toolbar{
+	width:100%;
+	border-collapse:collapse;
+	background-image: url(../picturies/gradient.png);
+	background-position: left bottom;
+	background-repeat: repeat-x;
+}
+.toolbar_up{
+
+}
+.toolbar_up:hover{
+	cursor:pointer;
+}
+
+.switch_view{
+	width:160px;
+}
+.switch_view:hover{
+	cursor:pointer;
+}
+/*-----------------------Папки и файлы-------------------------*/
+.table_main{
+	width:100%;
+	min-width:750px;
+	height:500px;
+	border-collapse:collapse;
+	background:#FFFFFF;
+}
+.navigation_table{
+	width:100%;
+	border-collapse:collapse;
+}
+.zagolovok{
+	background:#E0E0E0;
+	border-bottom:1px solid #A4BBD3;
+	cursor:pointer;
+}
+.checkbox_table{
+	width:30px;
+
+}
+.img_table{
+	width:20px;
+	background:#FFFFFF;
+}
+.name_table{
+	background:#FFFFFF;
+}
+.name_table:hover{
+	text-decoration:underline;
+}
+
+.size_table{
+	width:50px;
+}
+.date_table{
+	width:110px;
+	background:#FFFFFF;
+}
+
+.main_file{
+	height:100%;
+	vertical-align:top;
+}
+.main_file_checkbox{
+	height:100%;
+	vertical-align:top;
+}
+.main{
+	height:500px;
+	min-width:120px;
+	overflow-y:auto;
+	overflow-x:visible;
+	position:relative;
+}
+.main{
+	height:500px;
+	min-width:120px;
+	overflow-y:auto;
+	overflow-x:visible;
+	position:relative;
+}
+
+/* div для картинки*/
+.picture{
+	height:70px;
+	line-height:0px;
+	font-size:0px;
+}
+
+/*div для имени*/
+.name{
+	/*border:1px solid black;*/
+	/*margin-top:1px;*/
+	width:105px;
+	overflow:hidden;
+	height:46px;
+	display:inline-block;
+}
+
+
+/*Чтобы отображалось в строку*/
+.left{
+	width:105px;
+	text-align:center;
+	overflow:hidden;
+	margin:3px;
+	float: left;
+	padding:1px;
+	position:relative;
+	top:0;
+	left:0;
+	z-index:40;
+}
+
+/*Шрифт Имя*/
+font{
+	font-size:11px;
+}
+
+/*При наведении на папки*/
+.left:hover{
+	/*border:2px groove;*/
+	background-color: RGB(230,230,230);
+}
+/*-----------------------Нижняя часть-------------------------*/
+.table_footer{
+	width:100%;
+	min-width:750px;
+	height:110px;
+	border-collapse:collapse;
+	background:#FFFFFF;
+}
+.count_file{
+	width:210px;
+	text-align:center;
+	vertical-align:bottom;
+	font-size:10px;
+
+}
+.size_file{
+	text-align:center;
+	vertical-align:bottom;
+
+}
+.img_add{
+	
+}
+.delete_basket{
+	width:90px;
+	
+}
+.status_file{
+	overflow:hidden;
+	height:90px;
+	margin-top:10px;
+	float:left;
+	font-size:12px;
+}
+.status_img{
+	width:100px;
+	margin-left:20px;
+	margin-top:20px;
+	vertical-align:center;
+	float:left;
+}
+
+#original{
+	height:70px
+}

@@ -1,0 +1,108 @@
+.no-stickers{
+	display: none;
+}
+.no-stickers.show{
+	display: block;
+}
+.header,
+.stickers-blocks{
+	display: table;
+}
+.sticker-string{
+	display: table-row;
+	position: relative;
+	font-size: 16px;
+	font-family: "Cuprum",Tahoma;
+}
+.sticker-string .callout{
+	left: 0;
+	padding: 10px;
+	display: none;
+	position: absolute;
+}
+.header >div,
+.sticker-string > div{
+	padding: 7px 3px;
+	display: table-cell;
+	text-align: center;
+	border-bottom: 1px dashed #999999;
+	vertical-align: middle;
+	position: relative;
+}
+.header >div{
+	text-align: center;
+	font-weight: bold;
+}
+.sticker-string > div .callout{
+	right: 10px;
+}
+.sticker-string .id{
+	width: 30px;
+}
+.sticker-string .color{
+	width: 75px;
+}
+.sticker-string .name{
+	width: 150px;
+}
+.sticker-string .description{
+	width: 250px;
+}
+.sticker-string .actions{
+	width: 70px;
+	padding-left: 0;
+	padding-right: 0;
+}
+.sticker-string input{
+	width: 100%;
+}
+.sticker-string .actions span{
+	cursor: pointer;
+	font-size: 26px;
+	font-family: FontAwesome;
+	display: inline-block;
+}
+.actions .move{
+	margin-right: 10px;
+}
+.sticker-string .move::before {
+	content: "\f0ec";
+	display: block;
+	font-size: 20px;
+	cursor: all-scroll;
+	-moz-transform: rotate(90deg);
+	-ms-transform: rotate(90deg);
+	-webkit-transform: rotate(90deg);
+	-o-transform: rotate(90deg);
+	transform: rotate(90deg);
+}
+.sticker-string .delete::before {
+	content: "\f00d";
+}
+#add-sticker{
+	min-height: 60px;
+	display: none;
+	background: #FDF4E3;
+}
+#add-sticker form{
+	margin: 0;
+	padding: 1em;
+	min-width: 400px;
+}
+#add-sticker table tr:last-child td{
+	border-bottom: none;
+}
+.message{
+	padding: 0.5em;
+	display: none;
+	text-align: center;
+}
+.callout:before{
+	right: auto;
+}
+.sticker-string > div .callout:before{
+	left: 8px;
+}
+.color-block{
+	padding: 5px;
+}

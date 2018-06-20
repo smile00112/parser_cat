@@ -1,0 +1,16 @@
+################################################################################
+@cms_body[]
+^if(def $form:catalog_id && def $form:id){
+ $photo_path[^table::sql{select * from catalog_gallery_second where id='$form:id'}]
+ $small[/images/catalog/second/small/${form:catalog_id}/${photo_path.path}]
+ $big[/images/catalog/second/big/${form:catalog_id}/${photo_path.path}]
+ ^void:sql{delete from catalog_gallery_second where id='$form:id'}
+ ^try{
+ $res[^file:delete[$small]]
+ $res[^file:delete[$big]]
+ }{$exception.handled(1)}
+ $response:location[index.html?idpage=$form:idpage&parent=$form:parent&catalog_id=$form:catalog_id]
+}{
+ ^insert_error_fields[]
+}
+################################################################################

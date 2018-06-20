@@ -1,0 +1,30 @@
+@cms_body[]
+^if(def $form:id_te && def $form:image){
+	$name_as_is[^file:justext[$form:image.name]]
+	$extentionphoto[^name_as_is.lower[]]
+	$sortir(^int:sql{SELECT count(id_te) FROM te_slideshow WHERE id_te=$form:id_te})
+	^sortir.inc[]
+  # Сформировываем часть строки SQL запроса со служебной информацией           
+  $sql_info[^get_add_info[]] 
+  # Добавляем тип запчасти в базу данных
+  ^void:sql{INSERT INTO te_slideshow VALUES ('', '$form:id_te','$form:descript','$extentionphoto', '', '$sortir', $sql_info)}
+	$maxid[^int:sql{select max(id) from te_slideshow}]
+		
+	$preview_width[^string:sql{select value from te_opt where id_te='$form:id_te' and name='preview_width'}[$.default{0}]]
+	$preview_height[^string:sql{select value from te_opt where id_te='$form:id_te' and name='preview_height'}[$.default{0}]]
+	$width[^string:sql{select value from te_opt where id_te='$form:id_te' and name='width'}[$.default{0}]]
+	$height[^string:sql{select value from te_opt where id_te='$form:id_te' and name='height'}[$.default{0}]]
+	$make_resize_preview[^string:sql{select value from te_opt where id_te='$form:id_te' and name='make_resize_preview'}[$.default{}]]
+		
+	$bigpath[$prefpath/block/slideshow/big/${maxid}.${extentionphoto}]
+	$normalpath[$prefpath/block/slideshow/normal/${maxid}.${extentionphoto}]
+  $smallpath[$prefpath/block/slideshow/small/${maxid}.${extentionphoto}]
+	
+	^form:image.save[binary;$bigpath]
+	
+	^imageresize[$bigpath;$normalpath;$width;$height]
+  ^imageresize[$bigpath;$smallpath;$preview_width;$preview_height]
+	$response:location[index.html?id=$form:id_te&idpage=$form:idpage&idpage_name=$form:idpage_name]
+}{
+ ^insert_error_fields[]
+}

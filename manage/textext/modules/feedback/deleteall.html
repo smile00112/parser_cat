@@ -1,0 +1,11 @@
+################################################################################
+@cms_body[]
+^if(def $form:id && def $form:idpage ){	
+ ^use[$prefpath/manage/textext/modules/feedback/block_delete.p]
+ $mod[^block_delete::init[$form:id]]	
+ ^mod.deleteall[]	
+ $response:location[$servername/manage/textext/index.html?idpage=$form:idpage&idpage_name=$form:idpage_name]
+}{
+ ^insert_error_fields[]
+}
+################################################################################

@@ -1,0 +1,61 @@
+################################################################################
+@cms_body[]
+^use[/classes/NConvert.p]
+$oImg[^NConvert::create[
+#	Путь, где лежит nconvert
+ $.sScriptPath[/cgi-bin/]
+#	Имя самого файла nconvert
+ $.sScriptName[nconvert]
+ ^if(def $sFormat){$.sFormat[$sFormat]}
+]]
+
+$params[ 
+ $.bKeepRatio[1]
+ $.sResizeType[decr]
+]
+# Если передаётся id блока и сама картинка
+^if(def $form:id_te && def $form:files){
+# Считываем параметры из таблицы с настройками
+ $preview_width(^textext:GetOptionValue[preview_width;$form:id_te;300])
+ $preview_height(^textext:GetOptionValue[preview_height;$form:id_te;99999])
+ $width(^textext:GetOptionValue[width;$form:id_te;800])
+ $height(^textext:GetOptionValue[height;$form:id_te;99999])
+ $make_resize_preview[^textext:GetOptionValue[make_resize_preview;$form:id_te]]
+
+# Перебираем все выбранные картинки 
+ ^form:files.multifiles.foreach[sNum;fValue]{
+# Получаем расширение фотки
+  $extentionphoto[^file:justext[$fValue.name]]
+# Получаем последнюю сортировку 
+  $sortir(^int:sql{SELECT count(id_te) FROM te_gallery WHERE id_te=$form:id_te})
+# Увеличиваем её на 1 
+  ^sortir.inc[]
+# Добавляем в галерею инфу о фотке 
+  ^void:sql{insert te_gallery (id_te, descript, ext, sortir) values ('$form:id_te','$form:description','$extentionphoto','$sortir')}
+# Получаем id для фотки 
+  $maxid(^int:sql{select max(id) from te_gallery})
+# Инициализируем пути к фоткам
+  $srcpath[/images/gallery/src/${maxid}.${extentionphoto}]
+  $bigpath[/images/gallery/big/${maxid}.${extentionphoto}]
+  $smallpath[/images/gallery/small/${maxid}.${extentionphoto}]
+# Сохраняем оригинал фотки 
+  ^fValue.save[binary;$srcpath]
+# Сохраняем картинку
+  $rs1[^cms:ImageResize[$srcpath;$smallpath;$preview_width;$preview_height;$params]]
+# Сохраняем превью
+  ^if(!def $make_resize_preview){
+   $rs2[^cms:ImageResize[$srcpath;$bigpath;$width;$height;$params]]
+  }
+# Удаляем оригинал 
+ ^file:delete[$srcpath]
+ }  
+# Переходим к галерее 
+  $response:refresh[
+   $.value(0)
+   $.url[index.html?id=$form:id_te&idpage=$form:idpage&idpage_name=$form:idpage_name]
+  ]
+# Иначе выводим ошибку 
+}{
+ ^insert_error_fields[]
+}
+################################################################################

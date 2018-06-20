@@ -1,0 +1,101 @@
+﻿@cms_left[]
+<table class="table100">
+<tr>
+<td valign=top bgcolor="$allbgcolor">
+
+@cms_body[]
+^if(def $form:insert){
+$bank_name[$form:bank_name]
+$url[$form:url]
+$pos[$form:pos]
+#Если вставляется туда где и был то ничего не делаем
+	^if($pos eq $url){
+		$response:location[http://$env:SERVER_NAME/manage/v3filemanager/index.html?url=$pos]
+	}{
+#	Перемещение или копирование файла	
+	$name_d[$form:name_d]
+		$f[^file::load[text;drag_${name_d}.txt]]
+		$name_file[$f.text]
+		^file:delete[drag_${name_d}.txt]
+		
+		^ext[$name_file]
+		$name_file[$f.text]
+		^if(def $ext){
+			^switch[$ext]{
+				^case[jpg]{^cop_drag[]}
+				^case[png]{^cop_drag[]}
+				^case[gif]{^cop_drag[]}
+				^case[bmp]{^cop_drag[]}
+				^case[ico]{^cop_drag[]}
+				^case[icon]{^cop_drag[]}
+				^case[jpe]{^cop_drag[]}
+				^case[DEFAULT]{^cop_drag[]}
+			}
+		}{
+			^cop_drag[]
+		}		
+	}
+}{
+#	Создание текстового файла с именем перемещаемого или копируемого файла
+
+	^if(def $form:url&&def $form:name&&def $form:bank_name){
+		$bank_name[$form:bank_name]
+		$id[$form:id]
+		$url[$form:url]
+		$name[$form:name]
+		$cop_file[$form:cop_file]
+		$str[${name}]
+		^str.save[drag_${name}.txt]
+		^if(def $cop_file){
+		
+		}{
+		$cop_file[no]
+		}
+		$response:location[http://$env:SERVER_NAME/manage/v3filemanager/index.html?url=$url&name_d=$name&drag=$id&pos=$url&cop_file=$cop_file]
+	}
+}
+
+
+##################################
+@cop_drag[]
+^ext[$name_file]
+#$preview_name
+$form:cop_file
+
+$pv[^file:list[$pos]]
+$exist_pv(0)
+^pv.menu{
+	^if($preview_name eq $pv.name){
+		$exist_pv(1)
+	}
+}
+
+^if($exist_pv!=1){
+	^if($form:cop_file ne no){
+		^file:copy[${pos}${name_file};${url}${name_file}]
+	}{
+		^file:move[${pos}${name_file};${url}${name_file}]
+	}
+}{
+	^if($form:cop_file ne no){
+		^file:copy[${pos}${name_file};${url}${name_file}]
+		^file:copy[${pos}${preview_name};${url}${preview_name}]
+	}{
+		^file:move[${pos}${name_file};${url}${name_file}]
+		^file:move[${pos}${preview_name};${url}${preview_name}]
+	}
+}	
+$response:location[http://$env:SERVER_NAME/manage/v3filemanager/index.html?url=$url]
+
+##################################
+#Разрешение файла
+@ext[name]
+$name_file[$name]
+$ext[^file:justext[$name_file]]
+$preview[-preview.]
+$name_f[^file:justname[$name_file]]
+$preview_name[${name_f}${preview}${ext}]
+#$ext-рарсширение
+#$name_f-имя файла
+#$name_file-имя файла с расширением
+#$preview_name-имя превью

@@ -1,0 +1,114 @@
+################################################################################
+@cms_body[]
+#-------------------------------------------------------------------------------
+<link href="./styles/style.css" rel="stylesheet" type="text/css">
+#-------------------------------------------------------------------------------
+# Если параметры передаются
+^if(def $form:id && def $form:idpage){
+# Выводим заголовок страницы
+	^cms.ShowPageHeader[Импорт каталога из стороннего файла;$cms.currentModule.path;^this.GetClassInfo[]]
+	<p class="cms_h2">
+		<a href="../?id=$idblock&idpage=$form:idpage&parent=$form:parent^if(def $form:page){&page=$form:page}"><i class="fa fa-reply fa-3x inline blue mr10"></i>К каталогу</a>
+	</p>
+	^if(def $form:file || def $form:option){^action[$idblock;$form:file]}{^ShowForm[]}
+}
+################################################################################
+@ShowForm[]
+$info[^this.GetCatalogInfo[]]
+<p>В разделе <strong>$info.elementsCount</strong> видимых и <strong>$info.hiddenElementsCount</strong> скрытых элементов.</p>
+<p>В разделе <strong>$info.categoriesCount</strong> видимых категорий и <strong>$info.hiddenCategoriesCount</strong> скрытых категорий.</p>
+<form method="post" action="import.html" enctype="multipart/form-data">
+	<input type="hidden" name="id" value="$idblock">
+	<input type="hidden" name="idpage" value="$form:idpage">
+	<input type="hidden" name="parent" value="$form:parent">
+	^if(def $form:page){<input type="hidden" name="page" value="$form:page">}
+		<div class="parameter_string">
+			<div class="label">Файл:</div>
+			<div class="field"><input type="file" name="file"></div>
+		</div>
+		<div class="parameter_string">
+			<input type="radio" name="option" value="0" checked> - Обновить информацию по артикулу
+		</div>
+		<div class="parameter_string">
+			<input type="radio" name="option" value="1"> - Загрузить вместо существующего
+		</div>
+		<div class="parameter_string">
+			<div class="field aC"><input type="submit" value="Импорт"></div>
+		</div>
+</form>
+################################################################################
+@action[block_id;file]
+^switch[$form:option]{
+	^case(0){
+		$params[^hash::create[]]
+		^if(def $form:count_sync){$params.count_sync($form:count_sync)}
+		^if(def $form:sync){$params.sync($form:sync)}
+		^if(def $form:insert){$params.insert($form:insert)}
+		^if(def $form:update){$params.update($form:update)}
+		^if(def $form:errors){$params.errors($form:errors)}
+		^if($form:lastTransaction eq 'true'){$params.lastTransaction(true)}
+		$answer[^this.UpdateFile[$file;$block_id;$params]]
+	}
+	^case(1){
+		$answer[^this.ImportFile[$file;$block_id]]
+		^make_rewrite[]
+	}
+	^case[DEFAULT]{2}
+}
+<div class="cms_h1">$answer.text</div>
+^if(def $answer.counters){
+	^if(def $answer.counters.sync){<div class="cms_h2">Синхронизировано всего $answer.counters.sync записей.</div>}
+	^if(def $answer.counters.insert){<div class="cms_h2">Добавлено $answer.counters.insert записей.</div>}
+	^if(def $answer.counters.update){<div class="cms_h2">Изменено $answer.counters.update записей.</div>}
+	^if(def $answer.counters.errors){<div class="cms_h2">Ошибки в синхронизации $answer.counters.errors записей.</div>}
+}
+^if(!$answer.error){
+	^if(!def $answer.endTransaction){
+		<script>
+			^$(document).ready(function(){
+				^$('.wait').show()^;
+			})^;
+		</script>
+		$params[^GetQueryHash[]]
+		^if(def $answer.counters.count_sync){$params.count_sync($answer.counters.count_sync)}
+		^if(def $answer.counters.sync){$params.sync($answer.counters.sync)}
+		^if(def $answer.counters.insert){$params.insert($answer.counters.insert)}
+		^if(def $answer.counters.update){$params.update($answer.counters.update)}
+		^if(def $answer.counters.errors){$params.errors($answer.counters.errors)}
+		^if(def $answer.lastTransaction){$params.lastTransaction($answer.lastTransaction)}
+		$response:refresh[$.value(0)$.url[./import.html?^HashToQuery[$params]]]
+	}{
+		<p class="cms_h2">
+			<a href="./import.html?id=$idblock&idpage=$form:idpage"><i class="fa fa-refresh fa-3x inline blue mr10"></i>Загрузить ещё раз</a>
+		</p>
+	}
+}{
+	^var_dump[$answer.exception]
+}
+################################################################################
+@GetQueryHash[]
+$queryHashParams[^hash::create[]]
+^form:fields.foreach[field;value]{
+	^if(def $value){
+		$queryHashParams.[$field][$value]
+	}
+}
+$result[$queryHashParams]
+################################################################################
+@HashToQuery[hashQueryParams]
+$query[]
+^hashQueryParams.foreach[key;value]{
+	^switch[$value.CLASS_NAME]{
+		^case[bool]{
+			^if($value){
+				$query[${query}&$key=true]
+			}{
+				$query[${query}&$key=false]
+			}
+		}
+		^case[file]{}
+		^case[DEFAULT]{$query[${query}&$key=$value]}
+	}
+}
+$result[^query.trim[left;&]]
+################################################################################

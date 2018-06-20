@@ -1,0 +1,74 @@
+@main[]
+<head>
+
+<link href="/i/univ.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="/manage/v3filemanager/js/script.js"></script>
+<script type="text/javascript" src="/manage/tiny/tiny_mce_popup.js"></script>
+</head>
+<body>
+^if(def $form:uri_get){
+$uri_get[$form:uri_get]
+}
+
+#Замена русских букв на английйские
+$translit_cfg[^table::load[/manage/v3filemanager/config/translit.cfg]]
+$space[ ]
+$d[-]
+$translit[^table::create{from	to
+$space	$d}]
+^translit_cfg.menu{
+	^translit.append{$translit_cfg.from	$translit_cfg.to}
+}
+
+<font style="font-size:12px;">								
+<div style='position:absolute;height:150;width:350;' id='formDirectory'>
+<form method="POST">
+<div style="padding-top:5px;">
+	<center>
+		Допустимы символы: a-z, 0-9, - и _<br><br>
+		Имя папки:<div style="padding-top:5px;overflow:hidden;"><input type="text" name="directoryName" id="directoryName_id" size="50" maxlength="500"/></div>
+		<hr width="100%;" color="grey">
+		<div style="padding:4px;">
+			
+			<input type="submit" class="add" value="Добавить" name="posted"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<input type="button" class="add" value="Отмена" onClick='javascript:tinyMCEPopup.close();' />
+		</div>
+	</center>
+</div>
+</form>
+</font>
+<script>
+folder_input_text('directoryName');
+</script>
+$directoryName[$form:directoryName]
+^if(def $directoryName){
+	$directoryName[^directoryName.lower[]]
+	$directoryName[^directoryName.trim[]]
+	
+#	Проверка на запрещенные символы в имени файла
+	$directoryName[^directoryName.replace[$translit]]
+	^name_replace[$directoryName]
+	$directoryName[$name_rep]
+	
+	^if(def $directoryName){
+		$exist[^file:list[$uri_get]]
+		^exist.menu{
+			^if($exist.name eq $directoryName){
+				$exist_directory(1)	
+			}
+		}
+		
+		^if(def $exist_directory){
+			<script>alert('$directoryName уже существует')</script>
+		}{
+			$str[TEXT]	
+			^str.save[${uri_get}/${directoryName}/t.t]	
+			<script>var win = window.dialogArguments || opener || parent || top^;win.location.reload()^;</script>
+		}
+		
+	}{
+		<script>alert('Допустимы символы: a-z, 0-9, - и _')</script>
+	}
+}
+</div>
+</body>

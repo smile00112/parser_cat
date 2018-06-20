@@ -1,0 +1,65 @@
+################################################################################
+@cms_body[]
+#-------------------------------------------------------------------------------
+<link		href="./styles/style.css?v=0.01" rel="stylesheet" type="text/css">
+<script	src="./scripts/actions.js?v=0.09" type="text/javascript"></script>
+#-------------------------------------------------------------------------------
+# Если параметры передаются
+^if(def $form:id && def $form:idpage && def $form:parent){
+# Выводим заголовок страницы
+	^cms.ShowPageHeader[Сопутствующие товары для элемента "^textext:GetFixedText[^this.GetElementNameById[$form:parent];40;...]";$cms.currentModule.path;^this.GetClassInfo[]]
+	<p class="cms_h2">
+		<a href="./?id=$idblock&idpage=$form:idpage&parent=$form:parent^if(def $form:page){&page=$form:page}"><i class="fa fa-reply fa-3x inline blue mr10"></i>К каталогу</a>
+		<span class="remove_all_relateds ml20" data-element-id="$form:parent"><i class="fa fa-times fa-3x inline blue mr10"></i>Удалить все</span>
+	</p>
+	$params[
+		$.block_id($form:id)
+		$.limitCount(-1)
+	]
+	$elements[^this.GetElements[$params]]
+	$relateds[^this.GetElementsRelateds[$.element_id($form:parent)]]
+	$opens[^hash::create[]]
+	^relateds.menu{
+		$opens[^opens.union[^GetParents[$relateds.related_id;$elements]]]
+	}
+	<div class="related-goods" data-id="$form:parent">
+		<div class="cms_h1">Выберите сопутствующие товары:</div>
+		<div class="description">(Все товары из каталога, помеченные галочкой, будут выводиться как сопутствующие для выбранного товара)</div>
+		<div class="products-table">
+			^ShowProducts[$elements;0;0;$relateds;$opens]
+		</div>
+	</div>
+}
+################################################################################
+@ShowProducts[allModules;parent;counter;relateds;opens][modules;moduleChilds]
+^if(!def $counter){$counter(0)}
+$modules[^allModules.select($allModules.parent eq $parent)]
+^if(def $modules){
+	^modules.menu{
+		$moduleChilds[^allModules.select($allModules.parent == $modules.id)]
+		<ul class="product-string^if($moduleChilds && !^opens.contains[$modules.id]){ close}" data-id="$modules.id">
+			<li>
+				<span style="margin-left: ^eval($counter*20)px^;" class="product-name-wrapper">
+					^if($moduleChilds){<i class="fa fa-chevron-up"></i>}<span class="product-name">$modules.name</span>
+				</span>
+			</li><li>
+				<div id="$modules.id" class="callout"></div>
+				^if($modules.type && $modules.id!=$form:parent){<input type="checkbox" class="related_checkbox"^if(^relateds.select($relateds.element_id==$form:parent && $relateds.related_id==$modules.id)){ checked}>}
+			</li>
+			^if($moduleChilds){^ShowProducts[$allModules;$modules.id;^eval($counter+1);$relateds;$opens]}
+		</ul>
+	}
+}
+################################################################################
+@GetParents[id;elements]
+$parents[^hash::create[]]
+$current[^elements.select($elements.id==$id)]
+^while($current.parent > 0){
+	$parent[^elements.select($elements.id==$current.parent)]
+	^if($parent.id > 0 && !^parents.contains[$parent.id]){
+		$parents.[$parent.id]($current.id)
+	}
+	$current[$parent]
+}
+$result[$parents]
+################################################################################

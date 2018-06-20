@@ -1,0 +1,49 @@
+################################################################################
+@head[]
+<script type="text/javascript" src="/lib/jscolor/jscolor.js"></script>
+################################################################################
+@cms_body[]
+^include[/config.p]
+# Выводим шапку
+^page_head[$this.classModuleDescription;^site:GetModulePathByName[$this.className];$this.GetClassInfo[]]
+$logoExt[^site:GetImageExtention[${site:templateFolder}/images/;logo]]
+$headerExt[^site:GetImageExtention[${site:templateFolder}/images/;header]]
+$bgrExt[^site:GetImageExtention[${site:templateFolder}/images/;background]]
+<form method="post" enctype="multipart/form-data" action="add.html">
+	<table border="0" cellpadding="5" cellspacing="1" bgcolor="#999999">
+		<tr class="tH">
+			<td>Поле</td>
+			<td>Значение</td>
+			<td>Описание</td>
+			<td>Действие</td>
+		</tr>
+		<tr class="tN">
+			<td>Логотип:</td>
+			<td>^if($logoExt ne 'no'){<img src="${site:templateFolder}/images/logo.${logoExt}">}{<p align="center">Нет логотипа</p>}</td>
+			<td><strong>^this.GetPropertyComment[^site:GetTemplateName[];logo]</strong></td>
+			<td><input type="file" name="logo"><br><br><input type="submit" value="Закачать"></td>
+		</tr>
+		<tr class="tN">
+			<td>Шапка:</td>
+			<td>^if($headerExt ne 'no'){<img src="${site:templateFolder}/images/header.${headerExt}" width="300">}{<p align="center">Нет шапки</p>}</td>
+			<td><strong>^this.GetPropertyComment[^site:GetTemplateName[];header]</strong></td>
+			<td><input type="file" name="header"><br><br><input type="submit" value="Закачать"></td>
+		</tr>
+		<tr class="tN">
+			<td>Фон:</td>
+			<td>^if($bgrExt ne 'no'){<img src="${site:templateFolder}/images/background.${bgrExt}" width="300">}{<p align="center">Нет фона</p>}</td>
+	 		<td><strong>^this.GetPropertyComment[^site:GetTemplateName[];background]</strong></td>
+			<td><input type="file" name="background"><br><br><input type="submit" value="Закачать"></td>
+		</tr>
+		<tr class="tN">
+			<td>Цвет фона:</td>
+			<td align="left">
+				<input id="background_color" type="text" name="background_color" value="^this.GetPropertyValue[^site:GetTemplateName[];background_color]" class="color" style="width: 60px^;">
+				<span style="padding-left: 15px^; cursor: pointer^; font-weight: bold^;" onClick="^$('#background_color').val('^this.GetPropertyDefaultValue[^site:GetTemplateName[];background_color]')^;" title="Вернуть значение цвета фона по умолчанию">По умолчанию</span>
+			</td>
+			<td><strong>^this.GetPropertyComment[^site:GetTemplateName[];background_color]</strong></td>
+			<td><input type="submit" value="Сохранить"></td>
+		</tr>
+	</table>
+</form>
+################################################################################

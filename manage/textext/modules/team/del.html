@@ -1,0 +1,6 @@
+################################################################################
+@cms_body[]
+^if(def $form:id){$res[^team.Delete[$form:id]]}
+# Переходим к списку блоков страницы
+$response:refresh[$.value(0)$.url[/manage/^textext:GetModulePathByName[$team.className]/?id=$form:idblock&idpage=$form:idpage]]
+################################################################################

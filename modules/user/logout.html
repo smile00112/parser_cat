@@ -1,0 +1,39 @@
+################################################################################
+@body[]
+^try{
+	$answer[^site.user.auth.LogOut[]]
+	^if($request:method eq 'POST'){
+		^if($answer eq logout){
+			$answer[
+				$.error(false)
+				$.logout(true)
+			]
+		}{
+			$answer[
+				$.error(false)
+				$.logout(false)
+			]
+		}
+		$result[^json:string[$answer;$.indent(true)]]
+	}{
+		^if(def $form:resp){$newresp[^string:base64[$form:resp]]}{$newresp[${env:REQUEST_SCHEME}://${env:SERVER_NAME}${env:REQUEST_URI}]}
+		^if($answer eq logout){
+			$response:refresh[$.value(0)$.url[^untaint{$newresp}]]
+		}{
+			$answer
+		}
+	}
+}{
+	$exception.handled(true)
+	^if($request:method eq 'POST'){
+		$answer[
+			$.error(true)
+			$.logout(false)
+			$.exception($exception)
+		]
+		$result[^json:string[$answer;$.indent(true)]]
+	}{
+		Ошибка выполнения
+	}
+}
+################################################################################

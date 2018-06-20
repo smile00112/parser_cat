@@ -1,0 +1,46 @@
+################################################################################
+@cms_body[]
+
+^use[/classes/NConvert.p]
+$oImg[^NConvert::create[
+# Путь, где лежит nconvert
+	$.sScriptPath[/cgi-bin/]
+# Имя самого файла nconvert
+	$.sScriptName[nconvert]
+	^if(def $sFormat){$.sFormat[$sFormat]}
+]]
+
+$params1[
+	$.bKeepRatio[1]
+	$.sResizeType[decr]
+]
+
+^if(def $form:news_id && def $form:multifiles && def $form:idpage){
+	^form:files.multifiles.foreach[sNum;fValue]{ 
+		$extentionphoto[^file:justext[$fValue.name]]
+		$unique[^math:uuid[]]
+		$filename[${unique}.${extentionphoto}]
+		$small[/images/news/s_$filename]
+		$big[/images/news/b_$filename]
+		$sbig[/images/news/sb_$filename]  
+		^fValue.save[binary;$sbig]
+		$rs1[^oImg.resize[$sbig;$big;$news.imagesWidth.big;$news.imagesHeight.big;$params1]]
+		$rs2[^oImg.resize[$sbig;$small;$news.imagesWidth.small;$news.imagesHeight.small;$params1]]
+		^file:delete[$sbig]
+		$max_sortir(^int:sql{
+			SELECT COUNT(id) FROM news_gallery 
+			WHERE news_id=$form:news_id
+		})
+		$max_sortir(^eval(($max_sortir+1)*10))
+		^void:sql{
+			INSERT INTO news_gallery 
+			(news_id, path, descript, sortir) 
+			VALUES 
+			('$form:news_id', '$filename', '$form:description', $max_sortir)
+		}
+	}
+}
+ 
+$response:location[gallery.html?idpage=$form:idpage&news_id=$form:news_id]
+
+################################################################################

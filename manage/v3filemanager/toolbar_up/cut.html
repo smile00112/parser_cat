@@ -1,0 +1,14 @@
+п»ї@main[]
+^if(def $form:url && def $form:spisok){
+	$cookie:paste[]
+	$cookie:cut[]
+	$cookie:copy[]
+	$cookie:paste[$form:url]
+	$cookie:cut[$form:spisok]
+	$form:url
+}{
+	$cookie:paste[]
+	$cookie:cut[]
+	$cookie:copy[]
+}
+#$response:location[http://$env:SERVER_NAME/manage/v3filemanager/index.html?url=$form:url]

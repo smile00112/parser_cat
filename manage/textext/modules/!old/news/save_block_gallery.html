@@ -1,0 +1,11 @@
+################################################################################
+@cms_body[]
+^if(def $form:id){
+ ^if(def $form:gallery_edit){
+  ^void:sql{update news_gallery set descript='$form:description' where id='$form:id'}
+ }{
+  ^void:sql{update news_gallery set sortir='$form:sortir' where id='$form:id'}
+ }
+}
+$response:location[gallery.html?idpage=$form:idpage&news_id=$form:news_id]
+################################################################################

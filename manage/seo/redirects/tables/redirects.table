@@ -1,0 +1,6 @@
+name	type	label	main	width	align	show	show_manage	table
+id	key	id	no	250	center	no	yes
+source_url	text	Недоступная страница	yes	250	left	yes	yes	
+destination_url	text	Рабочая страница	yes	250	left	yes	yes	
+subfolders	checkbox	Подкаталоги	no	0	center	yes	yes
+comment	memo	Комментарий	no	350	justify	yes	yes

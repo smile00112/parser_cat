@@ -1,0 +1,5 @@
+field	sql_field	rename
+id	`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+element_id	`element_id` int(10) NOT NULL DEFAULT 0,	catalog_id
+filter	`filter` varchar(255) NOT NULL,
+	PRIMARY KEY (`id`)

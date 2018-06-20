@@ -1,0 +1,6 @@
+@main[]
+^if(def $form:link){
+	$link[^request:query.replace[link=;]]
+	$link[^link.replace[http://;]]
+	$response:location[^taint[as-is][http://$link]]
+}

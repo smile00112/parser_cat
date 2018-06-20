@@ -1,0 +1,177 @@
+################################################################################
+@main[]
+^connect[$site:connectString]{
+	^switch[$form:action]{
+		^case[delete]{
+			^if(def $form:id){
+				$result(^this.DeleteNews[$form:id])
+			}{$result(-1)}
+		}
+		^case[crop_image]{
+			^if(def $form:id && def $form:x && def $form:y && def $form:width && def $form:height){
+				^try{
+					$params[
+						$.x($form:x)
+						$.y($form:y)
+						$.width($form:width)
+						$.height($form:height)
+					]
+					$result(^this.CropImage[$form:id;$params])
+				}{
+					$exception.handled(true)
+					$result(0)
+				}
+			}{$result(-1)}
+		}
+	^case[sort_inc]{
+	 ^if(def $form:id && def $form:block_id){
+    ^try{
+		 $result(^this.ChangeElementPosition[$form:id;$form:block_id])
+    }{
+     $exception.handled(true)
+     $result(0)
+    }
+   }{$result(-1)}
+	}
+	^case[sort_dec]{
+	 ^if(def $form:id && def $form:block_id){
+    ^try{
+		 $result(^this.ChangeElementPosition[$form:id;$form:block_id;up])
+    }{
+     $exception.handled(true)
+     $result(0)
+    }
+   }{$result(-1)}
+	}
+	^case[sort_field_inc]{
+	 ^if(def $form:id){
+    ^try{
+		 $result(^this.ChangeFieldPosition[$form:id])
+    }{
+     $exception.handled(true)
+     $result(0)
+    }
+   }{$result(-1)}
+	}
+	^case[sort_field_dec]{
+	 ^if(def $form:id){
+    ^try{
+		 $result(^this.ChangeFieldPosition[$form:id;up])
+    }{
+     $exception.handled(true)
+     $result(0)
+    }
+   }{$result(-1)}
+	}
+	^case[save_field]{
+	 ^if(def $form:id && def $form:field && def $form:value){
+    ^try{
+		 $res[^this.SaveNewsProperty[$form:id;$form:field;$form:value]]
+		 $result(1)
+    }{
+     $exception.handled(true)
+     $result(0)
+    }
+   }{$result(-1)}
+	}
+	^case[save_date]{
+		^if(def $form:id && def $form:field && def $form:value){
+			^try{
+				$params[^hash::create[]]
+				$params.id($form:id)
+				^if($form:field eq 'date'){$params.date[$form:value]}
+				^if($form:field eq 'time'){$params.time[${form:value}:00]}
+				$result(^this.SaveDate[$params])
+			}{
+				$exception.handled(true)
+				$result(0)
+			}
+		}{$result(-1)}
+	}
+	^case[delete_main_image]{
+		^if(def $form:id){
+			^try{
+				$result(^this.DeleteImage[$form:id])
+			}{
+				$exception.handled(true)
+				$result(0)
+			}
+		}{$result(-1)}
+	}
+	^case[save_option]{
+	 ^if(def $form:id){
+    ^try{
+		 $res[^textext:UpdateOptionValue[$form:id;$form:value]]
+		 $result(1)
+    }{
+     $exception.handled(true)
+     $result(0)
+    }
+   }{$result(-1)}
+	}
+	^case[update_visible]{
+	 ^if(def $form:id){
+    ^try{
+		 $res(^this.SetVisible[$form:id])
+     ^cms.HtaccessGenerate[]
+     $result($res)
+    }{
+     $exception.handled(true)
+     $result(-1)
+    }
+   }{$result(-1)}
+	}
+	^case[delete_image]{
+	 ^if(def $form:name){
+    ^try{
+     $result(^this.DeleteImage[$form:name])
+    }{
+     $exception.handled(true)
+     $result(-1)
+    }
+   }{$result(-1)}
+	}
+	^case[add_element]{
+	 ^if(def $form:type && def $form:name && def $form:parent && def $form:block_id){
+    ^try{
+		 $result(^this.AddElement[$form:block_id;$form:name;$form:type;$form:parent])
+    }{
+     $exception.handled(true)
+     $result(0)
+    }
+   }{$result(-1)}
+	}
+	^case[add_field]{
+	 ^if(def $form:type_id && def $form:name){
+    ^try{
+		 $result(^this.AddField[$form:name;$form:type_id])
+    }{
+     $exception.handled(true)
+     $result(0)
+    }
+   }{$result(-1)}
+	}
+	^case[delete_field]{
+	 ^if(def $form:name){
+    ^try{
+     $result(^this.DeleteField[$form:name])
+    }{
+     $exception.handled(true)
+     $result(-1)
+    }
+   }{$result(-1)}
+	}
+	^case[update_main]{
+	 ^if(def $form:id && def $form:value){
+    ^try{
+		 $result(^this.SetMain[$form:id;$form:value;$form:one])
+    }{
+     $exception.handled(true)
+     $result(-2)
+    }
+   }{$result(-1)}
+	}
+	^case[DEFAULT]{$result(-1)}
+ }
+}
+################################################################################

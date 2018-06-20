@@ -1,0 +1,11 @@
+################################################################################
+@main[]
+^connect[$site:connectString]{
+ ^if(def $form:id){
+  $val(^site:ChangeBoolField[$responses.responsesTable.name;visible;$form:id])
+ }{
+  $val(-1)
+ }
+}
+$result($val)
+################################################################################  

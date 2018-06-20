@@ -1,0 +1,44 @@
+################################################################################
+@main[]
+^cms.ShowModalHeader[]
+<script	src="./scripts/edit_property.js" type="text/javascript"></script>
+^if(def $form:id){
+	^connect[$site:connectString]{
+		$property[^this.GetProperty[$form:id]]
+	}
+	<table class="table_dsb w100p" data-id="$form:id">
+		<tr>
+			<td colspan="2"><div class="cms_h1 aC"><nobr>Редактирование свойства</nobr><br><nobr>($property.name)</nobr></div></td>
+		</tr>
+		<tr>
+			<td class="aR">Название:</td>
+			<td>
+				<input type="text" name="name" value="$property.name" class="w100p" onChange="^$(this).UpdatePropertyField()^;">
+			</td>
+		</tr>
+		<tr>
+			<td class="aR">Значение:</td>
+			<td>
+				<input type="text" name="value" value="$property.value" class="w100p" onChange="^$(this).UpdatePropertyField()^;">
+			</td>
+		</tr>
+		^if($property.type_field == 1){
+		<tr>
+			<td class="aR"><nobr>По умолчанию:<nobr></td>
+			<td>
+				<input type="text" name="default_value" value="$property.default_value" class="w100p" onChange="^$(this).UpdatePropertyField()^;">
+			</td>
+		</tr>
+		}
+		<tr>
+			<td class="aR">Комментарий:</td>
+			<td>
+				<input type="text" name="comment" value="$property.comment" class="w100p" onChange="^$(this).UpdatePropertyField()^;">
+			</td>
+		</tr>
+	</table>
+}{
+	<div class="cms_h1">Необходимо передать id свойства</div>
+}
+^cms.ShowModalFooter[]
+################################################################################

@@ -1,0 +1,20 @@
+################################################################################
+@auto[]
+# Получаем информацию о пользователе
+$currentUserID(^form:id.int(0))
+################################################################################
+@body_init[]
+^if($currentUserID==0){$currentUserID($site.user.id)}
+$currentUser[^site.user.GetUsers[$.userId($currentUserID)]]
+^site.SetCurrentPage[0]
+$site.currentPage.header[Профиль пользователя]
+################################################################################
+@text[]
+^if($site.user.isRegUser){
+	^if($currentUser.CLASS_NAME eq table){
+		^site.user.ShowUserProfile[$currentUser]
+	}{
+		<h1>$currentUser.text</h1>
+	}
+}
+################################################################################

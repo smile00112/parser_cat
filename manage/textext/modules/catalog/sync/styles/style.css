@@ -1,0 +1,21 @@
+.parameter_string{
+	font-family:		"Cuprum",Tahoma;
+	font-size:			16px;
+	border-bottom:	1px dashed #999999;
+	padding:				10 0px;
+	width:					270px;
+}
+
+.parameter_string .label{
+	float:					left;
+	padding-right:	10px;
+	line-height:		30px;
+}
+
+.parameter_string .field{
+	overflow:				hidden;
+}
+
+.block_file{
+	font-size:			16px;
+}

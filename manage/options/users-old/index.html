@@ -1,0 +1,85 @@
+################################################################################
+@cms_body[]
+# Выводим заголовок страницы   
+^cms.ShowPageHeader[Администраторы сайта;$cms.currentModule.path;^module_info[]]
+# Получаем список администраторов сайта
+$admins[^cms.GetCmsUsers[]]
+^if($admins){
+	<br>
+	<table border="0" cellspacing="1" cellpadding="6" bgcolor="#999999">
+		<tr class="tH">
+			<td>Уровень:</td>
+			<td>Логин:</td>
+			<td>ФИО:</td>
+			<td align="center" colspan="3">Действия</td>
+		</tr>
+	^admins.menu{
+		<tr ^if($cookie:adm_login eq $admins.login){class="tNS"}{class="tN"}>
+			<td>
+			^if($admins.level==0){Пользователь}
+				^if($admins.level>0){
+					^if($admins.level==$cms.maxUserLevel){
+						Владелец
+					}{
+						Администратор
+				}
+			}
+			</td>
+			<td>$admins.login</td>
+			<td>$admins.fio</td>
+			<td>
+			^if($cookie:adm_login ne $admins.login && $cms.cmsUserLevel>0){
+				<a href="javascript: if (confirm('Вы хотите удалить пользователя?')){window.location.href='user_del.html?login=$admins.login'}"style="cursor:pointer">Удалить</a>
+			}{<span style="color:#999999">Удалить</span>}
+			</td>
+			<td>^if($cms.cmsUserLevel>0 && $admins.level>9){<a href="access.html?login=$admins.login">Права</a>}</td>
+			<td>
+			^if($admins.login eq $cookie:adm_login || $cms.cmsUserLevel>0){
+				<a href="user_ch_password_form.html?login=$admins.login">Сменить пароль / ФИО</a>
+			}
+			</td>
+		</tr>
+	}
+	</table>
+}
+^if($cms.cmsUserLevel>0){
+<h2>Регистрация пользователя</h2>
+<form method="post" action="user_add.html" style="MARGIN-TOP: 0em^; margin-bottom: 0em^;">
+	<table border="0" cellpadding="6">
+		<tr>
+			<td align="right">Уровень:</td>
+			<td>
+				<select name="level">
+					<option value="0">Пользователь</option>
+					<option value="1">Администратор</option>
+				^if($cms.cmsUserLevel==$cms.maxUserLevel){
+					<option value="$cms.maxUserLevel">Владелец</option>
+				}
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td align="right">Логин:</td>
+			<td><input type="text" name="login" style="width: 240px"></td>
+		</tr>
+		<tr>
+			<td align="right">ФИО:</td>
+			<td><input type="text" name="fio" style="width: 240px"></td>
+		</tr>
+		<tr>
+			<td align="right">Пароль:</td>
+			<td><input type="password" name="password1" style="width: 240px"></td>
+		</tr>
+		<tr>
+			<td align="right">Еще раз пароль:</td>
+			<td><input type="password" name="password2" style="width: 240px"></td>
+		</tr>
+		<tr>
+			<td colspan="2" align="center">
+				<input type="submit" value="Сохранить">
+			</td>
+		</tr>
+	</table>
+</form>
+}
+################################################################################

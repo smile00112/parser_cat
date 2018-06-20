@@ -1,0 +1,149 @@
+@ShowFeedbackTemplate[block_id]
+$tpuri[${env:SERVER_NAME}${request:uri}]
+<div class="center">
+	<span id="callbackFormBtn" class="open">Обратная связь</span>
+</div>
+								<form id="callbackForm">
+									<h3>Форма обратной связи</h3>
+									<div class="left">
+										<input type="text" placeholder="Ваше имя*" required class="required" name="name" >
+										<textarea placeholder="Текст сообщения*" required class="required" name="text" ></textarea>
+									</div>
+									<div class="right">
+										<input type="email" placeholder="Ваш email*" required class="required" name="email" >
+										<p>Введите код с картинки* </p>
+										<span class="captureImg">^use[controlimage.p]  ^controlimage:insert_controlimage[FFFFFF]</span>
+										<input type="text" name="control" class="capture required" /><input  type="submit" value="Отправить сообщение" class="submit"/>
+									</div>
+									<div class="clear"></div>
+									<div class="output"></div>
+								</form>
+								<script>
+									jQuery(document).ready(function() {
+									
+										var callbackForm = ^$('#callbackForm'),
+												callbackFormBtn = ^$('#callbackFormBtn')^;		
+										
+										callbackFormBtn.on("click", function(event){
+											event.preventDefault()^;
+											callbackForm.fadeToggle()^;
+											^$(this).toggleClass('open')^;
+											return false   
+										})^;
+						
+									
+									
+										^$('form').each(function(){
+											
+											// Объявляем переменные (форма и кнопка отправки)
+											var form = ^$(this),
+											btn = form.find('.submit')^;
+											
+											var output = ^$(this).find('.output')[0]^;
+											var capture = ^$(this).find('.captureImg')[0]^;
+											
+											// Добавляем каждому проверяемому полю, указание что поле пустое
+											form.find('input').addClass('empty_field')^;
+											form.find('textarea').addClass('empty_field')^;
+											
+											// Функция проверки полей формы
+											function checkInput(){
+												form.find('input').each(function(){
+													if((^$(this).val() != '') || !(^$(this).hasClass('required'))){
+													
+													// Если поле не пустое удаляем класс-указание
+														^$(this).removeClass('empty_field')^;
+													} else {
+														// Если поле пустое добавляем класс-указание
+														^$(this).addClass('empty_field')^;
+													}
+												})^;
+												form.find('textarea').each(function(){
+													if((^$(this).val() != '') || !(^$(this).hasClass('required'))){
+														// Если поле не пустое удаляем класс-указание
+														^$(this).removeClass('empty_field')^;
+													} else {
+														// Если поле пустое добавляем класс-указание
+														^$(this).addClass('empty_field')^;
+													}
+												})^;
+											}
+											
+											// Функция подсветки незаполненных полей
+											function lightEmpty(){
+												form.find('.empty_field').css({'border-color':'#d8512d'})^;
+												// Через полсекунды удаляем подсветку
+												setTimeout(function(){
+													form.find('.empty_field').removeAttr('style')^;
+												},500)^;
+											}
+											
+											// Функция подсветки незаполненных полей
+												function raiseError(){
+												form.find('.empty_field').parent().addClass('raise-error')^;
+											}
+											// Проверка в режиме реального времени
+											setInterval(function(){
+												// Запускаем функцию проверки полей на заполненность
+												checkInput()^;
+												// Считаем к-во незаполненных полей
+												var sizeEmpty = form.find('.empty_field').size()^;
+												// Вешаем условие-тригер на кнопку отправки формы
+												if(sizeEmpty > 0){
+													if(btn.hasClass('disabled')){
+														return false
+													} else {
+														btn.addClass('disabled')
+													}
+												} else {
+													btn.removeClass('disabled')
+												}
+											},500)^;
+											// Событие клика по кнопке отправить
+											btn.click(function(event){
+												event.preventDefault()^;
+												form.find('.raise-error').removeClass('raise-error')^;
+												if(^$(this).hasClass('disabled')){
+													// подсвечиваем незаполненные поля и форму не отправляем, если есть незаполненные поля
+													lightEmpty()^;
+													raiseError()^;
+												} else {
+												// Все хорошо, все заполнено, отправляем форму
+													AjaxFormRequest(output, form, '${self.templateFolder}${feedback:feedbackFolder}/send.html')^;
+												}
+												
+												captureLoad(capture)^;
+											})^;
+										})^;
+
+								
+										function AjaxFormRequest(result,form,url) {
+											jQuery.ajax({
+												url: url, //Адрес подгружаемой страницы
+												type: "POST", //Тип запроса
+												dataType: "html", //Тип данных
+												data: jQuery(form).serialize(), success: function(response) { //Если все нормально
+													result.innerHTML = response^;
+												},
+												error: function(response) { //Если ошибка
+													result.innerHTML = "Ошибка при отправке формы"^;
+												}
+											})^;
+										}
+										
+										function captureLoad(capture) {
+											jQuery.ajax({
+												url: "${self.templateFolder}${feedback:feedbackFolder}/capture.html", //Адрес подгружаемой страницы
+												dataType: "html", //Тип данных
+												success: function(response) { //Если все нормально
+													capture.innerHTML = response^;
+												},
+												error: function(response) { //Если ошибка
+													capture.innerHTML = "Capture error"^;
+												}
+											})^;
+										}
+						
+									})^;
+					
+							</script>

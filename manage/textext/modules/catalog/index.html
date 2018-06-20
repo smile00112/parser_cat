@@ -1,0 +1,427 @@
+################################################################################
+@cms_body[]
+#-------------------------------------------------------------------------------
+<link		href="./styles/style.css" rel="stylesheet" type="text/css">
+<script	src="./scripts/actions.js" type="text/javascript"></script>
+#------------------------------------ jcrop ------------------------------------
+<link		href="${cms.templateFolder}/libraries/jcrop/css/jquery.Jcrop.css" rel="stylesheet" type="text/css">
+<script	src="${cms.templateFolder}/libraries/jcrop/js/jquery.Jcrop.min.js" type="text/javascript"></script>
+<script	src="./scripts/crop.js" type="text/javascript"></script>
+^if(def $form:moveto || def $cookie:moduleCatalogIndexTopPos){
+<script type="text/javascript">
+	^$(document).ready(function(){
+		^if(def $form:moveto){
+			var topPos = ^$('.block_element[data-id=^form:moveto.int(0)]').offset().top-50^;
+		}{
+			var topPos = $cookie:moduleCatalogIndexTopPos^;
+			$cookie:moduleCatalogIndexTopPos[]
+		}
+		^$('html, body').animate({scrollTop: topPos}, 300)^;
+	})^;
+</script>
+}
+#-------------------------------------------------------------------------------
+^if(def $form:parent){$cparent($form:parent)}{$cparent(0)}
+# Если параметры передаются
+^if(def $form:id && def $form:idpage){
+# Определяем страницу
+	^if(!def $form:page){$currentPage(1)}{$currentPage($form:page)}
+	$expandFields[^this.GetExpandFields[]]
+	$params[
+		$.parent($cparent)
+		$.block_id($form:id)
+		$.offsetCount(^eval(($currentPage-1)*$this.elementsPerPage))
+	]
+	$elements[^this.GetElements[$params]]
+	^if($elements.CLASS_NAME eq 'hash'){
+		^throw[
+			$.type[bad.command]
+			$.source[$command]
+			$.comment[^var_dump[$elements.exception]]
+		]
+	}
+	^if($elements){
+		$ids[]
+		^elements.menu{
+			$ids[$ids, $elements.id]
+		}
+#		Получаем список страниц, у которых родители - все текущие элементы (для выбора фильтров для элементов с составными частями)
+		$params[
+			$.parent[^ids.trim[left;, ]]
+			$.limitCount(-1)
+		]
+		$parents[^this.GetElements[$params]]
+#		Данные по фильтрам
+		^if($this.settings.showFilters){
+			$filterFields[^this.GetFilterFields[]]
+			^if(!$elements.type || ($elements.type && ^parents.count[]>0)){
+				$ids[]
+				^elements.menu{
+					$ids[$ids, $elements.id]
+				}
+				$allFilters[^this.GetElementsFilters[$.element_id[^ids.trim[left;, ]]]]
+			}
+		}
+	}
+	$type($elements.type)
+	$stopComponents(false)
+	$parent[^this.GetElementById[$cparent]]
+	^if($parent.type){
+		$type($parent.type)
+		$stopComponents(true)
+	}
+	^if($type && ($this.settings.showSizes || $this.settings.showColors || $this.settings.showStickers)){
+		<link	href="./styles/select2.css" rel="stylesheet">
+		<script	src="${cms.templateFolder}/libraries/select2/js/select2.min.js"></script>
+		<script>
+			^$(document).ready(function(){
+				^$(".chosen-select").select2()^;
+			})^;
+		</script>
+	}
+#	Выводим заголовок страницы
+	^cms.ShowPageHeader[Каталог;$cms.currentModule.path;^this.GetClassInfo[]]
+	$params[
+		$.block_id($form:id)
+		$.parent($cparent)
+	]
+	$catalogInfo[^this.GetCatalogInfo[$params]]
+# Отображение
+	<div class="elements_info">
+		<div class="elements_info_string">
+			<span class="elements_info_title">Всего товаров:</span>$catalogInfo.stat.allCount
+		</div>
+		<div class="elements_info_string">
+			<span class="elements_info_title">Текущих^if($elements.type==0){ разделов}{ товаров}:</span>$catalogInfo.stat.allChildsCount
+		</div>
+		<div class="elements_info_string">
+			<span class="elements_info_title">Видимых:</span>$catalogInfo.stat.visibleChildsCount
+		</div>
+		<div class="elements_info_string">
+			<span class="elements_info_title">Скрытых:</span>$catalogInfo.stat.hiddenChildsCount
+		</div>
+	</div>
+	<div class="actions cms_h2">
+		<div class="action_button">
+			<a href="${cms.cmsFolder}/textext/?idpage=$form:idpage"><i class="fa fa-reply fa-3x inline brown mr10"></i>К блокам</a>
+		</div>
+		^if($cms.cmsUserLevel>0){
+		<div class="action_button">
+			<span id="addSlideBtn" data-width="400" data-href="add_element.html?idpage=$form:idpage&idblock=$idblock^if(def $elements || $parent.type){&type=$type}&parent=$form:parent" data-title="Добавить элемент" data-reload="true" class="link pointer" onClick="^$(this).OpenFancybox()^;">
+				<i class="fa fa-plus fa-3x inline brown mr10"></i>Добавить элемент</span>
+		</div>
+		}
+		^if($cms.cmsUserLevel>0){
+		<div class="action_button settings">
+			<a href="./options.html?id=$idblock&idpage=$form:idpage^if(def $form:parent){&parent=$form:parent}^if($currentPage>1){&page=$currentPage}"><i class="fa fa-cog fa-3x inline brown mr10"></i>К настройкам</a>
+		</div>
+			<div class="hover_wrapper cms_h2">
+				<i class="fa fa-puzzle-piece fa-3x inline brown mr10"></i>Дополнительно
+				<div class="hover_actions">
+					<nobr>
+# 						^if($this.settings.showDiagnostics){
+						<a href="./diagnostics/index.html?id=$idblock&idpage=$form:idpage^if(def $form:parent){&parent=$form:parent}^if($currentPage>1){&page=$currentPage}" title="Диагностика каталога" class="pl10 pr10"><i class="fa fa-wrench fa-3x inline brown mr10"></i>Диагностика</a>
+# 						}
+						^if($this.settings.showSync){
+						<div class="hover_wrapper cms_h2">
+							<i class="fa fa-refresh fa-3x inline brown mr10"></i>Синхронизация
+							<div class="hover_actions sync links left">
+								<a href="./sync/import.html?id=$idblock&idpage=$form:idpage^if(def $form:parent){&parent=$form:parent}^if($currentPage>1){&page=$currentPage}"><i class="fa fa-download fa-3x inline brown mr10"></i>Импорт</a>
+								<a href="./sync/export.html?id=$idblock&idpage=$form:idpage^if(def $form:parent){&parent=$form:parent}^if($currentPage>1){&page=$currentPage}" class="ml20"><i class="fa fa-upload fa-3x inline brown mr10"></i>Экспорт</a>
+								<a href="./sync/import-field.html?id=$idblock&idpage=$form:idpage^if(def $form:parent){&parent=$form:parent}^if($currentPage>1){&page=$currentPage}" class="ml20"><i class="fa fa-file-text-o fa-3x inline brown mr10"></i>Поле из файла</a>
+							</div>
+						</div>
+						}
+						<div class="hover_wrapper cms_h2">
+							<i class="fa fa-window-restore fa-3x inline brown mr10"></i>Текстовые&nbsp^;блоки
+							<div class="hover_actions links">
+								<a data-width="830" data-href="edit_text.html?id=$elements.id&position=top" data-title="Редактирование верхнего текстового блока для элемента '$elements.name'" onClick="^$(this).OpenFancybox()^;" class="pointer"><i class="fa fa-window-maximize fa-3x inline brown mr10"></i>Верхний</a>
+								<a data-width="830" data-href="edit_text.html?id=$elements.id&position=bottom" data-title="Редактирование нижнего текстового блока для элемента '$elements.name'" onClick="^$(this).OpenFancybox()^;" class="pointer ml20"><i class="fa fa-window-maximize fa-3x inline brown mr10"></i>Нижний</a>
+							</div>
+						</div>
+						<a href="./stickers/index.html?id=$idblock&idpage=$form:idpage^if(def $form:parent){&parent=$form:parent}^if($currentPage>1){&page=$currentPage}" title="Управление стикерами каталога" class="pl10 pr10"><i class="fa fa-tags fa-3x inline brown mr10"></i>Стикеры</a>
+					</nobr>
+				</div>
+			</div>
+		}
+	</div>
+#	Вывод навигационного меню
+	<p><a href="?id=$idblock&idpage=$form:idpage&parent=0">Главная</a> ^header_page[$cparent]</p>
+	^if(!def $elements){
+		<h1 class="cms_h1">Товары не найдены</h1>
+	}{
+# Выводим скроллер
+		^scroller:print_scroller2[^math:ceiling(^eval(^this.GetCountElements[$params]/$this.elementsPerPage));5;yes]
+		$imagesHeight(^eval($this.imagesWidth.small/$this.imagesAspectRatio))
+		<div class="block_elements" data-block-id="$this.blockId">
+		^elements.menu{
+			$image(false)
+			<div class="block_element" data-id="$elements.id">
+				<div class="block_image" style="width:${this.imagesWidth.small}px">
+					<div class="image_main" style="height: ${imagesHeight}px^;line-height:${imagesHeight}px">
+						^if($elements.type && $this.settings.showNew){<div id="new_element_${elements.id}" class="has_new"^if(!$elements.new){ style="display: none^;"}>Новинка</div>}
+						^if($elements.type && $this.settings.showStock){<div id="stock_${elements.id}" class="has_stock"^if($elements.stock eq ""){ style="display: none^;"}>$elements.stock</div>}
+					$mainImage[^this.GetMainImage[$elements.id]]
+					^if(def $mainImage){
+						$image(true)
+						<div id="image_${elements.id}">
+							<span class="editThumb" href="#cropImg" title="Обрезать изображение" data-idblock="$idblock" data-id="$mainImage.id" data-width="$this.imagesWidth.small" data-ratio="$this.imagesAspectRatio" data-big="${this.imagesFolder.src}/${mainImage.name}" data-small="${this.imagesFolder.small}/${mainImage.name}">
+								<i class="fa fa-crop fa-2x brown pointer"></i>
+							</span>
+							<span data-id="$mainImage.id" class="image_delete" title="Удалить изображение" onClick="^$(this).DeleteImage()^;">Х</span>
+							<img src="${this.imagesFolder.small}/${mainImage.name}?^math:random(1000000000)" title="$elements.head">
+						</div>
+					}
+						<div id="no_image_${elements.id}"^if($image){ style="display: none^;"}>
+							<div class="image">Нет изображения</div>
+							<span data-width="320" data-href="./images/add_main_image.html?id=${elements.id}&idblock=${form:id}" data-title="Добавление изображения" data-reload="true" class="link" onClick="^$(this).OpenFancybox()^;" style="position:absolute^; left: 10px^; top: 10px^;">
+								<i class="fa fa-plus fa-3x inline brown mr10"></i>
+							</span>
+						</div>
+					</div>
+					<div class="pt5">
+					^if($elements.type || (!$elements.type && $this.settings.showFolderActions)){
+						<a href="./images/?id=${elements.id}&idblock=${form:id}&idpage=${form:idpage}&parent=$form:parent^if($currentPage>1){&page=$currentPage}"><i class="fa fa-picture-o fa-2x inline pointer brown" title="Галерея"></i></a>
+						<a href="./video/?id=${elements.id}&idblock=${form:id}&idpage=${form:idpage}&parent=$form:parent^if($currentPage>1){&page=$currentPage}"><i class="fa fa-youtube-play fa-2x inline pointer brown" title="Видео"></i></a>
+						<a href="./files/?id=${elements.id}&idblock=${form:id}&idpage=${form:idpage}&parent=$form:parent^if($currentPage>1){&page=$currentPage}"><i class="fa fa-file fa-2x inline pointer brown" title="Файлы"></i></a>
+					}
+						<a href="./seo/?id=${elements.id}&idblock=${form:id}&idpage=${form:idpage}&parent=$form:parent^if($currentPage>1){&page=$currentPage}"><i class="fa fa-bar-chart-o fa-2x inline pointer brown" title="SEO атрибуты"></i></a>
+					</div>
+				</div>
+				<div class="block_fields" style="margin-left:^eval($this.imagesWidth.small+15)px">
+				^if($this.settings.showFilters && def $filterFields){
+					$element_parts[^parents.select($parents.parent==$elements.id)]
+					^if(!$elements.type || ($elements.type && ^element_parts.count[]>0)){$filters[^allFilters.select($allFilters.element_id==$elements.id)]}
+					<div class="block_filters">
+						<div class="cms_h1">Фильтры:</div>
+						<table class="table_dsb">
+						^filterFields.menu{
+							<tr>
+								<td>${filterFields.label}:</td>
+								<td>
+								^if($elements.type){
+									<input type="text" name="$filterFields.field" value="$elements.[$filterFields.field]" onChange="^$(this).Save()^;" class="cms_input">
+								}{
+									<div id="${filterFields.field}_${elements.id}" class="callout"></div>
+									<input type="checkbox" name="$filterFields.field" class="filter_checkbox"^if(^filters.locate[filter;$filterFields.field]){ checked}>
+								}
+								</td>
+							</tr>
+						}
+						</table>
+						^if($elements.type && ^element_parts.count[]>0){
+						<table class="table_dsb">
+						^filterFields.menu{
+							<tr>
+								<td>${filterFields.label}:</td>
+								<td>
+									<div id="${filterFields.field}_${elements.id}" class="callout"></div>
+									<input type="checkbox" name="$filterFields.field" class="filter_checkbox"^if(^filters.locate[filter;$filterFields.field]){ checked}>
+								</td>
+							</tr>
+						}
+						</table>
+						}
+					</div>
+				}
+					<div class="main-wrapper">
+						<div class="block_string multiple first">
+							<div class="label main">Элемент:</div>
+							<div class="field">^if($elements.type){Товар}{<a href="./?id=$form:id&idpage=$form:idpage&parent=$elements.id">Раздел</a>}</div>
+							<div class="label">Сортировка:</div>
+							<div class="field"><input type="text" name="sortir" value="$elements.sortir" onChange="^$(this).Save()^;" class="cms_input"></div>
+							<div class="label">Артикул:</div>
+							<div class="field"><input type="text" name="artikul" value="$elements.artikul" onChange="^$(this).Save()^;" class="cms_input"></div>
+						</div>
+						^if($this.settings.showId || $this.settings.showParent || $this.settings.showStep || $this.settings.showFavorites){
+						<div class="block_string multiple">
+							^if($this.settings.showId){
+							<div class="label main">ID:</div>
+							<div class="field">$elements.id</div>
+							}
+							^if($this.settings.showParent){
+							<div class="label^if(!$this.settings.showId){ main}">Родитель:</div>
+							<div class="field"><input type="text" name="parent" value="$elements.parent" onChange="^$(this).Save()^;" class="cms_input"></div>
+							}
+							^if($this.settings.showStep){
+							<div class="label^if(!$this.settings.showParent && !$this.settings.showId){ main}">Шаг:</div>
+							<div class="field"><input type="text" name="step" value="$elements.step" class="cms_input" data-prev="$elements.step"></div>
+							}
+							^if($this.settings.showFavorites){
+							<div class="label^if(!$this.settings.showStep && !$this.settings.showParent && !$this.settings.showId){ main}">Избранное:</div>
+							<div class="field"><input type="checkbox" name="favorites" class="cms_checkbox" onChange="^$(this).SaveCheckBox()^;"^if($elements.favorites){ checked}></div>
+							}
+						</div>
+						}
+						<div class="block_string">
+							<div class="label main">Название:</div>
+							<div class="field"><input type="text" name="name" value="$elements.name" class="cms_input" onChange="^$(this).Save()^;"></div>
+						</div>
+						^if($this.settings.showHead && ($elements.type || (!$elements.type && $this.settings.showFolderHead))){
+						<div class="block_string">
+						<div class="label main">Описание:</div>
+							<div class="field">
+							^if($this.settings.setTextHead){
+								<input name="head" value="$elements.head" class="cms_input w100p headValue" onChange="^$(this).Save()^;">
+							}{
+								<span data-width="830" data-href="edit_field.html?element_id=$elements.id&field=head&fieldName=Краткое описание" title="Краткое описание для элемента '$elements.name'" data-reload="true" class="headValue pointer" onClick="^$(this).OpenFancybox()^;">^if(def $elements.head){^untaint{$elements.head}}{Описание не задано}</span>
+							}
+							</div>
+						</div>
+						}
+						^if( $elements.type && ($this.settings.showNew || $this.settings.showStock) ){
+						<div class="block_string multiple">
+							^if($this.settings.showStock){
+							<div class="label main">Акция:</div>
+							<div class="field"><input type="text" name="stock" value="$elements.stock" class="cms_input" onChange="^$(this).Save()^;"></div>
+							}
+							^if($this.settings.showNew){
+							<div class="label^if(!$this.settings.showNew){ main}">Новинка:</div>
+							<div class="field"><input type="checkbox" name="new" onChange="^$(this).SaveCheckBox()^;"^if($elements.new){ checked}></div>
+							}
+						</div>
+						}
+						^if($elements.type && $this.settings.showPrice){
+						<div class="block_string multiple">
+							<div class="label main">Цена:</div>
+							<div class="field">
+								<input type="text" id="price_$elements.id" name="price" value="$elements.price" class="cms_input number" onChange="^$(this).Save()^;">
+							</div>
+							^if($elements.type && $this.settings.showCurrencies){
+							<div class="label">Валюта:</div>
+							<div class="field">
+								<select name="currency_id" class="cms_select w100p" onChange="^$(this).Save()^;">
+									<option value="0" disabled>Не указана</option>
+									^if(def $this.currencies){
+										^this.currencies.menu{
+									<option value="$this.currencies.id"^if($elements.currency_id==$this.currencies.id){ selected}>$this.currencies.name</option>
+										}
+									}
+								</select>
+							</div>
+							<div class="label">Наценка (%):</div>
+							<div class="field">
+								<input type="text" id="markup_$elements.id" name="markup" value="$elements.markup" class="cms_input number" onChange="^$(this).Save()^;">
+							</div>
+							}
+							^if($this.settings.showToOrder){
+							<div class="label">Под заказ:</div>
+							<div class="field"><input type="checkbox" name="to_order" onChange="^$(this).SaveCheckBox()^;"^if($elements.to_order){ checked}></div>
+							}
+						</div>
+						}
+						^if($elements.type && $this.settings.showSizes){
+						<div class="block_string multiple">
+							<div class="label main">Размеры:</div>
+							<div class="field">
+								<div class="sizes">
+									$currentSizes[^this.GetSizesRelations[$.elementIDs($elements.id)]]
+									<select name="sizes" class="chosen-select w100p save" multiple data-placeholder="Выберите размеры">
+										<option value="0" disabled>Не указаны</option>
+										^if(def $this.sizes){
+											^this.sizes.menu{
+										<option value="$this.sizes.id"^if(^currentSizes.locate($currentSizes.size_id==$this.sizes.id)){ selected}>$this.sizes.name</option>
+											}
+										}
+									</select>
+								</div>
+							</div><!--
+							--><a href="./sizes/?id=$form:id&idpage=$form:idpage&parent=$form:parent&moveto=$elements.id^if($currentPage>1){&page=$currentPage}"><i class="fa fa-pencil-square-o brown sizes-edit" title="Перейти к редактированию списка размеров"></i></a>
+						</div>
+						}
+						^if($elements.type && $this.settings.showColors){
+						<div class="block_string multiple">
+							<div class="label main">Цвета:</div>
+							<div class="field">
+								<div class="colors">
+									$currentColors[^this.GetColorsRelations[$.elementIDs($elements.id)]]
+									<select name="colors" class="chosen-select w100p save" multiple data-placeholder="Выберите цвета">
+										<option value="0" disabled>Не указаны</option>
+										^if(def $this.colors){
+											^this.colors.menu{
+										<option value="$this.colors.id"^if(^currentColors.locate($currentColors.color_id==$this.colors.id)){ selected}>$this.colors.name</option>
+											}
+										}
+									</select>
+								</div>
+							</div><!--
+							--><a href="./colors/?id=$form:id&idpage=$form:idpage&parent=$form:parent&moveto=$elements.id^if($currentPage>1){&page=$currentPage}"><i class="fa fa-pencil-square-o brown colors-edit" title="Перейти к редактированию списка цветов"></i></a>
+						</div>
+						}
+						^if($elements.type && $this.settings.showStickers){
+						<div class="block_string multiple">
+							<div class="label main">Стикеры:</div>
+							<div class="field">
+								<div class="stickers">
+									$currentStickers[^this.GetStickersRelations[$.elementIDs($elements.id)]]
+									<select name="stickers" class="chosen-select w100p save" multiple data-placeholder="Выберите стикеры">
+										<option value="0" disabled>Не указаны</option>
+										^if(def $this.stickers){
+											^this.stickers.menu{
+										<option value="$this.stickers.id"^if(^currentStickers.locate($currentStickers.sticker_id==$this.stickers.id)){ selected}>$this.stickers.name</option>
+											}
+										}
+									</select>
+								</div>
+							</div><!--
+							--><a href="./stickers/?id=$form:id&idpage=$form:idpage&parent=$form:parent&moveto=$elements.id^if($currentPage>1){&page=$currentPage}"><i class="fa fa-pencil-square-o brown colors-edit" title="Перейти к редактированию списка стикеров"></i></a>
+						</div>
+						}
+						^if( ($this.settings.showSync && $this.settings.showNoSync) || $this.settings.showParts){
+						<div class="block_string multiple">
+							^if($this.settings.showParts){
+							<div class="label main">Части:</div>
+							<div class="field"><input type="text" name="parts" value="$elements.parts" onChange="^$(this).SaveParts()^;" class="cms_input"></div>
+							}
+							^if($this.settings.showSync && $this.settings.showNoSync){
+							<div class="label">Не синхронизировать:</div>
+							<div class="field"><input type="checkbox" name="no_sync" onChange="^$(this).SaveCheckBox()^;"^if($elements.no_sync){ checked}></div>
+							}
+						</div>
+						}
+						<div class="pt5">
+						^if($elements.type){
+							<i data-width="830" data-href="edit_field.html?element_id=$elements.id&field=content&fieldName=Полное описание" title="Редактирование элемента '$elements.name'" class="fa fa-pencil-square fa-3x inline pointer brown" onClick="^$(this).OpenFancybox()^;"></i>
+						}
+						^if($this.settings.showExpandFields && def $expandFields){
+							<i data-width="400" data-href="edit_expand_fields.html?id=$elements.id" data-title="Редактирование дополнительных полей элемента '$elements.name'" class="fa fa-th fa-3x inline pointer brown pl20" onClick="^$(this).OpenFancybox()^;"></i>
+						}
+							<i class="fa ^if($elements.visible == 1){fa-eye}{fa-eye-slash} fa-3x inline pointer brown pl30" title="^if($elements.visible == 1){Скрыть}{Отобразить}" onClick="^$(this).ChangeVisible()^;"></i>
+							<span class="fa-stack fa-2x inline pointer pl30 red delete" title="Удалить" onClick="^$(this).Delete()^;">
+								<i class="fa fa-square-o fa-stack-2x"></i>
+								<i class="fa fa-times fa-stack-1x"></i>
+							</span>
+						^if($this.settings.showСomponents && $elements.type && !$stopComponents){
+							<a href="./?id=$form:id&idpage=$form:idpage&parent=$elements.id^if($currentPage>1){&page=$currentPage}"><i class="fa fa-bars fa-3x inline pointer brown ml30" title="Перейти к составным частям товара"></i></a>
+						}
+						^if($this.settings.showRelated && $elements.type){
+							<a href="./related_elements.html?id=$form:id&idpage=$form:idpage&parent=$elements.id^if($currentPage>1){&page=$currentPage}"><i class="fa fa-cart-plus fa-3x inline pointer brown ml30" title="Перейти к сопутствующим товарам"></i></a>
+						}
+						</div>
+					</div>
+				</div>
+			</div>
+		}
+		</div>
+	}
+	<div id="cropImg" style="display:none">
+		<div class="controls">
+			<button id="reset">По умолчанию</button>
+			<button id="crop">Обрезать</button>
+		</div>
+		<div id="targetWrap"></div>
+	</div>
+}{
+	$response:refresh[$.value(0)$.url[${cms.cmsFolder}/]]
+}
+################################################################################
+@header_page[idpar][idcname;cname]
+^if($idpar!=0){
+	$tbl_header[^this.GetElementById[$idpar]]
+	^tbl_header.menu{
+		$cname[$tbl_header.name]
+		$idcname[$tbl_header.id]
+		^header_page[$tbl_header.parent] / <a^if($idpar != $form:parent){ href="?id=$idblock&idpage=$form:idpage&parent=$idcname"}>$cname</a>
+	}
+}
+################################################################################

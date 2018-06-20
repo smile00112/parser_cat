@@ -1,0 +1,12 @@
+################################################################################
+@cms_body[]
+# Если параметры формы непустые
+^if(def $form:name && def $form:code){
+# Добавляем видео в базу данных 
+ ^videogallery.add_block_videogallery[]
+ $response:refresh[$.value(0) $.url[index.html?id=$form:id&idpage=$form:idpage]]
+}{
+# Выводим ошибку
+ ^insert_error_fields[]
+}
+################################################################################

@@ -1,0 +1,11 @@
+################################################################################
+@cms_body[]
+^if(def $form:id){
+	^void:sql{UPDATE site_settings SET value='$form:value' WHERE id='$form:id'}
+}
+# Переходим к списку записей
+$response:refresh[
+	$.value(0)
+	$.url[${cms.cmsFolder}/${cms.currentModule.path}/]
+]
+################################################################################

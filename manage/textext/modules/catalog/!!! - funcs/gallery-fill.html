@@ -1,0 +1,8 @@
+################################################################################
+@cms_body[]
+$values[^table::sql{SELECT id FROM catalog WHERE block_id=$form:id}]
+^values.menu{
+	$res[^void:sql{INSERT INTO catalog_gallery (element_id, name, sortir, visible, main) VALUES ($values.id, '${values.id}.jpg', 10, 1, 1)}]
+}
+Готово
+################################################################################

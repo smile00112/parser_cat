@@ -1,0 +1,57 @@
+################################################################################
+@head[]
+^$(document).ready(function(){
+	^$('.expand_field').on('change', function(){
+		var id = ^$(this).closest("table").attr("data-id"),
+				field = ^$(this).attr("name")^;
+		^$.post("actions.html", { action: "save_field", id: id, field: field, value: ^$(this).val() }, function(data){
+			data = JSON.parse(data)^;
+			if(data.error){
+				^$("#"+field+"_"+id).html("Значение не сохранено. "+data.text).addClass("error").fadeIn(500)^;
+				setTimeout(function(){
+					^$("#"+field+"_"+id).hide().removeClass("error")^;
+				},2000)^;
+			} else {
+				^$("#"+field+"_"+id).html(data.text).addClass("success").fadeIn(500)^;
+				setTimeout(function(){
+					^$("#"+field+"_"+id).hide().removeClass("success")^;
+				},1000)^;
+			}
+		})^;
+	})^;
+})^;
+################################################################################
+@main[]
+^if(def $form:id && $cms.cmsUserLevel>0){
+	^cms.ShowModalHeader[]
+	^connect[$site:connectString]{
+		$element[^this.GetElements[$.element_ids($form:id)]]
+		$expandFields[^this.GetExpandFields[]]
+	}
+	<style>.callout.left::before{left:10px}</style>
+	<div class="options_column">
+		^if(def $expandFields){
+		<div class="cms_h1 aC">Дополнительные поля элемента:</div>
+		<br />
+		<table data-id="$form:id" class="table_dsb">
+			<tr class="tB">
+				<td>Поле</td>
+				<td>Значение</td>
+			</tr>
+		^expandFields.menu{
+			<tr>
+				<td>$expandFields.title</td>
+				<td style="position:relative">
+					<div id="${expandFields.field}_${element.id}" class="callout left"></div>
+					<input type="text" name="$expandFields.field" value="$element.[$expandFields.field]" class="cms_input expand_field" style="width:250px">
+				</td>
+			</tr>
+		}
+		</table>
+		}
+	</div>
+	^cms.ShowModalFooter[]
+}{
+	$response:refresh[$.value(0)$.url[${cms:cmsFolder}/]]
+}
+################################################################################

@@ -1,0 +1,138 @@
+﻿@cms_left[]
+<table class="table100">
+<tr>
+<td valign=top bgcolor="$allbgcolor">
+
+@cms_body[]
+^if(def $form:insert){
+	^if(def $form:url && def $form:name_d){
+		$way[$form:pos]
+		$slesh[/]
+		$way[^way.trim[]]
+		$name[$form:name_d]
+		$name[^name.trim[]]
+		$way[/$way]
+		$request[$way]
+		$way[^string:js-unescape[$way]]
+
+		$way[${way}${name}/]
+		
+		$url[$form:url]
+		$pos[$form:pos]
+		$cop_file[$form:cop_file]
+		$name_d[$form:name_d]
+		$bank_name[$form:bank_name]
+		$bank_name_slesh[/$bank_name/]
+		$rep_bank_name[^table::create{from	to
+$bank_name_slesh	}]
+
+		$table_way[^table::create{cnt	name	way}]
+		$summ(0)
+		^table_way.append{$summ	$name	$way}
+		$exit(1)
+		
+#Проврка чтобы папка в которую перемещают не была дочерней
+		$proverka[^url.pos[${pos}${name_d}/]]
+		^if($form:cop_file eq no){
+			^if($proverka==0){
+				$response:location[http://$env:SERVER_NAME/manage/v3filemanager/index.html?url=$url&err=folder_drag]
+			}{
+				^insert[]
+				$response:location[http://$env:SERVER_NAME/manage/v3filemanager/index.html?url=$url]	
+			}
+		}{
+			^insert[]
+			$response:location[http://$env:SERVER_NAME/manage/v3filemanager/index.html?url=$url]	
+		}
+		
+
+	
+	}
+}{
+$bank_name[$form:bank_name]
+$id[$form:id]
+$url[$form:url]
+$name[$form:name]
+$cop_file[$form:cop_file]
+^if(def $cop_file){
+		
+}{
+$cop_file[no]
+}
+	$response:location[http://$env:SERVER_NAME/manage/v3filemanager/index.html?url=$url&name_d=$name&drag=$id&pos=$url&cop_file=$cop_file&folder=1]
+}
+
+
+#перемещение копирование
+@insert[][$table_way]
+$exception[t.t]
+$t(0)
+^while($exit!=-1){
+	$tables[^table_way.select($table_way.cnt==$summ)]
+	^if($tables){
+		^summ.inc[]
+		^tables.menu{
+			$back_way[$tables.way]		
+			
+#			Поиск в $tables.way <br>
+			
+			$list[^file:list[$tables.way]]
+			^if($list){
+			}{
+				$t(-1)
+			}
+			^list.menu{
+				^ext[$list.name]
+				^if($name_file eq $exception){
+					$t(1)
+				}{
+					$t(-1)
+				}
+#				Если есть разрешение то удаляем сразу если нет то заходим внутрь
+				^if(-f "${tables.way}${name_file}"){
+					$way_t[^table::create{from	to
+/${pos}${name_d}/	
+}]
+
+					$rep_way[${tables.way}]
+					$rep_way[^rep_way.replace[$way_t]]
+
+						^if($form:cop_file ne no){
+							^file:copy[${tables.way}${name_file};${url}${name_d}/${rep_way}${name_file}]
+						}{
+							^file:move[${tables.way}${name_file};${url}${name_d}/${rep_way}${name_file}]
+						}
+						${tables.way}${name_file}<br>
+						$name_file<br>
+						${url}${name_d}/${rep_way}${name_file}<br>		
+				}{
+					$way[${tables.way}${name_file}/]
+#					$name_file<br>
+					^table_way.append{$summ	$name_file	$way}
+				}	
+
+			}<br>
+#			Если файла t.t нет то добавляем и удаляем
+			^if($t==-1){
+#				$str[TEXT]	
+#				^str.save[${back_way}${exception}]	
+#				^file:delete[${back_way}${exception}]
+			}
+		}
+	}{
+		$exit(-1)
+	}
+}
+
+##################################
+#Разрешение файла
+@ext[name]
+$name_file[$name]
+$ext[^file:justext[$name_file]]
+$preview[-preview.]
+$name_f[^file:justname[$name_file]]
+$preview_name[${name_f}${preview}${ext}]
+#$ext-рарсширение
+#$name_f-имя файла
+#$name_file-имя файла с расширением
+#$preview_name-имя превью

@@ -1,0 +1,6 @@
+field
+`id` int(10) unsigned NOT NULL auto_increment,
+`id_te` int(10) unsigned default NULL,
+`descript` mediumtext,
+`ext` varchar(8) default NULL,
+`link` varchar(255) default NULL,

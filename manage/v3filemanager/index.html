@@ -1,0 +1,341 @@
+@main[]
+^rem{
+	^connect[$connect_string]{
+		^auth_admin[]
+		^if($bad_login eq error){
+			$response:location[${servername}/manage/]
+		}{
+			^v3filemanager[]
+		}
+	}
+}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+	<html>
+		<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<link rel="stylesheet" type="text/css" href="/manage/v3filemanager/css/style.css" />
+		<script type="text/javascript" src="/manage/v3filemanager/js/jquery-1.8.2.js"></script>
+		<script type="text/javascript" src="/manage/v3filemanager/js/jquery-ui-1.9.1.custom.min.js"></script>
+		<script type="text/javascript" src="/manage/v3filemanager/js/jquery.contextmenu.r2.js"></script>
+		<script type="text/javascript" src="/manage/v3filemanager/js/script.js"></script>
+		<script type="text/javascript" src="/manage/tiny/tiny_mce_popup.js"></script>
+		<script type="text/javascript" src="/manage/tiny/tiny_mce.js"></script>
+		<script language="javascript" type="text/javascript">
+			tinyMCE.init({
+				mode: "exact",
+				theme: "advanced",
+				plugins: "inlinepopups",
+				elements : "elm1",
+#				content_css : "/manage/v3filemanager/css/editor.css",
+				file_browser_callback: "fileADD"
+			});
+		</script>
+		</head>
+		<body>
+			<textarea id="elm1" name="elm1" rows="20" cols="80" style="display:none;width: 100%"></textarea>
+$ext_table[^table::load[/manage/v3filemanager/config/config.cfg]]
+$main_way[${env:REQUEST_SCHEME}://$env:SERVER_NAME/manage/v3filemanager/]
+$id_number(0)
+$table[v3filemanager]
+$bank_name[bank]
+$bank_name_slesh[/$bank_name/]
+^if(def $cookie:tmpl){
+	$tmpl[$cookie:tmpl]
+}{
+	$tmpl[1]
+}
+
+$cut_cookie[$cookie:cut]
+$copy_cookie[$cookie:copy]
+$paste_cookie[$cookie:paste_cookie]
+
+
+$rep_bank_name[^table::create{from	to
+$bank_name_slesh	}]
+
+#test[] проверка неправильность имени или файла
+#file_exist[] проверка на наличие такого файла
+
+
+<script>
+var err='$form:err'
+if(err=='folder_drag'){
+	alert('Перемещение папки, которая является дочерней, запрещено');
+}
+</script>
+
+
+^file_exist[]
+^uri_way[]	
+<table class="table_top">
+<tr>
+	<td class="left_bg">&nbsp;</td>
+	<td class="img_back">^back[]</td>
+	<td><div class="way">^way[]</div></td>
+	<td class="right_bg">&nbsp;</td>
+</tr>
+</table>
+
+^var_plupload[]
+<font class="font_main">
+<form NAME=s action="delete_clear.html">
+<input id="hidden_way" type="hidden" name="way"/>
+<table class="table_toolbar">
+	<tr height="40px;">
+		^if($tmpl eq 1){
+			^toolbar_checkbox[]
+		}{
+			^toolbar_icon[]
+		}
+	</tr>
+</table>
+
+<table class="table_main">
+	<tr>
+	<td class="left_bg">&nbsp;</td>
+	^if($tmpl eq 1){
+		<td class="main_file_checkbox">
+		^navigation_checkbox[]
+	}{
+		<td class="main_file">
+		^navigation[]
+	}
+	</td>
+	<td class="right_bg">&nbsp;</td>
+	</tr>
+</table>
+</form>
+
+
+<table class="table_footer">
+	<tr height="5px">
+	<td colspan=6 class="left_bg"></td>
+	</tr>
+	
+	<tr>
+	<td class="left_bg">&nbsp;</td>
+	<td class="count_file">
+		^if($tmpl eq 1){
+			^footer_status_checkbox[]
+		}{
+		
+		}		
+	</td>
+	<td class="img_add"></td>
+	<td class="size_file"></td>
+	<td class="delete_basket">
+		^if($tmpl eq 1){
+		
+		}{
+			^delete_footer[]
+		}
+	</td>
+	<td class="right_bg">&nbsp;</td>
+	</tr>
+</table>
+
+</font>
+
+<script>
+^$(document).ready(function() {
+//Если есть drag то значит какой то файло премещается
+var drag="$drag";
+var cop_file="$cop_file";
+var pos="$pos";
+var url="$uri_get";
+var folder="$folder";
+var name_d="$name_d";
+if(drag){
+	if(pos==url){
+		^$("#"+drag).fadeTo(1,0.4); //полупрозрачный файл
+	}
+}
+else{
+^$("#menu_insert").fadeTo(1,0.4);
+^$("#menu_insert_f").fadeTo(1,0.4);
+^$("#menu_insert2").fadeTo(1,0.4);
+}
+^$('div.file_context_menu').contextMenu('myMenu1', {
+	bindings: {
+		'menu_open': function(t) {
+			var div_name=(^$("#font_"+t.id).text());
+			div_name_space=div_name.replace(/\s+/g, '');
+			
+			insertURL(url+div_name_space);
+		},
+		'menu_download': function(t) {	
+			var div_name=(^$("#font_"+t.id).text());
+			div_name_space=div_name.replace(/\s+/g, '');
+			
+			location.href="contextmenu/download.html?url="+url+div_name_space+"";
+
+		},
+		'menu_rename': function(t) {	
+			var div_name=(^$("#font_"+t.id).text());
+			div_name_space=div_name.replace(/\s+/g, '');
+			rename("$uri_get","$spisok_file","$ext_filters","$spisok",div_name_space);
+		},
+		'menu_drag': function(t) {	
+			var div_name=(^$("#font_"+t.id).text());
+			div_name_space=div_name.replace(/\s+/g, '');
+			location.href="contextmenu/drag.html?url=$uri_get&name="+div_name_space+"&id="+t.id+"&bank_name=$bank_name&cop_file=no";
+		},
+		'menu_copy': function(t) {
+			var div_name=(^$("#font_"+t.id).text());
+			div_name_space=div_name.replace(/\s+/g, '');
+			location.href="contextmenu/drag.html?url=$uri_get&name="+div_name_space+"&id="+t.id+"&bank_name=$bank_name&cop_file=1";
+		},
+		'menu_insert': function(t) {		
+			if(drag){
+				if(folder){
+					location.href="contextmenu/drag_folder.html?url=$uri_get&pos=$pos&bank_name=$bank_name&insert=1&cop_file=$cop_file&name_d=$name_d";
+				}else{
+					location.href="contextmenu/drag.html?url=$uri_get&pos=$pos&bank_name=$bank_name&insert=1&cop_file=$cop_file&name_d=$name_d";
+				}	
+			}
+		},
+		'menu_delete': function(t) {	
+			var div_name=(^$("#font_"+t.id).text());
+			var way_name=(^$("#way_name").text());	
+		
+			div_name_space=div_name.replace(/\s+/g, '');
+			way_name_space=way_name.replace(/\s+/g, '');		
+			if (confirm('Вы действительно хотите удалить '+div_name_space+'?')) {
+				  window.location.href="delete_clear.html?name_delete="+escape(div_name_space)+"&way="+escape(way_name_space);
+			} 
+		}
+
+	}
+});
+
+^$('div.file_context_menu_folder').contextMenu('myMenu2', {
+	bindings: {
+		'menu_open_f': function(t) {
+			var div_name=(^$("#font_"+t.id).text());
+			div_name_space=div_name.replace(/\s+/g, '');
+			location.href="index.html?url=$uri_get"+div_name_space+"/";
+		},
+		'menu_rename_f': function(t) {	
+			var div_name=(^$("#font_"+t.id).text());
+			div_name_space=div_name.replace(/\s+/g, '');
+			rename("$uri_get","$spisok_file","$ext_filters","$spisok",div_name_space);
+		},
+		'menu_drag_f': function(t) {	
+			var div_name=(^$("#font_"+t.id).text());
+			div_name_space=div_name.replace(/\s+/g, '');
+			location.href="contextmenu/drag_folder.html?url=$uri_get&name="+div_name_space+"&id="+t.id+"&bank_name=$bank_name&cop_file=no";
+		},
+		'menu_copy_f': function(t) {
+			var div_name=(^$("#font_"+t.id).text());
+			div_name_space=div_name.replace(/\s+/g, '');
+			location.href="contextmenu/drag_folder.html?url=$uri_get&name="+div_name_space+"&id="+t.id+"&bank_name=$bank_name&cop_file=1";
+		},
+		'menu_insert_f': function(t) {		
+			if(drag){
+				var spisok_all="$spisok";
+				var name_insert="$name_d";
+				if(spisok_proverka(spisok_all,name_insert)){
+					if (confirm("Файл с таким именем уже существует\nпереместить с заменой?")) {
+						 if(folder){
+							location.href="contextmenu/drag_folder.html?url=$uri_get&pos=$pos&bank_name=$bank_name&insert=1&cop_file=$cop_file&name_d=$name_d";
+						}else{
+							location.href="contextmenu/drag.html?url=$uri_get&pos=$pos&bank_name=$bank_name&insert=1&cop_file=$cop_file&name_d=$name_d";
+						}	
+					}
+				}else{			
+					if(folder){
+						location.href="contextmenu/drag_folder.html?url=$uri_get&pos=$pos&bank_name=$bank_name&insert=1&cop_file=$cop_file&name_d=$name_d";
+					}else{
+						location.href="contextmenu/drag.html?url=$uri_get&pos=$pos&bank_name=$bank_name&insert=1&cop_file=$cop_file&name_d=$name_d";
+					}	
+				}
+			}
+		},
+		'menu_delete_f': function(t) {	
+			var div_name=(^$("#font_"+t.id).text());
+			var way_name=(^$("#way_name").text());	
+		
+			div_name_space=div_name.replace(/\s+/g, '');
+			way_name_space=way_name.replace(/\s+/g, '');		
+			if (confirm('Вы действительно хотите удалить '+div_name_space+'?')) {
+				  window.location.href="delete_clear.html?name_delete="+escape(div_name_space)+"&way="+escape(way_name_space);
+			} 
+		}
+
+	}
+});
+
+^$('.main_file').contextMenu('myMenu3', {
+	bindings: {
+		'menu_create_folder': function(t) {
+			folderADD("$uri_get");
+		},
+		'menu_create_file': function(t) {
+			fileADD("$uri_get","$spisok_file","$ext_filters");
+		},
+		'menu_insert2': function(t) {
+			if(drag){
+				var spisok_all="$spisok";
+				var name_insert="$name_d";
+				if(spisok_proverka(spisok_all,name_insert)){
+					if (confirm("Файл с таким именем уже существует\nпереместить с заменой?")) {
+						 if(folder){
+							location.href="contextmenu/drag_folder.html?url=$uri_get&pos=$pos&bank_name=$bank_name&insert=1&cop_file=$cop_file&name_d=$name_d";
+						}else{
+							location.href="contextmenu/drag.html?url=$uri_get&pos=$pos&bank_name=$bank_name&insert=1&cop_file=$cop_file&name_d=$name_d";
+						}	
+					}
+				}else{			
+					if(folder){
+						location.href="contextmenu/drag_folder.html?url=$uri_get&pos=$pos&bank_name=$bank_name&insert=1&cop_file=$cop_file&name_d=$name_d";
+					}else{
+						location.href="contextmenu/drag.html?url=$uri_get&pos=$pos&bank_name=$bank_name&insert=1&cop_file=$cop_file&name_d=$name_d";
+					}	
+				}
+			}
+		}
+	}
+});
+
+
+
+
+});
+</script>
+		<div class="contextMenu" id="myMenu1">
+			<ul>
+			<font style="font-size:10px;">
+				<li id="menu_open">Выбрать</li>
+				<li id="menu_rename">Переименовать</li>
+				<li id="menu_download">Скачать файл</li>
+				<li id="menu_drag">Вырезать</li>
+				<li id="menu_copy">Копировать</li>
+				<li id="menu_insert">Вставить</li>
+				<li id="menu_delete">Удалить</li>
+				</font>
+			</ul>
+		</div>
+		<div class="contextMenu" id="myMenu2">
+			<ul>
+			<font style="font-size:10px;">
+				<li id="menu_open_f">Выбрать</li>
+				<li id="menu_rename_f">Переименовать</li>
+				<li id="menu_drag_f">Вырезать</li>
+				<li id="menu_copy_f">Копировать</li>
+				<li id="menu_insert_f">Вставить</li>
+				<li id="menu_delete_f">Удалить</li>
+				</font>
+			</ul>
+		</div>
+		<div class="contextMenu" id="myMenu3">
+			<ul>
+			<font style="font-size:10px;">
+				<li id="menu_create_folder">Создать папку</li>
+				<li id="menu_create_file">Добавить файл</li>
+				<li id="menu_insert2">Вставить</li>
+				</font>
+			</ul>
+		</div>
+#		^test[]
+	</body>
+</html>

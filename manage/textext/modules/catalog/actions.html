@@ -1,0 +1,170 @@
+################################################################################
+@main[]
+$answer[^hash::create[]]
+^connect[$site:connectString]{
+	^switch[$form:action]{
+		^case[delete]{
+			$result(^this.DeleteElement[$form:id])
+		}
+		^case[crop_image]{
+			^if(def $form:id && def $form:x && def $form:y && def $form:width && def $form:height){
+				^try{
+					$params[
+						$.x($form:x)
+						$.y($form:y)
+						$.width($form:width)
+						$.height($form:height)
+					]
+					$result(^this.CropImage[$form:id;$params])
+				}{
+					$exception.handled(true)
+					$result(0)
+				}
+			}{$result(-1)}
+		}
+		^case[save_field]{
+			^if(def $form:id && def $form:field){
+				^try{
+					$res[^this.SaveElementProperty[$form:id;$form:field;$form:value]]
+					^if(def $form:parts){
+						$answer[^this.RecalcPartsPrices[$.ids[$form:id]]]
+					}{
+						$answer.error(false)
+						$answer.text[Значение сохранено]
+					}
+				}{
+					$exception.handled(true)
+					$answer.error(true)
+					$answer.text[Ошибка выполнения функции]
+				}
+			}{
+				$answer.error(true)
+				$answer.text[Не переданы id или поле товара]
+			}
+		}
+		^case[delete_main_image]{
+			^if(def $form:id){
+				^try{
+					$result(^this.DeleteImage[$form:id])
+				}{
+					$exception.handled(true)
+					$result(0)
+				}
+			}{$result(-1)}
+		}
+		^case[save_option]{
+			^if(def $form:id){
+				^try{
+					$res[^textext:UpdateOptionValue[$form:id;$form:value]]
+					$result(1)
+				}{
+					$exception.handled(true)
+					$result(0)
+				}
+			}{$result(-1)}
+		}
+		^case[update_visible]{
+			^if(def $form:id){
+				^try{
+					$result(^this.SetVisible[$form:id])
+				}{
+					$exception.handled(true)
+					$result(0)
+				}
+			}{$result(-1)}
+		}
+		^case[delete_image]{
+			^if(def $form:name){
+				^try{
+					$result(^this.DeleteImage[$form:name])
+				}{
+					$exception.handled(true)
+					$result(0)
+				}
+			}{$result(-1)}
+		}
+		^case[add_element]{
+			^if(def $form:type && def $form:name && def $form:parent && def $form:block_id){
+				^try{
+					$result(^this.AddElement[$form:block_id;$form:name;$form:type;$form:parent])
+				}{
+					$exception.handled(true)
+					$result(0)
+				}
+			}{$result(-1)}
+		}
+		^case[toggle_filter]{
+			$answer[^this.ToggleFilter[$form:element_id;$form:name]]
+		}
+		^case[toggle_related]{
+			$answer[^this.ToggleRelated[$form:element_id;$form:related_id]]
+		}
+		^case[remove_all_relateds]{
+			^if(def $form:element_id){
+				$answer[^this.RemoveAllRelateds[$form:element_id]]
+			}{
+				$answer.error(true)
+				$answer.text[Не передан ID элемента]
+			}
+		}
+		^case[save_text]{
+			^if(def $form:id && def $form:position){
+				^try{
+					$answer[^this.SaveElementText[$form:id;$form:position;$form:value]]
+				}{
+					$exception.handled(true)
+					$answer.error(true)
+					$answer.text[Ошибка выполнения функции]
+				}
+			}{
+				$answer.error(true)
+				$answer.text[Не переданы id или позиция текста]
+			}
+		}
+		^case[delete_expand_field]{
+			^if(def $form:field){
+					$answer[^this.DeleteExpandField[$form:field]]
+			}{
+				$answer.error(true)
+				$answer.text[Не передано название поля]
+			}
+		}
+		^case[save_step]{
+			^if(def $form:field_id && def $form:value){
+				$params[^hash::create[]]
+				^if($this.settings.saveChildsStep eq 0){$params.withChilds(false)}
+				$answer[^this.SaveElementStep[$form:field_id;$form:value;$params]]
+			}{
+				$answer.error(true)
+				$answer.text[Не достаточно параметров]
+			}
+		}
+		^case[link_element]{
+			$answer[^this.LinkElement[$form:element_id;$form:parent]]
+			^if(!$answer.error){^make_rewrite[]}
+		}
+		^case[save_redirect]{
+			$params[^hash::create[]]
+			^if($form:withChilds){$params.withChilds(true)}{$params.withChilds(false)}
+			$answer[^this.RedirectElement[$form:element_id;$form:value;$params]]
+			^if(!$answer.error){^make_rewrite[]}
+		}
+		^case[check_url]{
+			$answer[^site:CheckURL[$form:url]]
+		}
+		^case[update_sizes]{
+			$answer[^this.SaveSizes[$form:id;$form:value;$.deleteByZero(true)]]
+		}
+		^case[update_colors]{
+			$answer[^this.SaveColors[$form:id;$form:value;$.deleteByZero(true)]]
+		}
+		^case[update_stickers]{
+			$answer[^this.SaveStickers[$form:id;$form:value;$.deleteByZero(true)]]
+		}
+		^case[DEFAULT]{$result(-1)}
+	}
+}
+^if(def $answer.error){
+	$result[^json:string[$answer;$.indent(true)]]
+}
+################################################################################

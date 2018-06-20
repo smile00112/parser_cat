@@ -1,0 +1,53 @@
+################################################################################
+@main[]
+^cms.ShowModalHeader[header_light.html]
+^if(def $form:image){
+	^connect[$site:connectString]{
+# Получаем главную страницу элемента
+		$mainImage[^this.GetMainImage[$form:id]]
+# Если главного изображения ещё нет
+		^if(!def $mainImage){
+			$params[
+				$.file[$form:image]
+				$.element_id[$form:id]
+				$.visible(1)
+				$.main(1)
+			]
+# Сохраняем изображение
+			$res[^this.InsertImage[$params]]
+# Выводим резултат
+			<div class="cms_h1 aC">Изображение добавлено</div>
+			<br>
+			<script>
+				setTimeout(function(){
+					parent.^$.fancybox.close()^;
+				}, 1000)^;
+			</script>
+		}{
+			<div class="cms_h1 aC">Изображение было добавлено ранее</div>
+			<br>
+		}
+	}
+}{
+	^if(def $form:id){
+		<form method="post" enctype="multipart/form-data" action="add_main_image.html">
+			<input type="hidden" name="id" value="$form:id">
+			<input type="hidden" name="idblock" value="$form:idblock">
+			<table class="table_dsb">
+				<tr align="center">
+					<td><div class="cms_h1"><nobr>Добавление изображения</nobr></div></td>
+				</tr>
+				<tr align="center">
+					<td><input type="file" name="image"></td>
+				</tr>
+				<tr align="center">
+					<td><input type="submit" value="Добавить"></td>
+				</tr>
+			</table>
+		</form>
+	}{
+		<div class="cms_h1 aC">Исполнитель не найден</div>
+	}
+}
+^cms.ShowModalFooter[]
+################################################################################

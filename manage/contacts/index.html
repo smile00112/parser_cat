@@ -1,0 +1,83 @@
+################################################################################
+@cms_body[]
+<script src="./scripts/actions.js" type="text/javascript"></script>
+# Выводим заголовок страницы
+^cms.ShowPageHeader[$this.classModuleDescription;$cms.currentModule.path;^this.GetClassInfo[]]
+# Ссылка на возвращение к списку блоков
+<p class="cms_h2">
+	<a href="#addForm" id="addSlideBtn" class="ml20 addForm"><img src="${cms.imagesFolder}/actions/add.png" class="inline mr10" width="40">Добавить контакт</a>
+</p>
+# Список значений полей таблицы
+$cities[^this.GetCities[]]
+$data_types[^this.GetDataTypes[]]
+^if(def $cities){
+<table class="table_dsb">
+	<tr class="vaT aC" data-id="$contacts.id">
+		<td><div class="cms_h3">Тип</div></td>
+		<td><div class="cms_h3">Имя</div></td>
+		<td><div class="cms_h3">Значение</div></td>
+		<td><div class="cms_h3">Действие</div></td>
+	</tr>
+	^cities.menu{
+	$contacts[^this.GetCityContacts[$cities.id]]
+	^if(def $contacts){
+	<tr class="vaT aC" data-id="$cities.id">
+		<td class="aL" colspan="4"><div class="cms_h1">$cities.name</div></td>
+	</tr>
+		^contacts.menu{
+	<tr class="vaT aC" data-id="$contacts.id">
+		<td class="aL">
+			<select name="data_type_id" class="cms_select w100p" onChange="^$(this).Edit()^;">
+				^data_types.menu{
+				<option value="$data_types.id"^if($data_types.id==$contacts.data_type_id){ selected}>$data_types.description</option>
+				}
+			<select>
+		</td>
+		<td class="aL"><input name="name" value="$contacts.name" class="cms_input w100p" onChange="^$(this).Edit()^;"></td>
+		<td class="aL"><input name="value" value="$contacts.value" class="cms_input w100p" onChange="^$(this).Edit()^;"></td>
+		<td><img src="${cms.imagesFolder}/actions/delete.png" class="pointer" width="40" title="Удалить контакт" onClick="^$(this).Delete()^;"></td>
+	</tr>
+		}
+	}
+	}
+</table>
+<form id="addForm" style="display:none^; background-color: #e0edf8^;" method="post" enctype="multipart/form-data" action="add.html">
+	<table class="table_dsb">
+		<tr>
+			<td colspan="2" class="aC cms_h2">Добавить контакт</td>
+		</tr>
+		<tr>
+			<td>Город:</td>
+			<td>
+				<select name="city_id" style="width: 200px^;">
+					^cities.menu{
+					<option value="$cities.id">$cities.name</option>
+					}
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td>Тип:</td>
+			<td>
+				<select name="data_type_id" style="width: 200px^;">
+					^data_types.menu{
+					<option value="$data_types.id">$data_types.description</option>
+					}
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td>Имя:</td>
+			<td><input type="text" name="name" style="width: 200px^;"></td>
+		</tr>
+		<tr>
+			<td><nobr>Значение:</nobr></td>
+			<td><input type="text" name="value" style="width: 200px^;"></td>
+		</tr>
+		<tr>
+			<td colspan="2" class="aC"><input id="uploadSubmit" type="submit" value="Добавить"></td>
+		</tr>
+	</table>
+</form>
+}{<h1 class="cms_h1">Не создано ниодного города</h1>}
+################################################################################

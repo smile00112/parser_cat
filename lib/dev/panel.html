@@ -1,0 +1,94 @@
+<div id="devPanel">
+	<span id="togglePanel"><i class="fa fa-cog"></i></span>
+
+	<div id="colorSelector">
+		<span>Основной цвет <i>Нажмите чтобы изменить</i></span><div></div>
+	</div>
+
+	<div id="otherColors">
+		<p>Другие цвета</p>
+		<div>
+			<span data-color="#3065b5" style="background-color: #3065b5"></span>
+			<span data-color="#5a964c" style="background-color: #5a964c"></span>
+			<span data-color="#db8f2f" style="background-color: #db8f2f"></span>
+			<span data-color="#cb3e2a" style="background-color: #cb3e2a"></span>
+			<span data-color="#7d539d" style="background-color: #7d539d"></span>
+			<span data-color="#4ab1b6" style="background-color: #4ab1b6"></span>
+			<span data-color="#9ec552" style="background-color: #9ec552"></span>
+			<span data-color="#dfc638" style="background-color: #dfc638"></span>
+			<span data-color="#662d0f" style="background-color: #662d0f"></span>
+			<span data-color="#565656" style="background-color: #565656"></span>
+		</div>
+		
+	</div>
+
+	<div id="siteWidth">
+		<p>Ширина сайта</p>
+		<span class="reset">Сброс <i class="fa fa-refresh"></i></span>
+		
+		<div id="widthAc">
+			<h3>Фиксированная</h3>
+			<div>
+				Ширина: <input id="width" value="940px" type="text" disabled="true" />
+				<div id="widthValue"></div>
+			</div>
+
+			<h3>Диапозон</h3>
+			<div>
+				<div class="col">
+					Min: <input id="minWidth" value="800px" type="text" disabled="true" />
+				</div><div class="col">
+					Max: <input id="maxWidth" value="1200px" type="text" disabled="true" />
+				</div>
+				<div id="widthRange"></div>
+			</div>
+
+			<h3>Неограниченная ("резиновый"")</h3>
+			<div>
+				<button id="flexWidth">Резиновый</button>
+				<p><i>Не рекоммендуем</i></p>
+			</div>
+
+		</div>
+	</div>
+
+	<div id="logo">
+		<p>Загрузите свой логотип</p>
+		
+		<label for="logoUpload" class="button">Загрузить</label>
+		<input type='file' id="logoUpload" class="hidden" style="display: none" />
+	</div>
+
+	<div id="btnsPanel">
+		<a class="btn resetSettings">Сбросить все <i class="fa fa-refresh"></i></a>
+		<a href="#orderTpl" class="btn submitSettings fancybox">Заказать эту кунфигурацию</a>
+	</div>
+
+	<div id="orderTpl" class="hidden modContainer">
+		<form action="/lib/dev/order.html" method="POST" class="js">
+			<input type="hidden" name="settings" value="" id="settingsInput">
+
+			<textarea name="logo" id="logoText" class="hidden" style="display: none;"></textarea>
+
+			<label for="inpname" class="required">Ваше имя:</label>
+			<input type="text" id="ordname" name="name" value="" class="required" required>
+
+			<label for="ordphone" class="required">Ваш телефон:</label>
+			<input type="text" id="ordphone" name="phone" value="" class="required" required>
+
+			<p><em>Поля, отмеченные знаком <label class="required" style="display: inline-block;width:auto"></label> обязательны для заполнения</em></p>
+			<button type="submit" class="button">Отправить</button>
+		</form>
+	</div>
+
+
+</div>
+
+^self.AddToQueue[
+	<script src="/lib/jquery-cookie-master/jquery.cookie.js"></script>
+	<link rel="stylesheet" media="screen" type="text/css" href="/lib/colorpicker/css/colorpicker.css" />
+	<script type="text/javascript" src="/lib/colorpicker/js/colorpicker.js"></script>
+	<script type="text/javascript" src="/lib/dev/scripts.js"></script>
+	<link href="/lib/jquery-ui/jquery-ui.min.css" rel="stylesheet">
+	<script src="/lib/jquery-ui/jquery-ui.min.js"></script>
+]

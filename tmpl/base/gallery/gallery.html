@@ -1,0 +1,24 @@
+@ShowGalleryTemplate[images;allImagesCount;current]
+<div class="portfolio-wrap">
+	<h1>$current.description</h1>
+	<div class='intro'>^if(def $current.text_before){^untaint{$current.text_before}}</div>
+	^if(def $images){
+		<div class="gallery-wrap js-masonry"><!--
+		^images.menu{
+		--><div class="gallery-item">
+				<div class="item-wrap">
+					<a class="title-wrap" data-fancybox="gallery" href="$caller.imagesFolder.big/$images.name" title="$images.description">
+						<img src="$caller.imagesFolder.small/$images.name" width="600" alt="$images.description" title="$images.description" />
+					</a>
+				</div>
+			</div><!--
+		}
+		--><div class='gallery-sizer'></div><div class='sizer'></div><!--
+	--></div>
+	}
+</div>
+^site:AddToQueue[
+	<script type="text/javascript" src="${site:templateFolder}/scripts/masonry.pkgd.min.js"></script>
+	<script type="text/javascript" src="${site:templateFolder}/scripts/imagesloaded.pkgd.min.js"></script>
+	<script type="text/javascript" src="${site:templateFolder}/scripts/main.js"></script>
+]

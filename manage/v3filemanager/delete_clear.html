@@ -1,0 +1,157 @@
+################################################################################
+@main[]
+^connect[$site:connectString]{
+	^if(!def $cms.cmsUser){
+		$response:location[${servername}/manage/]
+	}{
+		^v3filemanager_delete[]
+	}
+}
+################################################################################
+@v3filemanager_delete[]
+^if(def $form:way){
+	$way[$form:way]
+	$slesh[/]
+	$way[^way.trim[]]
+	$way[/$way]
+	$request[$way]
+	$i(0)
+}{
+	<script>location.href='index.html?url=$request'^;</script>
+}
+
+$name[$form:tables.name_delete]
+^if($name){
+	^name.menu{
+#$name.field-имя файла
+	^if(def $name.field){
+		$way[$form:way]
+		$slesh[/]
+		$way[^way.trim[]]
+		$way[/$way]
+		^if(-f "${way}${name.field}"){
+			^deleter_file[]
+		}{
+			^i.inc[]
+			$way[${way}${name.field}/]	
+			$table_way[^table::create{cnt	name	way}]
+			$summ(0)
+			^table_way.append{$summ	$name.field	$way}
+			$exit(1)
+			
+			^deleter[]
+			$way[]
+		}
+	}{
+#		нет имени удалямого файла
+	}
+	}
+}{
+# нет вообще удаляемых файлов
+}
+<script>location.href='index.html?url=$request';</script>
+
+#Удаление файла
+@deleter_file[]
+^ext[$name.field]
+^if(def $ext){
+	^switch[$ext]{
+		^case[jpg]{^exist_pv[]}
+		^case[png]{^exist_pv[]}
+		^case[gif]{^exist_pv[]}
+		^case[bmp]{^exist_pv[]}
+		^case[ico]{^exist_pv[]}
+		^case[icon]{^exist_pv[]}
+		^case[jpe]{^exist_pv[]}
+		^case[DEFAULT]{^file:delete[${way}${name.field}]}
+	}
+}{
+	^file:delete[${way}${name.field}]
+}
+
+@exist_pv[]
+
+#Поиск в $way<br>
+$pv[^file:list[$way]]
+$exist_pv(0)
+^pv.menu{
+	^if($preview_name eq $pv.name){
+		$exist_pv(1)
+	}
+#	$exist_pv - $preview_name - $pv.name<br>
+}
+
+^if($exist_pv!=1){
+#	${way}${name_file}<br>
+	^file:delete[${way}${name_file}]
+}{
+#	${way}${name_file}
+#	${way}${preview_name}<br>
+	^file:delete[${way}${name_file}]
+	^file:delete[${way}${preview_name}]
+}
+
+
+#Удаление Внутри папки и папки
+@deleter[way]
+$exception[t.t]
+$t(0)
+^while($exit!=-1){
+	$tables[^table_way.select($table_way.cnt==$summ)]
+	^if($tables){
+		^summ.inc[]
+		^tables.menu{
+			$back_way[$tables.way]		
+			
+#			Поиск в $tables.way <br>
+			
+			$list[^file:list[$tables.way]]
+			^if($list){
+			}{
+				$t(-1)
+			}
+			^list.menu{
+				^ext[$list.name]
+				^if($name_file eq $exception){
+					$t(1)
+				}{
+					$t(-1)
+				}
+#				Если есть разрешение то удаляем сразу если нет то заходим внутрь
+				^if(-f "${tables.way}${name_file}"){
+						^file:delete[${tables.way}${name_file}]
+#						$name_file<br>
+						
+					}{
+					$way[${tables.way}${name_file}/]
+#					$name_file<br>
+					^table_way.append{$summ	$name_file	$way}
+					}	
+			}<br>
+#			Если файла t.t нет то добавляем и удаляем
+			^if($t==-1){
+				$str[TEXT]	
+				^str.save[${back_way}${exception}]	
+				^file:delete[${back_way}${exception}]
+			}
+		}
+	}{	
+		$exit(-1)
+	}
+}
+
+##################################
+#Разрешение файла
+@ext[name]
+$name_file[$name]
+$ext[^file:justext[$name_file]]
+$preview[-preview.]
+$name_f[^file:justname[$name_file]]
+$preview_name[${name_f}${preview}${ext}]
+#$ext-рарсширение
+#$name_f-имя файла
+#$name_file-имя файла с расширением
+#$preview_name-имя превью
+
+
+

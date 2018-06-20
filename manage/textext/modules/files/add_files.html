@@ -1,0 +1,24 @@
+################################################################################
+@cms_body[]
+# Если передаются файлы
+^if(def $form:multifiles){
+ ^use[/classes/translit.p]
+# Перебираем все выбранные файлы
+ ^form:files.multifiles.foreach[sNum;fValue]{ 
+# Получаем имя файла
+  $name[^translit:translit_for_menu[^file:justname[$fValue.name]]]
+  $name[^this.GetCheckedName[$name;$form:idpage;$form:id]]
+# Получаем расширение файла
+  $ext[^file:justext[$fValue.name]]
+# Добавляем инфу о файле в таблицу
+  $res[^this.Insert[$form:idpage;$form:id;$name;$ext]]
+# Сохраняем файл
+  ^fValue.save[binary;$this.filesPath/$form:id/${name}.${ext}]
+ }
+# Переходим к списку файлов
+  $response:refresh[$.value(0)$.url[/manage/textext/modules/$this.className/?id=$form:id&idpage=$form:idpage&idpage_name=$form:idpage_name]]
+# Иначе выводим ошибку 
+}{
+ ^insert_error_fields[]
+}
+################################################################################

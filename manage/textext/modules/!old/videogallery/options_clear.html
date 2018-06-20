@@ -1,0 +1,7 @@
+################################################################################
+@cms_body[]
+^if(def $form:id && def $form:idpage){
+ ^void:sql{delete from te_opt where id_te='$form:id'}	
+}
+$response:refresh[$.value(0) $.url[options.html?id=$form:id&idpage=$form:idpage&idpage_name=$form:idpage_name]]
+################################################################################

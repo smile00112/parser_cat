@@ -1,0 +1,31 @@
+@ShowSendMailFormTemplate[userInfo;orderTable;orderArchTable]
+<h1>Информация о заказе</h1>
+<p style="font-size:11px">$orderTable.order_name $orderTable.order_phone $orderTable.order_email</p>
+<p style="font-size:11px">Заказ № $orderTable.id от $orderTable.date</p>
+<p style="font-size:15px">Ваш промо-код: $orderTable.promo_code</p>
+$nomerpp(0)
+$itogo_ves(0)
+<table width="100%" cellspacing="0" cellpadding="6" border="1">
+ <tr>
+  <td style="font-size:11px">№</td>
+  <td style="font-size:11px">Наименование</td>
+  <td style="font-size:11px" width="70">Кол-во</td>
+  <td style="font-size:11px" width="70">Цена, балл</td>
+  <td style="font-size:11px" width="70">Стоимость, балл</td>
+ </tr>
+ ^orderArchTable.menu{
+  $nomerpp($nomerpp+1)
+  $itogo_ves($itogo_ves+$orderArchTable.itogo)
+ <tr>
+  <td style="font-size:11px">$nomerpp</td>
+  <td style="font-size:11px">$orderArchTable.name</td>
+  <td style="font-size:11px" align="right">$orderArchTable.counts</td>
+  <td style="font-size:11px" align="right">$orderArchTable.price</td>
+  <td style="font-size:11px" align="right">$orderArchTable.itogo</td>
+ </tr>
+ }
+ <tr>
+  <td style="font-size:11px" colspan="4" align="right">СУММА:</td>
+  <td style="font-size:11px" align="right">$itogo_ves</td>
+ </tr>
+</table>

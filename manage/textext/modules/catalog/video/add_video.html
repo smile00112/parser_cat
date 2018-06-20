@@ -1,0 +1,48 @@
+################################################################################
+@main[]
+^cms.ShowModalHeader[header_light.html]
+^if(def $form:name && def $form:src){
+	$params[
+		$.blockName[$catalog_cms:className]
+		$.blockID($form:id)
+		$.name[$form:name]
+		$.src[$form:src]
+	]
+# Добавляем новость
+	^connect[$site:connectString]{
+		$answer[^video.InsertVideo[$params]]
+	}
+	<div class="cms_h1 aC">$answer.text</div>
+	<br>
+	<script>
+		setTimeout(function(){
+			parent.^$.fancybox.close()^;
+		}, 1000)^;
+	</script>
+}{
+	<form method="post" enctype="multipart/form-data" action="add_video.html">
+		<input type="hidden" name="id" value="$form:id">
+		<table class="table_dsb w100p">
+			<tr align="center">
+				<td><div class="cms_h1"><nobr>Добавление видео</nobr></div></td>
+			</tr>
+			<tr align="center">
+				<td><div class="inline">Название:</div></td>
+			</tr>
+			<tr align="center">
+				<td><textarea name="name" class="w100p"></textarea></td>
+			</tr>
+			<tr align="center">
+				<td><div class="inline">Ссылка:</div></td>
+			</tr>
+			<tr align="center">
+				<td><textarea name="src" class="w100p"></textarea></td>
+			</tr>
+			<tr align="center">
+				<td><input type="submit" value="Добавить"></td>
+			</tr>
+		</table>
+	</form>
+}
+^cms.ShowModalFooter[]
+################################################################################
