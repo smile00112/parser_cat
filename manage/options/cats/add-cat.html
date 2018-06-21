@@ -1,0 +1,22 @@
+################################################################################
+@main[]
+
+^connect[$site:connectString]{
+# Если передаются данные
+	^if(def $form:namec){
+
+		# Инициализируем переменную для метода сохранения
+		$values[
+			$.city_id($form:city_id)
+			$.data_type_id($form:data_type_id)
+			$.name[$form:name]
+			$.value[$form:value]
+		]
+# Добавляем контакт
+		$res[^this.AddContact[$values]]
+^rem{	}
+
+$response:refresh[$.value(0)$.url[${cms.cmsFolder}/${cms.currentModulePath}/]]
+################################################################################
+}
+}

@@ -136,3 +136,16 @@ function ShowCallout($callout, text, className){
 		$callout.removeClass(className).hide();
 	},2000);
 }
+
+$(document).ready(function(){
+	$(".addForm").fancybox({
+		padding:     5,
+		maxWidth:    800,
+		maxHeight:   600,
+		fitToView:   false,
+		autoSize:    true,
+		closeClick:  false,
+		openEffect:  'none',
+		closeEffect: 'none'
+	});
+});	

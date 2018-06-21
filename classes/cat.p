@@ -3,12 +3,12 @@
 cat
 ################################################################################
 @auto[]
-$self.classVersion[1.11]
-$self.classBuildDate[06.06.2018]
-$self.classDeveloper[Баранов Вадим Сергеевич]
+$self.classVersion[1.00]
+$self.classBuildDate[19.06.2018]
+$self.classDeveloper[...]
 $self.className[auth]
-$self.classDescription[Класс модуля авторизации]
-$self.classModuleDescription[Авторизация]
+$self.classDescription[Класс для табл cats_list для модуля КОТЫ]
+$self.classModuleDescription[КОТЫ]
 $self.classHistory[
 	<p align="justify">
 		<strong><u>Версия $self.classVersion ($self.classBuildDate):</u></strong>
@@ -40,10 +40,16 @@ $self.accountsTable[
 	$.name[auth_accounts]
 	$.file[auth_accounts.table]
 ]
-# Таблица "Поля регистрации"
-$self.fieldsTable[
-	$.name[registration_fields]
-	$.file[registration_fields.table]
+
+# Таблица "Список котов"
+$self.cats_list_table[
+	$.name[cats_list]
+	$.file[cats_list.table]
+]
+# Таблица "фотографии котов"
+$self.cats_foto_table[
+	$.name[cats_foto]
+	$.file[cats_foto.table]
 ]
 # Имя куки
 $self.cookiename[auth_sid]
@@ -399,7 +405,7 @@ $result[^table::load[/classes/auth/registration.table]]
 	}
 	$sql[
 		SELECT $sql.fields
-		FROM $self.fieldsTable.name
+		FROM $self.cats_list_table.name
 		WHERE 1=1
 					^if(def $params.IDs){ AND id IN ($params.IDs)}
 					^if(def $params.type){ AND type=$params.type}

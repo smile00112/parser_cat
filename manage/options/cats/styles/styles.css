@@ -10,12 +10,18 @@
 }
 .fields-table{
 	display: inline-block;
-	max-width: 1100px;
+	/*max-width: 1100px;*/
 	margin-top: 1em;
 }
 .element-string.header div{
 	line-height: 1em;
 }
+
+.element-string > div {
+   /*width: 131px;*/
+
+}
+
 .fields input,
 .fields select{
 	width: 100%;
@@ -25,7 +31,7 @@
 	padding-left: 0!important;
 }
 .name{
-	width: 100px;
+	width: 160px;
 }
 .caption,
 .description{

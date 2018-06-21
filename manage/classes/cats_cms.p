@@ -24,17 +24,38 @@ $self.classHistory[
 		]
 	]
 ]
-#	Поддерживаемые типы полей авторизации
-$self.fieldTypes[
-	$.login[Логин]
-	$.password[Пароль]
-	$.confirm[Пароль (повтор)]
-	$.text[Текст]
-	$.email[E-mail]
-	$.select[Список]
-	$.date[Дата]
-	$.tel[Телефон]
+# Пол кошек
+$self.sex[
+	$.male[Мальчик]
+	$.female[Девочка]
+
 ]
+# Статус кошек
+$self.status[
+	$.1[Свободен]
+	$.2[Занят]
+
+]
+#Все самцы
+	$sql[
+		SELECT id, name, sex
+		FROM $self.cats_list_table.name
+		WHERE sex = 'male'
+		ORDER BY name
+	]
+
+	$self.male_cats[^table::sql{$sql}]
+
+#Все самки
+	$sql[
+		SELECT id, name, sex
+		FROM $self.cats_list_table.name
+		WHERE sex = 'female'
+		ORDER BY name
+	]
+
+	$self.female_cats[^table::sql{$sql}]
+
 ################################################################################
 @GetClassInfo[]
 ^use[${cms:templateFolder}/prepare_history.html]
