@@ -6319,3 +6319,7 @@ modules		SaveModuleProperty	Поле "name" изменено	23	training	10	2018
 modules		SaveModuleProperty	Поле "path" изменено	23	training	10	2018-06-18 13:47:59
 modules		SaveModuleProperty	Поле "level" изменено	23	training	10	2018-06-18 13:49:16
 registration_data		SaveProperty	Поле "type" изменено	7	training	10	2018-06-20 12:22:17
+cats		SaveProperty	Поле "description" изменено	34	training	10	2018-06-21 21:45:16
+cats		SaveProperty	Поле "mastername" изменено	1	training	10	2018-06-21 21:45:22
+cats		SaveProperty	Поле "mastername" изменено	1	training	10	2018-06-21 21:45:27
+cats		SaveProperty	Поле "veteran" изменено	18	training	10	2018-06-21 21:48:11

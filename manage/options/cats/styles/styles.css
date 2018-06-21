@@ -17,11 +17,17 @@
 	line-height: 1em;
 }
 
-.element-string > div {
-   /*width: 131px;*/
-
+.status,
+.sex,
+.father,
+.mother,
+.zavod{
+	width: 113px;
 }
 
+.foto{
+	width: 50px;
+}
 .fields input,
 .fields select{
 	width: 100%;
@@ -46,7 +52,7 @@
 	text-align: center;
 }
 .actions{
-	width: 100px;
+	width: 150px;
 	text-align: center;
 	padding-right: 0!important;
 }
@@ -58,4 +64,22 @@
 }
 .actions .visible:before{
 	font-size: 26px;
+}
+
+.fa-square-o {
+    font-size: 44px;
+    cursor: pointer;
+}
+.fa {
+    vertical-align: middle;
+}
+.fa-times {
+    font-size: 30px;
+    left: 2px;
+    top: -2px;
+}
+.fa-file-text {
+    font-size: 34px;
+	cursor: pointer;
+	color: #7a2000;
 }

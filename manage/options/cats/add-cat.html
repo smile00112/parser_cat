@@ -4,19 +4,54 @@
 ^connect[$site:connectString]{
 # Если передаются данные
 	^if(def $form:namec){
+		^if(def $form:foto){
+			$fotoname[$form:foto.name]
+		}
 
-		# Инициализируем переменную для метода сохранения
+
+# Инициализируем переменную для метода сохранения
 		$values[
-			$.city_id($form:city_id)
-			$.data_type_id($form:data_type_id)
-			$.name[$form:name]
-			$.value[$form:value]
+			$.name[$form:namec]
+			$.date[$form:date]
+			$.father($form:father)
+			$.mother($form:mother)
+			$.color[$form:color]
+			$.mastername[$form:mastername]
+			$.description[$form:description]
+			$.tests[$form:tests]
+			$.foto[$fotoname]
+			$.veteran($form:veteran)
+			$.sex[$form:sex]
+			$.status[$form:status]
 		]
-# Добавляем контакт
-		$res[^this.AddContact[$values]]
-^rem{	}
+# Добавляем котэ
+$res[^this.addCat[$values]]
+		^if(def $res.id){
+			^if(def $form:foto){
+#			^if(def $form:width){$width($form:width)}{$width(300)}
+# 				Перебираем все выбранные картинки 
+				^form:files.foto.foreach[sNum;fValue]{
 
-$response:refresh[$.value(0)$.url[${cms.cmsFolder}/${cms.currentModulePath}/]]
+# 				Инициализируем пути к фоткам
+				$srcpath[/images/cats/foto/${res.id}/]
+
+				
+#				 $bigpath[/images/cats/big/${form:idpage}/${fValue.name}]
+#				$smallpath[/images/${textext.className}/small/${form:idpage}/${fValue.name}]
+#				^if(-f '$srcpath')
+				{
+# 				Сохраняем оригинал фотки 
+				$res[^fValue.save[binary;${srcpath}${fValue.name}]]
+
+				}
+				}
+
+			# Иначе выводим ошибку 
+			}
+
+		}	
+
+$response:refresh[$.value(0)$.url[/manage/options/cats/]]
 ################################################################################
 }
-}
+} 

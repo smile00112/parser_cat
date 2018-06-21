@@ -7,7 +7,7 @@
 <link rel="stylesheet" type="text/css" href="${cms:templateFolder}/libraries/dragula/dragula.min.css" />
 #-------------------------------------------------------------------------------
 # Выводим заголовок страницы
-^cms.ShowPageHeader[Управление регистрационными данными;$cms.currentModule.path;^this.GetClassInfo[]]
+^cms.ShowPageHeader[Наши питомцы;$cms.currentModule.path;^this.GetClassInfo[]]
 $groups[
 	$.1[
 		$.name[full]
@@ -34,35 +34,37 @@ $fields[^this.GetFields[]]
 }
 <div class="main-block">
 	<div class="text-block">
+	<!--	
 		<p>Здесь Вы можете настроить получение необходимых данных от пользователя.</p>
 		<p>Ниже представлена таблица со списком информационных полей данных о пользователе, доступных для хранения в Базе Данных.</p>
+	-->
 	</div>
 	<div class="fields-table cats-table">
 #	^var_dump[$fields]
-
-
 #$ee[^this.status]
 #^var_dump[$ee]
 #^var_dump[$fields]
-
+	
 	^if(def $fields){
 		<div class="element-string header">
 			<div class="type">Имя</div><!--
 			--><div class="name">Дата рождения</div><!--
 			--><div class="caption">Окрас</div><!--
-			--><div class="description">Папа</div><!--
-			--><div class="required">Мама</div><!--
-			--><div class="registration">Заводчик</div><!--
-			--><div class="registration">Описание</div><!--
-			--><div class="registration">Тесты</div><!--
-			--><div class="registration">Фото</div><!--
-			--><div class="registration">Пол</div><!--	
-			--><div class="registration">Статус</div><!--	
-			--><div class="registration">Ветеран</div><!--							
+			--><div class="father">Папа</div><!--
+			--><div class="mother">Мама</div><!--
+			--><div class="zavod">Заводчик</div><!--
+			--><div class="description">Описание</div><!--
+			--><div class="description">Тесты</div><!--
+			--><div class="foto">Фото</div><!--
+			--><div class="sex">Пол</div><!--	
+			--><div class="status">Статус</div><!--	
+			--><div class="vateran">Ветеран</div><!--							
 			--><div class="actions">Действие</div>
 		</div>
 		<div class="fields" data-url="actions.html" data-sort-field="sort_id">
 		^fields.foreach[pos;value]{
+
+			$srcpath[/images/cats/foto/${value.id}/]
 			<div class="element-string" data-id="$value.id" data-position="$value.sort_id">
 				<div class="type">
 					<div class="callout left"></div>
@@ -89,6 +91,7 @@ $fields[^this.GetFields[]]
 					<div class="callout left"></div>
 
 					<select name="father" class="cms_select save"^if(!$value.visible){ disabled}>
+							<option value="0">Нет</option>
 						^this.male_cats.foreach[pos;male_cat]{
 							<option value="$male_cat.id"^if($value.father eq $male_cat.id){ selected}>$male_cat.name</option>
 						}
@@ -100,6 +103,7 @@ $fields[^this.GetFields[]]
 				<div class="mother">
 					<div class="callout left"></div>
 					<select name="father" class="cms_select save"^if(!$value.visible){ disabled}>
+							<option value="0">Нет</option>
 						^this.female_cats.foreach[pos;female_cat]{
 							<option value="$female_cat.id"^if($value.mother eq $female_cat.id){ selected}>$female_cat.name</option>
 						}
@@ -125,12 +129,16 @@ $fields[^this.GetFields[]]
 				
 				<div class="foto">
 					<div class="callout left"></div>
-					<input type="text" name="foto" value="$value.foto" class="cms_input save"^if(!$value.visible){ disabled}>
+					
+					^if(-f '${srcpath}${value.foto}'){
+						<img src="${srcpath}${value.foto}" height="30">
+					}
+					
 				</div>		
 
 				<div class="sex">
 					<div class="callout left"></div>
-					<select name="type" class="cms_select save"^if(!$value.visible){ disabled}>
+					<select name="sex" class="cms_select save"^if(!$value.visible){ disabled}>
 						^this.sex.foreach[name;caption]{
 						<option value="$name"^if($name eq $value.sex){ selected}>$caption</option>
 						}
@@ -140,7 +148,7 @@ $fields[^this.GetFields[]]
 
 				<div class="status">
 					<div class="callout left"></div>
-					<select name="type" class="cms_select save"^if(!$value.visible){ disabled}>
+					<select name="status" class="cms_select save"^if(!$value.visible){ disabled}>
 						^this.status.foreach[name;caption]{
 						<option value="$name"^if($name eq $value.status){ selected}>$caption</option>
 						}
@@ -165,10 +173,22 @@ $fields[^this.GetFields[]]
 			 		<span class="move-button">
 						<span class="callout left"></span>
 						<span class="move" title="Перетащите поле чтобы изменить последовательность"></span>
-					</span><span>
+					</span>
+					<span>
 						<span class="callout left"></span>
 						<input id="visible_${pos}" type="checkbox" name="visible" class="cms_checkbox save"^if($value.visible){ checked}><label for="visible_${pos}" class="checkbox_visible" title="^if($value.visible == 1){Скрыть}{Отобразить}"></label>
 					</span>
+
+				<span class="fa-stack pointer red js-delete" title="Редактировать">
+					<i class="fa fa-file-text"></i>
+				</span>
+
+					<span class="fa-stack pointer red js-delete" title="Удалить">
+						<i class="fa fa-square-o fa-stack-1x"></i>
+						<i class="fa fa-times fa-stack-1x"></i>
+					</span>
+					
+					
 				</div>
 			</div>
 		}
@@ -185,12 +205,12 @@ $fields[^this.GetFields[]]
 <form id="addForm" style="display:none^; background: linear-gradient(to bottom, #fed571 0%,#ffbf23 100%)^;" method="post" enctype="multipart/form-data" action="add-cat.html">
 	<table class="table_dsb">
 		<tr>
-			<td colspan="2" class="aC cms_h2">Добавить контакт</td>
+			<td colspan="2" class="aC cms_h2">Добавить Котэ</td>
 		</tr>
 		<tr>
 			<td>Имя кота:</td>
 			<td>
-				<input type="text" name="namec"  value="" class="cms_input">
+				<input type="text" required name="namec"  value="" class="cms_input">
 
 			^rem{	<select name="city_id" style="width: 200px^;">
 					^cities.menu{
@@ -203,7 +223,7 @@ $fields[^this.GetFields[]]
 		<tr>
 			<td>Дата рождения:</td>
 			<td>
-				<input type="date" name="date"  value="" class="cms_input">
+				<input type="date" required name="date"  value="" class="cms_input">
 			</td>
 		</tr>
 
@@ -211,6 +231,7 @@ $fields[^this.GetFields[]]
 			<td>Папа:</td>
 			<td>
 				<select name="father" class="cms_select">
+						<option value="0">Нет</option>
 						^this.male_cats.foreach[pos;male_cat]{
 							<option value="$male_cat.id">$male_cat.name</option>
 						}
@@ -221,6 +242,7 @@ $fields[^this.GetFields[]]
 			<td>Мама:</td>
 			<td>
 				<select name="mother" class="cms_select">
+					<option value="0">Нет</option>
 					^this.female_cats.foreach[pos;female_cat]{
 						<option value="$female_cat.id">$female_cat.name</option>
 					}
@@ -270,7 +292,27 @@ $fields[^this.GetFields[]]
 				<label for="veteran" class="checkbox_custom" title="Кот - ветеран"></label>
 			</td>
 		</tr>
-		
+		<tr>
+			<td>Пол:</td>
+			<td>
+					<select name="sex" class="cms_select">
+						^this.sex.foreach[name;caption]{
+						<option value="$name">$caption</option>
+						}
+					</select>
+			</td>
+		</tr>
+		<tr>
+			<td>Статус:</td>
+			<td>
+				<select name="status" class="cms_select">
+					<option value="0">Нет</option>
+					^this.status.foreach[name;caption]{
+					z<option value="$name">$caption</option>
+					}
+				</select>
+			</td>
+		</tr>
 		<tr>
 			<td colspan="2" class="aC">
 				<input id="uploadSubmit"  type="submit" value="Добавить">

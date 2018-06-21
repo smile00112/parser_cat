@@ -74,7 +74,7 @@ $result[
 $answer[$.error(false)]
 ^if(def $id && def $name){
 	^try{
-		$res[^void:sql{UPDATE $self.fieldsTable.name SET $name='$value' WHERE id=$id}]
+		$res[^void:sql{UPDATE $self.cats_list_table.name SET $name='$value' WHERE id=$id}]
 # Делаем запись в лог
 		$params[
 			$.unit_id[$id]

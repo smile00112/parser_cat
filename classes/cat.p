@@ -76,6 +76,32 @@ $self.authFolder[/user]
 	$self.status[cookie not enabled]
 }
 ################################################################################
+@addCat[values]
+^connect[$site:connectString]{
+	^void:sql{INSERT INTO $self.cats_list_table.name (name, date, father, mother, color, mastername, description, tests, veteran, sex, status, foto) VALUES ("$values.name", 
+	"$values.date", 
+	"$values.father",
+	"$values.mother",
+	"$values.color",
+	"$values.mastername",
+	"$values.description",
+	"$values.tests",
+	"$values.veteran",
+	"$values.sex",
+	"$values.status",
+	"$values.foto"
+	 )
+	 }
+$lastgr_id(^int:sql{SELECT LAST_INSERT_ID()})
+}
+
+$result[
+#$.error(true)
+$.id[$lastgr_id]
+
+] 
+
+################################################################################
 @GetClassInfo[]
 $result[
 	$.version[$self.classVersion]
