@@ -6323,3 +6323,15 @@ cats		SaveProperty	Поле "description" изменено	34	training	10	2018-0
 cats		SaveProperty	Поле "mastername" изменено	1	training	10	2018-06-21 21:45:22
 cats		SaveProperty	Поле "mastername" изменено	1	training	10	2018-06-21 21:45:27
 cats		SaveProperty	Поле "veteran" изменено	18	training	10	2018-06-21 21:48:11
+cats		SaveProperty	Поле "sort_id" изменено	18	training	10	2018-06-21 21:52:47
+cats		SaveProperty	Поле "sort_id" изменено	2	training	10	2018-06-21 21:52:47
+cats		SaveProperty	Поле "sort_id" изменено	1	training	10	2018-06-21 21:52:47
+cats		SaveProperty	Поле "sort_id" изменено	19	training	10	2018-06-21 21:52:48
+cats		SaveProperty	Поле "sort_id" изменено	34	training	10	2018-06-21 21:52:48
+cats		SaveProperty	Поле "sort_id" изменено	18	training	10	2018-06-21 21:52:52
+cats		SaveProperty	Поле "sort_id" изменено	19	training	10	2018-06-21 21:52:52
+cats		SaveProperty	Поле "sort_id" изменено	34	training	10	2018-06-21 21:52:53
+cats		SaveProperty	Поле "sort_id" изменено	1	training	10	2018-06-21 21:52:56
+cats		SaveProperty	Поле "sort_id" изменено	19	training	10	2018-06-21 21:52:56
+cats		SaveProperty	Поле "sort_id" изменено	18	training	10	2018-06-21 21:52:56
+cats		SaveProperty	Поле "sort_id" изменено	34	training	10	2018-06-21 21:52:56

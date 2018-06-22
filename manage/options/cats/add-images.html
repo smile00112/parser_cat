@@ -1,0 +1,63 @@
+################################################################################
+@main[]
+
+^connect[$site:connectString]{
+# Если передаются данные
+	^if(def $form:id && def $form:multifiles){
+
+		$srcpath[/images/cats/foto/${form:id}/]
+
+
+# Заносим в базу
+#		Фото для галереи
+		^if($form:type eq '2'){
+			^form:files.multifiles.foreach[sNum;fValue]{
+
+					$res[^fValue.save[binary;${srcpath}${fValue.name}]]	
+					$values[
+						$.cat_id[$form:id]
+						$.name[$fValue.name]
+					]
+					$res[^this.addCatFotoToGalery[$values]]
+			}
+			
+		}{
+#		Главное Фото			
+			$values[
+				$.cat_id[$form:id]
+				$.name[$form:multifiles.name]
+			]
+			$r[^form:multifiles.save[binary;${srcpath}${form:multifiles.name}]]
+			$res[^this.updateCatFoto[$values]]
+		}
+
+		^if(0){
+			^if(def $res.id){
+				^if(def $form:foto){
+#			^if(def $form:width){$width($form:width)}{$width(300)}
+# 				Перебираем все выбранные картинки 
+					^form:files.foto.foreach[sNum;fValue]{
+
+# 				Инициализируем пути к фоткам
+					$srcpath[/images/cats/foto/${res.id}/]
+
+					
+#				 $bigpath[/images/cats/big/${form:idpage}/${fValue.name}]
+#				$smallpath[/images/${textext.className}/small/${form:idpage}/${fValue.name}]
+#				^if(-f '$srcpath')
+					{
+# 				Сохраняем оригинал фотки 
+					$res[^fValue.save[binary;${srcpath}${fValue.name}]]
+
+					}
+					}
+
+# Иначе выводим ошибку 
+				}
+
+			}	
+		}
+	$response:refresh[$.value(0)$.url[/manage/options/cats/images.html?cat=$form:id]]
+################################################################################
+}
+} 

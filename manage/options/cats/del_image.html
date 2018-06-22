@@ -1,0 +1,31 @@
+################################################################################
+@cms_body[]
+# Если передаётся путь к картинке
+^if(def $form:image && (def $form:cat || def $form:imgid)){
+# Инициализируем пути к фотке
+#    $srcpath[/images/${textext.className}/src/${form:idpage}/${form:image}]
+    $srcpath[/images/cats/foto/${form:cat}/${form:image}]
+# Удаляем фотку
+    $res[^file:delete[$srcpath;$.exception(false)]]
+# Чистим в базе
+    $values[
+        $.id[$form:imgid]
+        $.cat_id[$form:cat]
+        $.name[]
+    ]
+    ^if($form:type eq '2'){
+        $res[^this.deleteCatFotoFromGalery[$values]]
+    }{
+        $res[^this.updateCatFoto[$values]]
+    }
+# Переходим к галерее 
+ $response:refresh[
+    $.value(0)
+    $.url[/manage/options/cats/images.html?cat=$form:cat]
+ ]
+# Иначе выводим ошибку 
+}{
+ #   ^insert_error_fields[]
+ Ошибочка вышла)
+}
+################################################################################

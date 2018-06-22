@@ -452,3 +452,103 @@ $result[^table::load[/classes/auth/registration.table]]
 	]
 }
 ################################################################################
+@GetCatsImages[id]
+^try{
+	$sql[
+		SELECT foto
+		FROM $self.cats_list_table.name
+		WHERE id = $id
+
+	]
+	$sqlGalery[
+		SELECT *
+		FROM $self.cats_foto_table.name
+		WHERE cat_id = $id
+
+	]
+	
+	^if($params.count){
+		$result(^int:sql{$sql})
+	}{
+		$result[
+			$.mainFoto[^table::sql{$sql}], 
+			$.images[^table::sql{$sqlGalery}]
+		]
+	}
+}{
+	$exception.handled(true)
+	$result[
+		$.error(true)
+		$.text[Во время выполнения произошла ошибка]
+		$.exception[$exception]
+	]
+}
+################################################################################
+@updateCatFoto[params]
+^try{
+	$sql[
+		UPDATE $self.cats_list_table.name
+		SET foto = '$params.name'
+		WHERE id = $params.cat_id
+	]
+
+	^if($params.count){
+		$result(^int:sql{$sql})
+	}{
+		^connect[$site:connectString]{^void:sql{$sql}}
+		$result(1)
+	}
+}{
+	$exception.handled(true)
+	$result[
+		$.error(true)
+		$.text[Во время выполнения произошла ошибка]
+		$.exception[$exception]
+	]
+}
+################################################################################
+@addCatFotoToGalery[params]
+
+^try{
+	$sql[
+		INSERT INTO $self.cats_foto_table.name (cat_id, name)
+		VALUES('$params.cat_id', '$params.name')
+	]
+
+	^connect[$site:connectString]{
+		^void:sql{$sql}
+		$lastgr_id(^int:sql{SELECT LAST_INSERT_ID()})
+	}
+	$return($lastgr_id)
+	
+}{
+	$exception.handled(true)
+	$result[
+		$.error(true)
+		$.text[Во время выполнения произошла ошибка]
+		$.exception[$exception]
+	]
+}
+################################################################################
+@deleteCatFotoFromGalery[params]
+
+^try{
+	$sql[
+		DELETE FROM $self.cats_foto_table.name 
+		WHERE id = $params.id
+	]
+
+	^connect[$site:connectString]{
+		^void:sql{$sql}
+	}
+	$return(1)
+	
+}{
+	$exception.handled(true)
+	$result[
+		$.error(true)
+		$.text[Во время выполнения произошла ошибка]
+		$.exception[$exception]
+	]
+}
+################################################################################
