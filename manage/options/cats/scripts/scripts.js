@@ -47,12 +47,13 @@ $(document).ready(function(){
 		});
 	});
 	// Имя поля не должно содержать недопустимых символов
-	$('input[name=name]').on('keyup', function(){
+	/*$('input[name=name]').on('keyup', function(){
 		value = this.value.toLowerCase();
 		this.value = value.replace(/[^a-z1-9_]/, '');
 	});
+	*/
 	// Сохранения имени поля
-	$('input[name=name]').on('change', function(){
+	/*$('input[name=name]').on('change', function(){
 		var $element = $(this),
 				$callout = $(this).siblings('.callout'),
 				oldName = $element.attr('data-prev'),
@@ -88,6 +89,7 @@ $(document).ready(function(){
 			}
 		});
 	});
+	*/
 	// Drag'n'drop
 	dragula([document.querySelector('.fields')],{
 		direction: 'vertical',
@@ -138,6 +140,55 @@ function ShowCallout($callout, text, className){
 }
 
 $(document).ready(function(){
+	$('#kittensselect').click(function(){
+		var len = document.getElementById("kittensselect").options.length;
+		var SelectElements = [];
+		var i=0;
+		for (var n = 0; n < len; n++)
+		{
+			console.log(n)
+		  if (document.getElementById("kittensselect").options[n].selected==true)
+		  {
+		   SelectElements[i]=document.getElementById("kittensselect").options[n].value;
+	
+				 i++;
+		  }
+	
+		}
+		if(SelectElements.length){
+			$('#kittens').val(SelectElements.join());
+		}
+	})
+
+	$(".editFoto").click(function(){
+		var id = $(this).parents('.foto').data('id')*1;
+		if(id>0)
+			$("#cat_id").val(id);
+	})
+
+	$(".addPometForm").fancybox({
+		padding:     5,
+		maxWidth:    800,
+		maxHeight:   600,
+		fitToView:   false,
+		autoSize:    true,
+		closeClick:  false,
+		openEffect:  'none',
+		closeEffect: 'none'
+	});
+
+
+	$(".editFoto").fancybox({
+		padding:     5,
+		maxWidth:    800,
+		maxHeight:   600,
+		fitToView:   false,
+		autoSize:    true,
+		closeClick:  false,
+		openEffect:  'none',
+		closeEffect: 'none'
+	});
+
 	$(".addForm").fancybox({
 		padding:     5,
 		maxWidth:    800,
@@ -148,4 +199,20 @@ $(document).ready(function(){
 		openEffect:  'none',
 		closeEffect: 'none'
 	});
+
+	if(localStorage.getItem('curtab')){
+		$('[data-tabname="'+localStorage.getItem('curtab')+'"]').click();
+	}else{
+		$('[data-tabname="cats-list"]').click();
+	}
 });	
+
+$(document).on("click", ".tabname", function(){
+	$(".tabname").removeClass("active");
+	$(this).addClass("active");
+	$("div.tabcontent").hide();
+	$("div[data-tabcontent='"+$(this).data('tabname')+"']").show();
+
+
+	localStorage.setItem('curtab', $(this).data('tabname'))
+});

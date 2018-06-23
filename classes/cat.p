@@ -51,6 +51,16 @@ $self.cats_foto_table[
 	$.name[cats_foto]
 	$.file[cats_foto.table]
 ]
+# Таблица "скрины тестов котов"
+$self.cats_test_table[
+	$.name[cats_tests]
+	$.file[cats_tests.table]
+]
+# Таблица "Помёты котов"
+$self.cats_pomet_table[
+	$.name[cats_pomet]
+	$.file[cats_pomet.table]
+]
 # Имя куки
 $self.cookiename[auth_sid]
 # IP-адрес пользователя
@@ -59,22 +69,8 @@ $user_ip[$env:REMOTE_ADDR]
 $user_ip16[^user_ip.match[(\d+)\.(\d+)\.(\d+)\.(\d+)][g]{^match.1.format[%02x]^match.2.format[%02x]^match.3.format[%02x]^match.4.format[%02x]}]
 # Папка Авторизации
 $self.authFolder[/user]
-################################################################################
-@create[]
-# Если куки нет, то создать её
-^if(!def $cookie:[$self.cookiename]){
-	^self.WriteCookie[$self.cookiename;^self.makeRandomID[]]
-}
-# Если кука есть
-^if(def $cookie:[$self.cookiename]){
-	$self.session[^self.FindSession[$cookie:[$self.cookiename];$self.user_ip16]]
-	^if($self.session.user_id>0){
-		$self.user[^self.getUserByID[$self.session.user_id]]
-	}
-}{
-# куки не поддерживаются
-	$self.status[cookie not enabled]
-}
+
+
 ################################################################################
 @addCat[values]
 ^connect[$site:connectString]{
@@ -100,7 +96,13 @@ $result[
 $.id[$lastgr_id]
 
 ] 
+################################################################################
+@delCat[values]
+^connect[$site:connectString]{
+	^void:sql{DELETE FROM $self.cats_list_table.name WHERE id = '$values.id'}
+}
 
+$result(1)
 ################################################################################
 @GetClassInfo[]
 $result[
@@ -452,6 +454,28 @@ $result[^table::load[/classes/auth/registration.table]]
 	]
 }
 ################################################################################
+@GetPomets[params]
+^try{
+
+	$sql[
+		SELECT $sql.fields
+		FROM $self.cats_pomet_table.name
+		WHERE 1=1
+
+
+	]
+
+		$result[^table::sql{$sql}]
+
+}{
+	$exception.handled(true)
+	$result[
+		$.error(true)
+		$.text[Во время выполнения произошла ошибка]
+		$.exception[$exception]
+	]
+}
+################################################################################
 @GetCatsImages[id]
 ^try{
 	$sql[
@@ -551,4 +575,102 @@ $result[^table::load[/classes/auth/registration.table]]
 		$.exception[$exception]
 	]
 }
+
+################################################################################
+@addCatTest[params]
+
+^try{
+	$sql[
+		INSERT INTO $self.cats_test_table.name (cat_id, name)
+		VALUES('$params.cat_id', '$params.name')
+	]
+
+	^connect[$site:connectString]{
+		^void:sql{$sql}
+		$lastgr_id(^int:sql{SELECT LAST_INSERT_ID()})
+	}
+	$return($lastgr_id)
+	
+}{
+	$exception.handled(true)
+	$result[
+		$.error(true)
+		$.text[Во время выполнения произошла ошибка]
+		$.exception[$exception]
+	]
+}
+################################################################################
+@deleteCatTest[params]
+
+^try{
+	$sql[
+		DELETE FROM $self.cats_test_table.name 
+		WHERE id = $params.id
+	]
+
+	^connect[$site:connectString]{
+		^void:sql{$sql}
+	}
+	$return(1)
+	
+}{
+	$exception.handled(true)
+	$result[
+		$.error(true)
+		$.text[Во время выполнения произошла ошибка]
+		$.exception[$exception]
+	]
+}
+################################################################################
+@GetCatsTests2[id]
+
+	$sql[
+		SELECT tests
+		FROM $self.cats_list_table.name
+		WHERE id = $id
+
+	]
+	$sqlTests[
+		SELECT *
+		FROM $self.cats_test_table.name
+		WHERE cat_id = $id
+
+	]
+	
+
+	$result[
+		$.testtext[^table::sql{$sql}], 
+		$.images[^table::sql{$sqlTests}]
+		
+	]
+
+
+################################################################################
+@addPomet[values]
+^connect[$site:connectString]{
+	^void:sql{INSERT INTO $self.cats_pomet_table.name (name, date, father, mother) VALUES (
+	"$values.name", 
+	"$values.date", 
+	"$values.father",
+	"$values.mother"
+	
+
+	 )
+	 }
+$lastgr_id(^int:sql{SELECT LAST_INSERT_ID()})
+}
+
+$result[
+#$.error(true)
+$.id[$lastgr_id]
+
+] 
+
+################################################################################
+@delCat[values]
+^connect[$site:connectString]{
+	^void:sql{DELETE FROM $self.cats_pomet_table.name WHERE id = '$values.id'}
+}
+
+$result(1)
 ################################################################################

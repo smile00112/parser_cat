@@ -57,7 +57,12 @@
 
 			}	
 		}
+
+^if($form:redir eq 'module_main_page'){
+	$response:refresh[$.value(0)$.url[/manage/options/cats/]]
+}{
 	$response:refresh[$.value(0)$.url[/manage/options/cats/images.html?cat=$form:id]]
+}		
 ################################################################################
 }
 } 

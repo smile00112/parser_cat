@@ -1,0 +1,28 @@
+################################################################################
+@cms_body[]
+# Если передаётся путь к картинке
+^if(def $form:image && (def $form:cat || def $form:imgid)){
+# Инициализируем пути к фотке
+    $srcpath[/images/cats/tests/${form:cat}/${form:image}]
+# Удаляем фотку
+    $res[^file:delete[$srcpath;$.exception(false)]]
+# Чистим в базе
+    $values[
+        $.id[$form:imgid]
+        $.cat_id[$form:cat]
+        $.name[]
+    ]
+    ^if($form:type eq '2'){
+        $res[^this.deleteCatTest[$values]]
+    }
+# Переходим к галерее 
+ $response:refresh[
+    $.value(0)
+    $.url[/manage/options/cats/cat-test.html?cat=$form:cat]
+ ]
+# Иначе выводим ошибку 
+}{
+ #   ^insert_error_fields[]
+ Ошибочка вышла)
+}
+################################################################################

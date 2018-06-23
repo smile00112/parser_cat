@@ -56,6 +56,16 @@ $self.status[
 
 	$self.female_cats[^table::sql{$sql}]
 
+#Все котэ
+	$sql[
+		SELECT id, name, sex
+		FROM $self.cats_list_table.name
+		WHERE 1=1
+		ORDER BY name
+	]
+
+	$self.all_cats[^table::sql{$sql}]
+
 ################################################################################
 @GetClassInfo[]
 ^use[${cms:templateFolder}/prepare_history.html]

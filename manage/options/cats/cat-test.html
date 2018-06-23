@@ -1,0 +1,116 @@
+################################################################################
+@cms_body[]
+#-------------------------------------------------------------------------------
+<link href="./styles/styles.css" rel="stylesheet" type="text/css">
+<script	src="./scripts/scripts.js" type="text/javascript"></script>
+<script type="text/javascript" src="${cms:templateFolder}/libraries/dragula/dragula.min.js"></script>
+<link rel="stylesheet" type="text/css" href="${cms:templateFolder}/libraries/dragula/dragula.min.css" />
+#-------------------------------------------------------------------------------
+# Выводим заголовок страницы
+^cms.ShowPageHeader[Наши питомцы;$cms.currentModule.path;^this.GetClassInfo[]]
+
+#обновляем текст теста
+^if($form:type eq '1' && def $form:id){
+	
+
+	$answer[^this.SaveField[$form:id;tests;$form:full_text]]
+}
+
+
+^if($cms.cmsUserLevel==$cms.maxUserLevel){
+<div class="navigation cms_h2">
+	<a class="navigation-point"  href="/manage/options/cats/"><strong>Назад</strong></a>
+#	<a href="#addForm" id="addSlideBtn"  class="navigation-point add-field-link addForm">Добавить кота</a>
+#	<a class="navigation-point add-field-link" href="./add-cat.html" title="Добавить поле">Добавить поле</a>
+#	<a class="navigation-point options" href="./options.html" title="Перейти к настройкам регистрации">Настройки</a>
+</div>
+}
+<div class="main-block">
+	<div class="text-block">
+	<!--	
+		<p>Здесь Вы можете настроить получение необходимых данных от пользователя.</p>
+		<p>Ниже представлена таблица со списком информационных полей данных о пользователе, доступных для хранения в Базе Данных.</p>
+	-->
+	</div>
+	<div class="fields-table cats-table">
+	
+		<div class="fields" data-url="actions.html" data-sort-field="sort_id">
+				^if(def $form:width){$width($form:width)}{$width(300)}
+				$path[/images/cats/tests/${form:cat}/]
+				
+				$cat_tests[^this.GetCatsTests2[$form:cat]]
+#				^var_dump[$mainfoto]
+
+			   <h2>Текст<h2>
+
+
+				^if(def $cat_fotos.mainFoto.foto){
+					<div class="material_images">
+				
+						<span class="material">
+						<img src="${path}${cat_fotos.mainFoto.foto}" width="100">
+						<a href="del_image.html?image=${cat_fotos.mainFoto.foto}&cat=${form:cat}&type=1">x</a>
+						</span>
+				
+					</div>
+					}{<br>}
+			   <form method="post" enctype="multipart/form-data" action="">
+				<input type="hidden" name="id" value="$form:cat">
+				<input type="hidden" name="type" value="1">
+				<input type="hidden" name="idpage_name" value="$form:idpage_name">
+				<table border="0" cellspacing="1" cellpadding="4" bgcolor="#999999">
+				<!--
+				<tr class="tN">
+				  <td><strong>Ширина</strong></td>
+				  <td><input type="text" name="width" value="$width"></td>
+				 </tr>
+				-->
+				^cms:InsertTiny[full_text]
+				 <tr class="tN">
+				  <td colspan="2"><textarea name="full_text" id="full_text" rows="2" style="width: 100%;">$cat_tests.testtext.tests</textarea></td>
+				 </tr>
+				 <tr class="tN">
+				  <td colspan="2"><input type="submit" value="Сохранить"></td>
+				 </tr>
+				</table>
+			   </form>
+
+			   <h2>Скрины тестов<h2>
+				   $cat_tests.sql
+	
+					^if($cat_tests.images>0){
+						<div class="material_images">
+						^cat_tests.images.foreach[key;value]{
+							<span class="material">
+								<img src="${path}${value.name}" width="100">
+								<a href="del_test_image.html?image=${value.name}&cat=${form:cat}&imgid=${value.id}&type=2">x</a>
+							</span>
+						}
+						</div>
+					}{<br>}
+					<form method="post" enctype="multipart/form-data" action="add-test-images.html">
+					 <input type="hidden" name="id" value="$form:cat">
+					 <input type="hidden" name="type" value="2">
+					 <input type="hidden" name="idpage_name" value="$form:idpage_name">
+					 <table border="0" cellspacing="1" cellpadding="4" bgcolor="#999999">
+					 <!-- 
+						<tr class="tN">
+					   <td><strong>Ширина</strong></td>
+					   <td><input type="text" name="width" value="$width"></td>
+					  </tr>
+					-->
+					  <tr class="tN">
+					   <td colspan="2"><input type="file" name="multifiles" id="multifiles" multiple="true"></td>
+					  </tr>
+					  <tr class="tN">
+					   <td colspan="2"><input type="submit" value="Добавить"></td>
+					  </tr>
+					 </table>
+					</form>			   
+		</div>
+	</div>
+</div>
+
+
+
+################################################################################

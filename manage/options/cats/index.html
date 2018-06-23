@@ -23,184 +23,416 @@ $groups[
 		$.caption[Без регистрации]
 	]
 ]
+
 $fields[^this.GetFields[]]
-^if($cms.cmsUserLevel==$cms.maxUserLevel){
-<div class="navigation cms_h2">
-	<a href="#addForm" id="addSlideBtn"  class="navigation-point add-field-link addForm">Добавить кота</a>
-
-#	<a class="navigation-point add-field-link" href="./add-cat.html" title="Добавить поле">Добавить поле</a>
-	<a class="navigation-point options" href="./options.html" title="Перейти к настройкам регистрации">Настройки</a>
-</div>
-}
-<div class="main-block">
-	<div class="text-block">
-	<!--	
-		<p>Здесь Вы можете настроить получение необходимых данных от пользователя.</p>
-		<p>Ниже представлена таблица со списком информационных полей данных о пользователе, доступных для хранения в Базе Данных.</p>
-	-->
-	</div>
-	<div class="fields-table cats-table">
-#	^var_dump[$fields]
-#$ee[^this.status]
-#^var_dump[$ee]
-#^var_dump[$fields]
+$pomet[^this.GetPomets[]]
+<div class='tabs'>
 	
-	^if(def $fields){
-		<div class="element-string header">
-			<div class="type">Имя</div><!--
-			--><div class="name">Дата рождения</div><!--
-			--><div class="caption">Окрас</div><!--
-			--><div class="father">Папа</div><!--
-			--><div class="mother">Мама</div><!--
-			--><div class="zavod">Заводчик</div><!--
-			--><div class="description">Описание</div><!--
-			--><div class="description">Тесты</div><!--
-			--><div class="foto">Фото</div><!--
-			--><div class="sex">Пол</div><!--	
-			--><div class="status">Статус</div><!--	
-			--><div class="vateran">Ветеран</div><!--							
-			--><div class="actions">Действие</div>
+^if($cms.cmsUserLevel==$cms.maxUserLevel){
+	<div class='tabname' data-tabname='cats-list'>
+		<div class="cms_h1">Список котов</div>
+	</div>
+	<div class='tabname' data-tabname='cats-pomet'>
+		<div class="cms_h1">Помёт</div>
+	</div>
+	
+
+<div class="tabcontent" data-tabcontent="cats-list">
+
+	<div class="navigation cms_h2">
+		<a href="#addForm" id="addSlideBtn"  class="navigation-point add-field-link addForm">Добавить кота</a>
+	</div>
+
+	<div class="main-block">
+		<div class="text-block">
+		<!--	
+			<p>Здесь Вы можете настроить получение необходимых данных от пользователя.</p>
+			<p>Ниже представлена таблица со списком информационных полей данных о пользователе, доступных для хранения в Базе Данных.</p>
+		-->
 		</div>
-		<div class="fields" data-url="actions.html" data-sort-field="sort_id">
-		^fields.foreach[pos;value]{
+		<div class="fields-table cats-table">
+#^var_dump[$fields]
 
-			$srcpath[/images/cats/foto/${value.id}/]
-			<div class="element-string" data-id="$value.id" data-position="$value.sort_id">
-				<div class="type">
-					<div class="callout left"></div>
-					<input type="text" name="name" value="$value.name" class="cms_input" data-prev="$value.name"^if(!$value.visible){ disabled}>
-					^rem{
-						<select name="type" class="cms_select save"^if(!$value.visible){ disabled}>
-						^this.fieldTypes.foreach[name;caption]{
-						<option value="$name"^if($name eq $value.type){ selected}>$caption</option>
+		^if(def $fields){
+			<div class="element-string header">
+				<div class="type">Имя</div><!--
+				--><div class="name">Дата рождения</div><!--
+				--><div class="caption">Окрас</div><!--
+				--><div class="father">Папа</div><!--
+				--><div class="mother">Мама</div><!--
+				--><div class="zavod">Заводчик</div><!--
+				--><div class="description">Описание</div><!--
+				--><div class="testt">Тесты</div><!--
+				--><div class="foto">Фото</div><!--
+				--><div class="sex">Пол</div><!--	
+				--><div class="status">Статус</div><!--	
+				--><div class="vateran">Ветеран</div><!--							
+				--><div class="actions">Действие</div>
+			</div>
+			<div class="fields" data-url="actions.html" data-sort-field="sort_id">
+			^fields.foreach[pos;value]{
+
+				$srcpath[/images/cats/foto/${value.id}/]
+				<div class="element-string" data-id="$value.id" data-position="$value.sort_id">
+					<div class="type">
+						<div class="callout left"></div>
+						<input type="text" name="name" value="$value.name" class="cms_input save" data-prev="$value.name"^if(!$value.visible){ disabled}>
+						^rem{
+							<select name="type" class="cms_select save"^if(!$value.visible){ disabled}>
+							^this.fieldTypes.foreach[name;caption]{
+							<option value="$name"^if($name eq $value.type){ selected}>$caption</option>
+							}
+							</select>
 						}
+					</div>
+					<div class="name">
+						<div class="callout left"></div>
+						<input type="date" name="date" value="$value.date" class="cms_input save" data-prev="$value.date"^if(!$value.visible){ disabled}>
+					</div>
+
+					<div class="color">
+						<div class="callout left"></div>
+						<input type="text" name="color" value="$value.color" class="cms_input save"^if(!$value.visible){ disabled}>
+					</div>
+
+					<div class="father">
+						<div class="callout left"></div>
+
+						<select name="father" class="cms_select save"^if(!$value.visible){ disabled}>
+								<option value="0">Нет</option>
+							^this.male_cats.foreach[pos;male_cat]{
+								<option value="$male_cat.id"^if($value.father eq $male_cat.id){ selected}>$male_cat.name</option>
+							}
 						</select>
-					}
-				</div>
-				<div class="name">
-					<div class="callout left"></div>
-					<input type="date" name="date" value="$value.date" class="cms_input" data-prev="$value.date"^if(!$value.visible){ disabled}>
-				</div>
 
-				<div class="color">
-					<div class="callout left"></div>
-					<input type="text" name="color" value="$value.color" class="cms_input save"^if(!$value.visible){ disabled}>
-				</div>
+						
+					</div>
 
-				<div class="father">
-					<div class="callout left"></div>
+					<div class="mother">
+						<div class="callout left"></div>
+						<select name="father" class="cms_select save"^if(!$value.visible){ disabled}>
+								<option value="0">Нет</option>
+							^this.female_cats.foreach[pos;female_cat]{
+								<option value="$female_cat.id"^if($value.mother eq $female_cat.id){ selected}>$female_cat.name</option>
+							}
+						</select>
+						
+					</div>
 
-					<select name="father" class="cms_select save"^if(!$value.visible){ disabled}>
-							<option value="0">Нет</option>
-						^this.male_cats.foreach[pos;male_cat]{
-							<option value="$male_cat.id"^if($value.father eq $male_cat.id){ selected}>$male_cat.name</option>
+					<div class="mastername">
+						<div class="callout left"></div>
+						<input type="text" name="mastername" value="$value.mastername" class="cms_input save"^if(!$value.visible){ disabled}>
+					</div>
+
+					<div class="description">
+						<div class="callout left"></div>
+						<textarea type="text" name="description" class="cms_input save"^if(!$value.visible){ disabled}>$value.description</textarea>
+					</div>
+
+					<div class="tests">
+						<div class="callout left"></div>
+						<span class="fa-stack pointer red js-delete" title="Редактировать">
+							<a href = "/manage/options/cats/cat-test.html?cat=${value.id}"><i class="fa fa-file-text"></i></a>
+						</span>
+#					<textarea type="text" name="tests" class="cms_input save"^if(!$value.visible){ disabled}>$value.tests</textarea>
+					</div>
+					
+					<div class="foto" data-id="${value.id}">
+						<div class="callout left"></div>
+						
+						^if(-f '${srcpath}${value.foto}'){
+							<a href="#editFoto" id="" class="editFoto"><img class="foto" src="${srcpath}${value.foto}" height="30"></a>
+						}{
+							<a href="#editFoto" id="" class="editFoto"><img class="foto" src="/images/noimage.png" height="30"></a>
 						}
-					</select>
+						
+					</div>		
 
+					<div class="sex">
+						<div class="callout left"></div>
+						<select name="sex" class="cms_select save"^if(!$value.visible){ disabled}>
+							^this.sex.foreach[name;caption]{
+							<option value="$name"^if($name eq $value.sex){ selected}>$caption</option>
+							}
+						</select>
+
+					</div>
+
+					<div class="status">
+						<div class="callout left"></div>
+						<select name="status" class="cms_select save"^if(!$value.visible){ disabled}>
+							^this.status.foreach[name;caption]{
+							<option value="$name"^if($name eq $value.status){ selected}>$caption</option>
+							}
+						</select>
+												
+						
+					</div>
 					
-				</div>
+					<div class="veteran">
+						<div class="callout center"></div>
+						<input id="veteran_${pos}" type="checkbox" name="veteran" class="cms_checkbox save"^if($value.veteran){ checked}^if(!$value.visible){ disabled}><label for="veteran_${pos}" class="checkbox_custom"></label>
+					</div>
 
-				<div class="mother">
-					<div class="callout left"></div>
-					<select name="father" class="cms_select save"^if(!$value.visible){ disabled}>
-							<option value="0">Нет</option>
-						^this.female_cats.foreach[pos;female_cat]{
-							<option value="$female_cat.id"^if($value.mother eq $female_cat.id){ selected}>$female_cat.name</option>
-						}
-					</select>
-					
-				</div>
+				^rem{		
+					<div class="registration">
+						<div class="callout center"></div>
+						<input id="simplified_${value.id}" type="checkbox" name="simplified" class="cms_checkbox save"^if($value.simplified){ checked}^if(!$value.visible){ disabled}><label for="simplified_${value.id}" class="checkbox_custom"></label>
+					</div>
+				}
 
-				<div class="mastername">
-					<div class="callout left"></div>
-					<input type="text" name="mastername" value="$value.mastername" class="cms_input save"^if(!$value.visible){ disabled}>
-				</div>
+					<div class="actions">
+						<span class="move-button">
+							<span class="callout left"></span>
+							<span class="move" title="Перетащите поле чтобы изменить последовательность"></span>
+						</span>
+						<span>
+							<span class="callout left"></span>
+							<input id="visible_${value.id}" type="checkbox" name="visible" class="cms_checkbox save"^if($value.visible){ checked}><label for="visible_${value.id}" class="checkbox_visible" title="^if($value.visible == 1){Скрыть}{Отобразить}"></label>
+						</span>
 
-				<div class="description">
-					<div class="callout left"></div>
-					<textarea type="text" name="description" class="cms_input save"^if(!$value.visible){ disabled}>$value.description</textarea>
-				</div>
+					<span class="fa-stack pointer red js-delete" title="Редактировать">
+						<a href = "/manage/options/cats/images.html?cat=${value.id}"><i class="fa fa-file-text"></i></a>
+					</span>
 
-				<div class="tests">
-					<div class="callout left"></div>
-					
-					<textarea type="text" name="tests" class="cms_input save"^if(!$value.visible){ disabled}>$value.tests</textarea>
-				</div>
-				
-				<div class="foto">
-					<div class="callout left"></div>
-					
-					^if(-f '${srcpath}${value.foto}'){
-						<img src="${srcpath}${value.foto}" height="30">
-					}
-					
-				</div>		
-
-				<div class="sex">
-					<div class="callout left"></div>
-					<select name="sex" class="cms_select save"^if(!$value.visible){ disabled}>
-						^this.sex.foreach[name;caption]{
-						<option value="$name"^if($name eq $value.sex){ selected}>$caption</option>
-						}
-					</select>
-
-				</div>
-
-				<div class="status">
-					<div class="callout left"></div>
-					<select name="status" class="cms_select save"^if(!$value.visible){ disabled}>
-						^this.status.foreach[name;caption]{
-						<option value="$name"^if($name eq $value.status){ selected}>$caption</option>
-						}
-					</select>
-											
-					
-				</div>
-				
-				<div class="veteran">
-					<div class="callout center"></div>
-					<input id="veteran_${pos}" type="checkbox" name="veteran" class="cms_checkbox save"^if($value.veteran){ checked}^if(!$value.visible){ disabled}><label for="veteran_${pos}" class="checkbox_custom"></label>
-				</div>
-
-			^rem{		
-				<div class="registration">
-					<div class="callout center"></div>
-					<input id="simplified_${pos}" type="checkbox" name="simplified" class="cms_checkbox save"^if($value.simplified){ checked}^if(!$value.visible){ disabled}><label for="simplified_${pos}" class="checkbox_custom"></label>
+						<span class="fa-stack pointer red js-delete" title="Удалить" onclick="if(confirm('Подтвердите удаление')) location.href='delete-cat.html?cid=${value.id}'">
+							<i class="fa fa-square-o fa-stack-1x"></i>
+							<i class="fa fa-times fa-stack-1x"></i>
+						</span>
+						
+						
+					</div>
 				</div>
 			}
-
-				<div class="actions">
-			 		<span class="move-button">
-						<span class="callout left"></span>
-						<span class="move" title="Перетащите поле чтобы изменить последовательность"></span>
-					</span>
-					<span>
-						<span class="callout left"></span>
-						<input id="visible_${pos}" type="checkbox" name="visible" class="cms_checkbox save"^if($value.visible){ checked}><label for="visible_${pos}" class="checkbox_visible" title="^if($value.visible == 1){Скрыть}{Отобразить}"></label>
-					</span>
-
-				<span class="fa-stack pointer red js-delete" title="Редактировать">
-					<a href = "/manage/options/cats/images.html?cat=${value.id}"><i class="fa fa-file-text"></i></a>
-				</span>
-
-					<span class="fa-stack pointer red js-delete" title="Удалить">
-						<i class="fa fa-square-o fa-stack-1x"></i>
-						<i class="fa fa-times fa-stack-1x"></i>
-					</span>
-					
-					
-				</div>
+			</div>
+		}{
+			<div class="element-string no-elements">
+				<div class="h2">Поля не найдены</div>
 			</div>
 		}
 		</div>
-	}{
-		<div class="element-string no-elements">
-			<div class="h2">Поля не найдены</div>
-		</div>
-	}
 	</div>
 </div>
+<div class="tabcontent" data-tabcontent="cats-pomet">
+		<div class="navigation cms_h2">
+				<a href="#addPometForm" id="addPometForm1"  class="navigation-point add-field-link addPometForm">Добавить помёт</a>
+		</div>
 
+
+		$pomet	
+		
+		^if(def $fields){
+			<div class="element-string header">
+				<div class="type">Имя</div><!--
+				--><div class="name">Дата рождения</div><!--
+				--><div class="caption">Окрас</div><!--
+				--><div class="father">Папа</div><!--
+				--><div class="mother">Мама</div><!--
+				--><div class="zavod">Заводчик</div><!--
+				--><div class="description">Описание</div><!--
+				--><div class="testt">Тесты</div><!--
+				--><div class="foto">Фото</div><!--
+				--><div class="sex">Пол</div><!--	
+				--><div class="status">Статус</div><!--	
+				--><div class="vateran">Ветеран</div><!--							
+				--><div class="actions">Действие</div>
+			</div>
+			<div class="fields" data-url="actions.html" data-sort-field="sort_id">
+			^fields.foreach[pos;value]{
+
+				$srcpath[/images/cats/foto/${value.id}/]
+				<div class="element-string" data-id="$value.id" data-position="$value.sort_id">
+					<div class="type">
+						<div class="callout left"></div>
+						<input type="text" name="name" value="$value.name" class="cms_input save" data-prev="$value.name"^if(!$value.visible){ disabled}>
+						^rem{
+							<select name="type" class="cms_select save"^if(!$value.visible){ disabled}>
+							^this.fieldTypes.foreach[name;caption]{
+							<option value="$name"^if($name eq $value.type){ selected}>$caption</option>
+							}
+							</select>
+						}
+					</div>
+					<div class="name">
+						<div class="callout left"></div>
+						<input type="date" name="date" value="$value.date" class="cms_input save" data-prev="$value.date"^if(!$value.visible){ disabled}>
+					</div>
+
+					<div class="color">
+						<div class="callout left"></div>
+						<input type="text" name="color" value="$value.color" class="cms_input save"^if(!$value.visible){ disabled}>
+					</div>
+
+					<div class="father">
+						<div class="callout left"></div>
+
+						<select name="father" class="cms_select save"^if(!$value.visible){ disabled}>
+								<option value="0">Нет</option>
+							^this.male_cats.foreach[pos;male_cat]{
+								<option value="$male_cat.id"^if($value.father eq $male_cat.id){ selected}>$male_cat.name</option>
+							}
+						</select>
+
+						
+					</div>
+
+					<div class="mother">
+						<div class="callout left"></div>
+						<select name="father" class="cms_select save"^if(!$value.visible){ disabled}>
+								<option value="0">Нет</option>
+							^this.female_cats.foreach[pos;female_cat]{
+								<option value="$female_cat.id"^if($value.mother eq $female_cat.id){ selected}>$female_cat.name</option>
+							}
+						</select>
+						
+					</div>
+
+					<div class="mastername">
+						<div class="callout left"></div>
+						<input type="text" name="mastername" value="$value.mastername" class="cms_input save"^if(!$value.visible){ disabled}>
+					</div>
+
+					<div class="description">
+						<div class="callout left"></div>
+						<textarea type="text" name="description" class="cms_input save"^if(!$value.visible){ disabled}>$value.description</textarea>
+					</div>
+
+					<div class="tests">
+						<div class="callout left"></div>
+						<span class="fa-stack pointer red js-delete" title="Редактировать">
+							<a href = "/manage/options/cats/cat-test.html?cat=${value.id}"><i class="fa fa-file-text"></i></a>
+						</span>
+#					<textarea type="text" name="tests" class="cms_input save"^if(!$value.visible){ disabled}>$value.tests</textarea>
+					</div>
+					
+					<div class="foto" data-id="${value.id}">
+						<div class="callout left"></div>
+						
+						^if(-f '${srcpath}${value.foto}'){
+							<a href="#editFoto" id="" class="editFoto"><img class="foto" src="${srcpath}${value.foto}" height="30"></a>
+						}{
+							<a href="#editFoto" id="" class="editFoto"><img class="foto" src="/images/noimage.png" height="30"></a>
+						}
+						
+					</div>		
+
+					<div class="sex">
+						<div class="callout left"></div>
+						<select name="sex" class="cms_select save"^if(!$value.visible){ disabled}>
+							^this.sex.foreach[name;caption]{
+							<option value="$name"^if($name eq $value.sex){ selected}>$caption</option>
+							}
+						</select>
+
+					</div>
+
+					<div class="status">
+						<div class="callout left"></div>
+						<select name="status" class="cms_select save"^if(!$value.visible){ disabled}>
+							^this.status.foreach[name;caption]{
+							<option value="$name"^if($name eq $value.status){ selected}>$caption</option>
+							}
+						</select>
+												
+						
+					</div>
+					
+					<div class="veteran">
+						<div class="callout center"></div>
+						<input id="veteran_${pos}" type="checkbox" name="veteran" class="cms_checkbox save"^if($value.veteran){ checked}^if(!$value.visible){ disabled}><label for="veteran_${pos}" class="checkbox_custom"></label>
+					</div>
+
+			
+
+					<div class="actions">
+						<span class="move-button">
+							<span class="callout left"></span>
+							<span class="move" title="Перетащите поле чтобы изменить последовательность"></span>
+						</span>
+						<span>
+							<span class="callout left"></span>
+							<input id="visible_${value.id}" type="checkbox" name="visible" class="cms_checkbox save"^if($value.visible){ checked}><label for="visible_${value.id}" class="checkbox_visible" title="^if($value.visible == 1){Скрыть}{Отобразить}"></label>
+						</span>
+
+						<span class="fa-stack pointer red js-delete" title="Удалить" onclick="if(confirm('Подтвердите удаление')) location.href='delete-cat.html?cid=${value.id}'">
+							<i class="fa fa-square-o fa-stack-1x"></i>
+							<i class="fa fa-times fa-stack-1x"></i>
+						</span>
+						
+						
+					</div>
+				</div>
+			}
+			</div>
+		}{
+			<div class="element-string no-elements">
+				<div class="h2">Поля не найдены</div>
+			</div>
+		}		
+</div>
+}
+</div>
+
+<form id="addPometForm" style="display:none^; background: linear-gradient(to bottom, #fed571 0%,#ffbf23 100%)^;" method="post" enctype="multipart/form-data" action="add-pomet.html">
+	<table class="table_dsb" style = "width: 400px;height: 600px;">
+		<tr>
+			<td colspan="2" class="aC cms_h2">Добавить Помёт</td>
+		</tr>
+		<tr>
+			<td>Название:</td>
+			<td>
+				<input type="text" required name="namec"  value="" class="cms_input">
+			</td>
+		</tr>
+		<tr>
+			<td>Дата:</td>
+			<td>
+				<input type="date" required name="date"  value="" class="cms_input">
+			</td>
+		</tr>
+
+		<tr>
+			<td>Папа:</td>
+			<td>
+				<select name="father" class="cms_select">
+						<option value="0">Нет</option>
+						^this.male_cats.foreach[pos;male_cat]{
+							<option value="$male_cat.id">$male_cat.name</option>
+						}
+				</select>
+		</tr>
+	
+		<tr>
+			<td>Мама:</td>
+			<td>
+				<select name="mother" class="cms_select">
+					<option value="0">Нет</option>
+					^this.female_cats.foreach[pos;female_cat]{
+						<option value="$female_cat.id">$female_cat.name</option>
+					}
+				</select>
+			</td>
+		</tr>
+
+		<tr>
+			<td>Котята:</td>
+			<td>
+				<select name="kittens" id="kittensselect1"  required multiple="multiple" class="cms_select" style="height:  201px; width:  146px;">
+					
+					^this.all_cats.foreach[pos;female_cat]{
+						<option value="$female_cat.id">$female_cat.name</option>
+					}
+				</select>
+				<input type="hidden" required name="kittens" id="kittens"  value="" class="cms_input">
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2" class="aC">
+				<input id="uploadSubmit"  type="submit" value="Добавить">
+			</td>
+		</tr>
+	</table>
+</form>
 
 <form id="addForm" style="display:none^; background: linear-gradient(to bottom, #fed571 0%,#ffbf23 100%)^;" method="post" enctype="multipart/form-data" action="add-cat.html">
 	<table class="table_dsb">
@@ -318,6 +550,26 @@ $fields[^this.GetFields[]]
 				<input id="uploadSubmit"  type="submit" value="Добавить">
 			</td>
 		</tr>
+	</table>
+</form>
+
+<form id="editFoto" style="display:none^; background: linear-gradient(to bottom, #fed571 0%,#ffbf23 100%)^;" method="post" enctype="multipart/form-data" action="add-images.html">
+	<table class="table_dsb">
+			<tbody><tr align="center">
+			<td><div class="cms_h1"><nobr>Добавление изображения</nobr></div></td>
+			</tr>
+			<tr align="center">
+			<td><input type="file" name = "multifiles"></td>
+			</tr>
+			<tr align="center">
+			<td>
+				<input type = "text" id = "cat_id" name ="id">
+				<input type = "text"  name ="type" value="1">
+				<!--Куда редиректить (на главную модуля) -->
+				<input type = "text"  name ="redir" value="module_main_page">
+				<input type="submit"  value="Добавить"></td>
+			</tr>
+			</tbody>
 	</table>
 </form>
 ################################################################################

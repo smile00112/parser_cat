@@ -1,0 +1,34 @@
+################################################################################
+@main[]
+
+^connect[$site:connectString]{
+# Если передаются данные
+	^if(def $form:namec){
+		^if(def $form:foto){
+			$fotoname[$form:foto.name]
+		}
+
+
+# Инициализируем переменную для метода сохранения
+		$values[
+			$.name[$form:namec]
+			$.date[$form:date]
+			$.father($form:father)
+			$.mother($form:mother)	
+		]
+		$res[^this.addPomet[$values]]
+		^if(def $res.id){
+			^form:tables.kittens.foreach[pos;value]{
+				^if(def $value.field){
+					$answer[^this.SaveField[$value.field;pomet;$res.id]]
+				}
+			}
+		}	
+		
+
+#		(^json:string[$form:fields], ^json:string[$form:tables])
+
+$response:refresh[$.value(0)$.url[/manage/options/cats/]]
+################################################################################
+}
+}
