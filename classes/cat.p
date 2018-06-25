@@ -458,11 +458,11 @@ $result[^table::load[/classes/auth/registration.table]]
 ^try{
 
 	$sql[
-		SELECT $sql.fields
+		SELECT *
 		FROM $self.cats_pomet_table.name
 		WHERE 1=1
 
-
+		ORDER BY  sort_id
 	]
 
 		$result[^table::sql{$sql}]
@@ -667,7 +667,7 @@ $.id[$lastgr_id]
 ] 
 
 ################################################################################
-@delCat[values]
+@delPomet[values]
 ^connect[$site:connectString]{
 	^void:sql{DELETE FROM $self.cats_pomet_table.name WHERE id = '$values.id'}
 }

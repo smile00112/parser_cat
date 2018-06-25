@@ -58,7 +58,7 @@ $self.status[
 
 #Все котэ
 	$sql[
-		SELECT id, name, sex
+		SELECT *
 		FROM $self.cats_list_table.name
 		WHERE 1=1
 		ORDER BY name
@@ -105,6 +105,24 @@ $answer[$.error(false)]
 	$answer.text[Переданы не все параметры]
 }
 $result[$answer]
+
+################################################################################
+@SaveFieldPomet[id;name;value]
+$answer[$.error(false)]
+^if(def $id && def $name){
+	
+	if(name != kitens){
+	
+		$res[^void:sql{UPDATE $self.cats_pomet_table.name SET $name='$value' WHERE id=$id}]
+			$answer.text[Значение сохранено]
+			
+	}
+}{
+
+
+}
+$result[$answer]
+
 ################################################################################
 @RenameField[oldName;newName;tableName]
 ^try{
@@ -172,5 +190,20 @@ $result[$answer]
 		$.text[Ошибка выполнения функции]
 		$.exception[$exception]
 	]
+}
+################################################################################
+@checkKittenInPomet[params]
+
+^if(($params.pomet) && ($params.cat)){
+	$result['']
+	^self.all_cats.foreach[pos;cat]{
+		^if(($params.pomet eq $cat.pomet) && ($params.cat eq $cat.id)){
+			$result[selected]
+			^break[]
+		}
+#			$result[$params.pomet _____  $cat.pomet  ** $params.cat ____ $cat.id]
+	}
+#	$result[0]
+	
 }
 ################################################################################

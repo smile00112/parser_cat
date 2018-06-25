@@ -9,31 +9,44 @@
 	font-family: FontAwesome;
 }
 .fields-table{
-	display: inline-block;
+	display: table;
 	/*max-width: 1100px;*/
 	margin-top: 1em;
 }
 .element-string.header div{
 	line-height: 1em;
 }
-
-.status,
-.sex,
-.father,
-.mother,
-.zavod{
-	width: 113px;
+.header{
+	height: 50px;    
+    vertical-align: middle;
+	display: table-cell;
 }
 
-.foto{
+.element-string {
+    font-size: 16px;
+    font-family: "Cuprum",Tahoma;
+}
+.type{
+	width: 140px;
+}
+.fields{
+	display: table-row;
+}
+
+.foto img{
+	height: 30px;
 	width: 50px;
+
+}
+.foto{
+	width: 60px;
 }
 .fields input,
 .fields select{
 	width: 100%;
 }
 .type{
-	width: 130px;
+	/*width: 130px;*/
 	padding-left: 0!important;
 }
 .name{
@@ -82,7 +95,7 @@
     top: -2px;
 }
 .fa-file-text {
-    font-size: 34px;
+    font-size: 30px;
 	cursor: pointer;
 	color: #7a2000;
 }
@@ -133,4 +146,10 @@
     font-size: 28px;
     font-family: 'Cuprum',Tahoma;
     vertical-align: middle;
+}
+.pomet-kittens{
+	width: 180px;
+}
+.pomet-kittens .chosen-choices{
+	background: transparent;
 }

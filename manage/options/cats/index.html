@@ -1,9 +1,12 @@
 ################################################################################
 @cms_body[]
 #-------------------------------------------------------------------------------
+<link href="/lib/chosen/chosen.css" rel="stylesheet" type="text/css">
 <link href="./styles/styles.css" rel="stylesheet" type="text/css">
-<script	src="./scripts/scripts.js" type="text/javascript"></script>
+
 <script type="text/javascript" src="${cms:templateFolder}/libraries/dragula/dragula.min.js"></script>
+<script type="text/javascript" src="/lib/chosen/chosen.jquery.js"></script>
+<script	src="./scripts/scripts.js" type="text/javascript"></script>
 <link rel="stylesheet" type="text/css" href="${cms:templateFolder}/libraries/dragula/dragula.min.css" />
 #-------------------------------------------------------------------------------
 # Выводим заголовок страницы
@@ -55,25 +58,34 @@ $pomet[^this.GetPomets[]]
 
 		^if(def $fields){
 			<div class="element-string header">
-				<div class="type">Имя</div><!--
-				--><div class="name">Дата рождения</div><!--
-				--><div class="caption">Окрас</div><!--
-				--><div class="father">Папа</div><!--
-				--><div class="mother">Мама</div><!--
-				--><div class="zavod">Заводчик</div><!--
-				--><div class="description">Описание</div><!--
-				--><div class="testt">Тесты</div><!--
-				--><div class="foto">Фото</div><!--
-				--><div class="sex">Пол</div><!--	
-				--><div class="status">Статус</div><!--	
-				--><div class="vateran">Ветеран</div><!--							
-				--><div class="actions">Действие</div>
+				<div class="foto">Фото</div>
+				<div class="type">Имя</div>
+				<div class="name">Дата рождения</div>
+				<div class="color">Окрас</div>
+				<div class="father">Папа</div>
+				<div class="mother">Мама</div>
+				<div class="mastername">Заводчик</div>
+				<div class="description">Описание</div>
+				<div class="sex">Пол</div>
+				<div class="status">Статус</div>
+				<div class="vateran">Ветеран</div>
+				<div class="actions">Действие</div>
 			</div>
 			<div class="fields" data-url="actions.html" data-sort-field="sort_id">
 			^fields.foreach[pos;value]{
 
 				$srcpath[/images/cats/foto/${value.id}/]
 				<div class="element-string" data-id="$value.id" data-position="$value.sort_id">
+					<div class="foto"  data-id="${value.id}">
+						<div class="callout left"></div>
+						
+						^if(-f '${srcpath}${value.foto}'){
+							<a href="#editFoto" id="" class="editFoto"><img class="foto" src="${srcpath}${value.foto}" ></a>
+						}{
+							<a href="#editFoto" id="" class="editFoto"><img class="foto" src="/images/noimage.png" ></a>
+						}
+						
+					</div>	
 					<div class="type">
 						<div class="callout left"></div>
 						<input type="text" name="name" value="$value.name" class="cms_input save" data-prev="$value.name"^if(!$value.visible){ disabled}>
@@ -126,27 +138,9 @@ $pomet[^this.GetPomets[]]
 
 					<div class="description">
 						<div class="callout left"></div>
-						<textarea type="text" name="description" class="cms_input save"^if(!$value.visible){ disabled}>$value.description</textarea>
+#						<textarea type="text" name="description" class="cms_input save"^if(!$value.visible){ disabled}>$value.description</textarea>
+						<input type="text" name="description" value="$value.description" class="cms_input save"^if(!$value.visible){ disabled}>
 					</div>
-
-					<div class="tests">
-						<div class="callout left"></div>
-						<span class="fa-stack pointer red js-delete" title="Редактировать">
-							<a href = "/manage/options/cats/cat-test.html?cat=${value.id}"><i class="fa fa-file-text"></i></a>
-						</span>
-#					<textarea type="text" name="tests" class="cms_input save"^if(!$value.visible){ disabled}>$value.tests</textarea>
-					</div>
-					
-					<div class="foto" data-id="${value.id}">
-						<div class="callout left"></div>
-						
-						^if(-f '${srcpath}${value.foto}'){
-							<a href="#editFoto" id="" class="editFoto"><img class="foto" src="${srcpath}${value.foto}" height="30"></a>
-						}{
-							<a href="#editFoto" id="" class="editFoto"><img class="foto" src="/images/noimage.png" height="30"></a>
-						}
-						
-					</div>		
 
 					<div class="sex">
 						<div class="callout left"></div>
@@ -191,12 +185,16 @@ $pomet[^this.GetPomets[]]
 							<input id="visible_${value.id}" type="checkbox" name="visible" class="cms_checkbox save"^if($value.visible){ checked}><label for="visible_${value.id}" class="checkbox_visible" title="^if($value.visible == 1){Скрыть}{Отобразить}"></label>
 						</span>
 
+						<span class="fa-stack pointer red js-delete" title="Редактировать тесты">
+								<a href = "/manage/options/cats/cat-test.html?cat=${value.id}"><i class="fa fa-file-text"></i></a>
+							</span>
+
 					<span class="fa-stack pointer red js-delete" title="Редактировать">
 						<a href = "/manage/options/cats/images.html?cat=${value.id}"><i class="fa fa-file-text"></i></a>
 					</span>
 
 						<span class="fa-stack pointer red js-delete" title="Удалить" onclick="if(confirm('Подтвердите удаление')) location.href='delete-cat.html?cid=${value.id}'">
-							<i class="fa fa-square-o fa-stack-1x"></i>
+						
 							<i class="fa fa-times fa-stack-1x"></i>
 						</span>
 						
@@ -219,54 +217,35 @@ $pomet[^this.GetPomets[]]
 		</div>
 
 
-		$pomet	
+	
 		
-		^if(def $fields){
+		^if(def $pomet){
 			<div class="element-string header">
-				<div class="type">Имя</div><!--
-				--><div class="name">Дата рождения</div><!--
-				--><div class="caption">Окрас</div><!--
-				--><div class="father">Папа</div><!--
-				--><div class="mother">Мама</div><!--
-				--><div class="zavod">Заводчик</div><!--
-				--><div class="description">Описание</div><!--
-				--><div class="testt">Тесты</div><!--
-				--><div class="foto">Фото</div><!--
-				--><div class="sex">Пол</div><!--	
-				--><div class="status">Статус</div><!--	
-				--><div class="vateran">Ветеран</div><!--							
-				--><div class="actions">Действие</div>
+				<div class="type">Название</div>
+				<div class="name">Дата</div>
+				<div class="father">Папа</div>
+				<div class="mother">Мама</div>
+				<div class="zavod">Котята</div>
 			</div>
-			<div class="fields" data-url="actions.html" data-sort-field="sort_id">
-			^fields.foreach[pos;value]{
+			<div class="fields2" data-url="actions.html" data-sort-field="sort_id">
+			^pomet.foreach[pos;value]{
 
-				$srcpath[/images/cats/foto/${value.id}/]
 				<div class="element-string" data-id="$value.id" data-position="$value.sort_id">
 					<div class="type">
 						<div class="callout left"></div>
-						<input type="text" name="name" value="$value.name" class="cms_input save" data-prev="$value.name"^if(!$value.visible){ disabled}>
-						^rem{
-							<select name="type" class="cms_select save"^if(!$value.visible){ disabled}>
-							^this.fieldTypes.foreach[name;caption]{
-							<option value="$name"^if($name eq $value.type){ selected}>$caption</option>
-							}
-							</select>
-						}
+						<input type="text" name="name" value="$value.name" class="cms_input save_p" data-prev="$value.name"^if(!$value.visible){ disabled}>
 					</div>
-					<div class="name">
+					<div cl
+					ass="name">
 						<div class="callout left"></div>
-						<input type="date" name="date" value="$value.date" class="cms_input save" data-prev="$value.date"^if(!$value.visible){ disabled}>
+						<input type="date" name="date" value="$value.date" class="cms_input save_p" data-prev="$value.date"^if(!$value.visible){ disabled}>
 					</div>
 
-					<div class="color">
-						<div class="callout left"></div>
-						<input type="text" name="color" value="$value.color" class="cms_input save"^if(!$value.visible){ disabled}>
-					</div>
-
+	
 					<div class="father">
 						<div class="callout left"></div>
 
-						<select name="father" class="cms_select save"^if(!$value.visible){ disabled}>
+						<select name="father" class="cms_select save_p"^if(!$value.visible){ disabled}>
 								<option value="0">Нет</option>
 							^this.male_cats.foreach[pos;male_cat]{
 								<option value="$male_cat.id"^if($value.father eq $male_cat.id){ selected}>$male_cat.name</option>
@@ -278,7 +257,7 @@ $pomet[^this.GetPomets[]]
 
 					<div class="mother">
 						<div class="callout left"></div>
-						<select name="father" class="cms_select save"^if(!$value.visible){ disabled}>
+						<select name="father" class="cms_select save_p"^if(!$value.visible){ disabled}>
 								<option value="0">Нет</option>
 							^this.female_cats.foreach[pos;female_cat]{
 								<option value="$female_cat.id"^if($value.mother eq $female_cat.id){ selected}>$female_cat.name</option>
@@ -287,61 +266,22 @@ $pomet[^this.GetPomets[]]
 						
 					</div>
 
-					<div class="mastername">
+					<div class="pomet-kittens">
 						<div class="callout left"></div>
-						<input type="text" name="mastername" value="$value.mastername" class="cms_input save"^if(!$value.visible){ disabled}>
-					</div>
-
-					<div class="description">
-						<div class="callout left"></div>
-						<textarea type="text" name="description" class="cms_input save"^if(!$value.visible){ disabled}>$value.description</textarea>
-					</div>
-
-					<div class="tests">
-						<div class="callout left"></div>
-						<span class="fa-stack pointer red js-delete" title="Редактировать">
-							<a href = "/manage/options/cats/cat-test.html?cat=${value.id}"><i class="fa fa-file-text"></i></a>
-						</span>
-#					<textarea type="text" name="tests" class="cms_input save"^if(!$value.visible){ disabled}>$value.tests</textarea>
-					</div>
-					
-					<div class="foto" data-id="${value.id}">
-						<div class="callout left"></div>
-						
-						^if(-f '${srcpath}${value.foto}'){
-							<a href="#editFoto" id="" class="editFoto"><img class="foto" src="${srcpath}${value.foto}" height="30"></a>
-						}{
-							<a href="#editFoto" id="" class="editFoto"><img class="foto" src="/images/noimage.png" height="30"></a>
-						}
-						
-					</div>		
-
-					<div class="sex">
-						<div class="callout left"></div>
-						<select name="sex" class="cms_select save"^if(!$value.visible){ disabled}>
-							^this.sex.foreach[name;caption]{
-							<option value="$name"^if($name eq $value.sex){ selected}>$caption</option>
+						<select name="kitens" id="pom-kitens" data-placeholder="Котята" multiple class="save_p kittens-select"^if(!$value.visible){ disabled}>
+							^this.all_cats.foreach[pos;cat]{
+								^if(($cat.id != $value.mother) && ($cat.id != $value.father)){
+									$kValues[
+									
+										$.pomet[$value.id]
+										$.cat[$cat.id]
+									]
+									<option value="$cat.id" ^this.checkKittenInPomet[$kValues]>$cat.name</option>
+								}
 							}
 						</select>
-
-					</div>
-
-					<div class="status">
-						<div class="callout left"></div>
-						<select name="status" class="cms_select save"^if(!$value.visible){ disabled}>
-							^this.status.foreach[name;caption]{
-							<option value="$name"^if($name eq $value.status){ selected}>$caption</option>
-							}
-						</select>
-												
 						
 					</div>
-					
-					<div class="veteran">
-						<div class="callout center"></div>
-						<input id="veteran_${pos}" type="checkbox" name="veteran" class="cms_checkbox save"^if($value.veteran){ checked}^if(!$value.visible){ disabled}><label for="veteran_${pos}" class="checkbox_custom"></label>
-					</div>
-
 			
 
 					<div class="actions">
@@ -351,11 +291,11 @@ $pomet[^this.GetPomets[]]
 						</span>
 						<span>
 							<span class="callout left"></span>
-							<input id="visible_${value.id}" type="checkbox" name="visible" class="cms_checkbox save"^if($value.visible){ checked}><label for="visible_${value.id}" class="checkbox_visible" title="^if($value.visible == 1){Скрыть}{Отобразить}"></label>
+							<input id="visible_${value.id}" type="checkbox" name="visible" class="cms_checkbox save_p"^if($value.visible){ checked}><label for="visible_${value.id}" class="checkbox_visible" title="^if($value.visible == 1){Скрыть}{Отобразить}"></label>
 						</span>
 
-						<span class="fa-stack pointer red js-delete" title="Удалить" onclick="if(confirm('Подтвердите удаление')) location.href='delete-cat.html?cid=${value.id}'">
-							<i class="fa fa-square-o fa-stack-1x"></i>
+						<span class="fa-stack pointer red js-delete" title="Удалить" onclick="if(confirm('Подтвердите удаление')) location.href='delete-pomet.html?cid=${value.id}'">
+							
 							<i class="fa fa-times fa-stack-1x"></i>
 						</span>
 						
@@ -563,8 +503,8 @@ $pomet[^this.GetPomets[]]
 			</tr>
 			<tr align="center">
 			<td>
-				<input type = "text" id = "cat_id" name ="id">
-				<input type = "text"  name ="type" value="1">
+				<input type = "hidden" id = "cat_id" name ="id">
+				<input type = "hidden"  name ="type" value="1">
 				<!--Куда редиректить (на главную модуля) -->
 				<input type = "text"  name ="redir" value="module_main_page">
 				<input type="submit"  value="Добавить"></td>

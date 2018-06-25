@@ -8,6 +8,9 @@
 		^case[save-field]{
 			$answer[^this.SaveField[$form:id;$form:field;$form:value]]
 		}
+		^case[save-field-pomet]{
+			$answer[^this.SaveFieldPomet[$form:id;$form:field;$form:value]]
+		}		
 		^case[rename-field]{
 			$answer[^this.RenameField[$form:old_name;$form:new_name]]
 			^if(!$answer.error){
